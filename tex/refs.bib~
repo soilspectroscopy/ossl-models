@@ -1,0 +1,39 @@
+
+@article{dangal2020standardization,
+  title={Is Standardization Necessary for Sharing of a Large Mid-Infrared Soil Spectral Library?},
+  author={Dangal, Shree RS and Sanderman, Jonathan},
+  journal={Sensors},
+  volume={20},
+  number={23},
+  pages={6729},
+  doi={10.3390/s20236729},
+  year={2020},
+  publisher={Multidisciplinary Digital Publishing Institute}
+}
+
+@book{zhang2012ensemble,
+  title={Ensemble machine learning: methods and applications},
+  author={Zhang, Cha and Ma, Yunqian},
+  year={2012},
+  publisher={Springer}
+}
+
+@article{bischl2016mlr,
+  title={mlr: Machine Learning in R},
+  author={Bischl, Bernd and Lang, Michel and Kotthoff, Lars and Schiffner, Julia and Richter, Jakob and Studerus, Erich and Casalicchio, Giuseppe and Jones, Zachary M},
+  journal={The Journal of Machine Learning Research},
+  volume={17},
+  number={1},
+  pages={5938--5942},
+  year={2016},
+  publisher={JMLR. org}
+}
+
+@book{hengl2019predictive,
+  title={Predictive Soil Mapping with R},
+  author={Hengl, Tomislav and MacMillan, Robert A},
+  address={Wageningen, the Netherlands},
+  year={2019},
+  pages={370},
+  publisher={Lulu. com}
+}
