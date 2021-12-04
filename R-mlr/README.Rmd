@@ -1,5 +1,5 @@
 ---
-title: "OSSL: Global Soil Spectroscopy Calibration Models"
+title: "OSSL: Global Soil Spectral Calibration Models"
 author: "Tomislav Hengl (tom.hengl@opengeohub.org), Leandro Parente (leandro.parente@opengeohub.org), and Jonathan Sanderman (jsanderman@woodwellclimate.org)"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -38,7 +38,7 @@ Dataset: [OSSL](https://soilspectroscopy.github.io/ossl-manual/reference-soil-sp
 options(warn=0)
 ```
 
-This tutorial explains steps required to fit Global Soil Spectroscopy Calibration Models
+This tutorial explains steps required to fit Global Soil Spectral Calibration Models
 for the purpose of the [Soil Spectroscopy for Global Good project](https://soilspectroscopy.org).
 We use Ensemble Machine Learning with meta-learner / stacking where meta-learner is fitted using 
 5-fold Cross-Validation with refitting [@hengl2019predictive].
@@ -310,7 +310,7 @@ for(i in 1:nrow(acc.mat)){
 Example of an accuracy plot:
 
 ```{r ac-soc1, echo=FALSE, fig.cap="Accuracy plot for `log..oc_usda.calc_wpct/mir_mlr..eml_kssl_na_v1.rds`.", out.width="60%"}
-knitr::include_graphics("http://s3.us-east-1.wasabisys.com/soilspectroscopy/ossl_models/log..oc_usda.calc_wpct/ap.mir_mlr..eml_kssl_na_v1.rds.png")
+knitr::include_graphics("./models/log..oc_usda.calc_wpct/ap.mir_mlr..eml_kssl_na_v1.rds.png")
 ```
 
 

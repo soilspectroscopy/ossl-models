@@ -1,4 +1,4 @@
-OSSL: Global Soil Spectroscopy Calibration Models
+OSSL: Global Soil Spectral Calibration Models
 ================
 Tomislav Hengl (<tom.hengl@opengeohub.org>), Leandro Parente
 (<leandro.parente@opengeohub.org>), and Jonathan Sanderman
@@ -24,7 +24,7 @@ Last update: 2021-12-04
 Dataset:
 [OSSL](https://soilspectroscopy.github.io/ossl-manual/reference-soil-spectroscopy-models.html)
 
-This tutorial explains steps required to fit Global Soil Spectroscopy
+This tutorial explains steps required to fit Global Soil Spectral
 Calibration Models for the purpose of the [Soil Spectroscopy for Global
 Good project](https://soilspectroscopy.org). We use Ensemble Machine
 Learning with meta-learner / stacking where meta-learner is fitted using
@@ -39,116 +39,6 @@ The following code runs is implemented in a High Performance Computing
 environment with many steps fully parallelized and with enough RAM
 (&gt;450GB). Running this code on a standard computer without subsetting
 data is not recommended.
-
-    ## Loading required package: rgdal
-
-    ## Loading required package: sp
-
-    ## rgdal: version: 1.5-18, (SVN revision (unknown))
-    ## Geospatial Data Abstraction Library extensions to R successfully loaded
-    ## Loaded GDAL runtime: GDAL 3.0.4, released 2020/01/28
-    ## Path to GDAL shared files: /usr/share/gdal
-    ## GDAL binary built with GEOS: TRUE 
-    ## Loaded PROJ runtime: Rel. 7.0.0, March 1st, 2020, [PJ_VERSION: 700]
-    ## Path to PROJ shared files: /home/tomislav/.local/share/proj:/usr/share/proj
-    ## PROJ CDN enabled: FALSE
-    ## Linking to sp version:1.4-4
-    ## To mute warnings of possible GDAL/OSR exportToProj4() degradation,
-    ## use options("rgdal_show_exportToProj4_warnings"="none") before loading rgdal.
-
-    ## Loading required package: raster
-
-    ## Loading required package: terra
-
-    ## terra version 0.8.11 (beta-release)
-
-    ## 
-    ## Attaching package: 'terra'
-
-    ## The following object is masked from 'package:rgdal':
-    ## 
-    ##     project
-
-    ## Loading required package: ranger
-
-    ## Loading required package: mlr
-
-    ## Loading required package: ParamHelpers
-
-    ## 
-    ## Attaching package: 'ParamHelpers'
-
-    ## The following object is masked from 'package:raster':
-    ## 
-    ##     getValues
-
-    ## 'mlr' is in maintenance mode since July 2019. Future development
-    ## efforts will go into its successor 'mlr3' (<https://mlr3.mlr-org.com>).
-
-    ## 
-    ## Attaching package: 'mlr'
-
-    ## The following object is masked from 'package:terra':
-    ## 
-    ##     resample
-
-    ## The following object is masked from 'package:raster':
-    ## 
-    ##     resample
-
-    ## Loading required package: parallelMap
-
-    ## Loading required package: data.table
-
-    ## 
-    ## Attaching package: 'data.table'
-
-    ## The following objects are masked from 'package:terra':
-    ## 
-    ##     shift, transpose
-
-    ## The following object is masked from 'package:raster':
-    ## 
-    ##     shift
-
-    ## Loading required package: xgboost
-
-    ## Loading required package: Cubist
-
-    ## Loading required package: lattice
-
-    ## Loading required package: glmnet
-
-    ## Loading required package: Matrix
-
-    ## 
-    ## Attaching package: 'Matrix'
-
-    ## The following objects are masked from 'package:terra':
-    ## 
-    ##     expand, pack
-
-    ## Loaded glmnet 4.0-2
-
-    ## Loading required package: matrixStats
-
-    ## Loading required package: doMC
-
-    ## Loading required package: foreach
-
-    ## Loading required package: iterators
-
-    ## Loading required package: parallel
-
-    ## Loading required package: landmap
-
-    ## version: 0.0.12
-
-    ## Loading required package: openair
-
-    ## Loading required package: fastDummies
-
-    ## Loading required package: fastSave
 
 The directory/folder path:
 
@@ -307,7 +197,7 @@ geo.sel = names(rm.ossl)[grep("clm_", names(rm.ossl))]
 str(geo.sel)
 ```
 
-    ##  chr [1:62] "clm_lst_mod11a2.annual.day_m_1km_s0..0cm_2000..2017_v1.0" ...
+    ##  chr [1:62] "clm_lst_mod11a2.annual.day_m_1km_s0..0cm_2000..2017_v1.0" "clm_lst_mod11a2.annual.night_m_1km_s0..0cm_2000..2017_v1.0" ...
 
 ``` r
 harm.sel = names(rm.ossl)[grep("dataset.code_ascii_c_", names(rm.ossl))]
@@ -462,7 +352,7 @@ Example of an accuracy plot:
 
 <div class="figure">
 
-<img src="http://s3.us-east-1.wasabisys.com/soilspectroscopy/ossl_models/log..oc_usda.calc_wpct/ap.mir_mlr..eml_kssl_na_v1.rds.png" alt="Accuracy plot for `log..oc_usda.calc_wpct/mir_mlr..eml_kssl_na_v1.rds`." width="60%" />
+<img src="./models/log..oc_usda.calc_wpct/ap.mir_mlr..eml_kssl_na_v1.rds.png" alt="Accuracy plot for `log..oc_usda.calc_wpct/mir_mlr..eml_kssl_na_v1.rds`." width="60%" />
 <p class="caption">
 Accuracy plot for `log..oc_usda.calc_wpct/mir_mlr..eml_kssl_na_v1.rds`.
 </p>
