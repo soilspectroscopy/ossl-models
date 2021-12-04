@@ -1,0 +1,82 @@
+Results of ensemble model fitting 'ranger', 'xgboost', 'Cubist', 'cvglmnet' ...:
+
+Variable: log..oc_usda.calc_wpct 
+R-square: 0.962 
+Fitted values sd: 0.901 
+RMSE: 0.18 
+
+EML model summary:
+Call:
+stats::lm(formula = f, data = d)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.8075 -0.0760 -0.0026  0.0679  3.1851 
+
+Coefficients:
+               Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   -0.016035   0.002100  -7.636 2.38e-14 ***
+regr.ranger   -0.052139   0.009334  -5.586 2.36e-08 ***
+regr.xgboost   0.193946   0.008132  23.851  < 2e-16 ***
+regr.cvglmnet  0.700315   0.007920  88.420  < 2e-16 ***
+regr.cubist    0.180356   0.006390  28.226  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.18 on 14781 degrees of freedom
+Multiple R-squared:  0.9616,	Adjusted R-squared:  0.9616 
+F-statistic: 9.257e+04 on 4 and 14781 DF,  p-value: < 2.2e-16
+
+
+Variable importance:
+                                                      variable importance
+3                                                      mir.PC3 701.612421
+8                                                      mir.PC8 251.410420
+61                                                   hzn_depth 159.437034
+1                                                      mir.PC1 148.778891
+14                                                    mir.PC14  31.580884
+4                                                      mir.PC4  23.461361
+24                                                    mir.PC24  19.324123
+2                                                      mir.PC2  18.658217
+76       clm_lst_mod11a2.jan.day_m_1km_s0..0cm_2000..2017_v1.0  13.844310
+67       clm_lst_mod11a2.aug.day_m_1km_s0..0cm_2000..2017_v1.0  12.821024
+7                                                      mir.PC7  11.235346
+36                                                    mir.PC36  10.232712
+71  clm_lst_mod11a2.dec.daynight_m_1km_s0..0cm_2000..2017_v1.0   8.687094
+18                                                    mir.PC18   8.529831
+10                                                    mir.PC10   8.459407
+19                                                    mir.PC19   8.416486
+17                                                    mir.PC17   8.321158
+12                                                    mir.PC12   8.015061
+107      clm_precipitation_worldclim.mar_m_1km_1990..2010_v2.1   6.743579
+79       clm_lst_mod11a2.jul.day_m_1km_s0..0cm_2000..2017_v1.0   6.628210
+11                                                    mir.PC11   6.390216
+15                                                    mir.PC15   5.131651
+21                                                    mir.PC21   4.766545
+103      clm_precipitation_worldclim.feb_m_1km_1990..2010_v2.1   4.761203
+104      clm_precipitation_worldclim.jan_m_1km_1990..2010_v2.1   4.692309
+9                                                      mir.PC9   4.434616
+20                                                    mir.PC20   4.396985
+5                                                      mir.PC5   4.076762
+95  clm_lst_mod11a2.oct.daynight_m_1km_s0..0cm_2000..2017_v1.0   4.047335
+37                                                    mir.PC37   3.730132
+74  clm_lst_mod11a2.feb.daynight_m_1km_s0..0cm_2000..2017_v1.0   3.647262
+65  clm_lst_mod11a2.apr.daynight_m_1km_s0..0cm_2000..2017_v1.0   3.636663
+110      clm_precipitation_worldclim.oct_m_1km_1990..2010_v2.1   3.465993
+49                                                    mir.PC49   3.458937
+27                                                    mir.PC27   3.452640
+23                                                    mir.PC23   3.368624
+16                                                    mir.PC16   3.249471
+43                                                    mir.PC43   3.137579
+55                                                    mir.PC55   3.130705
+77  clm_lst_mod11a2.jan.daynight_m_1km_s0..0cm_2000..2017_v1.0   3.106477
+100      clm_precipitation_worldclim.apr_m_1km_1990..2010_v2.1   3.056279
+82       clm_lst_mod11a2.jun.day_m_1km_s0..0cm_2000..2017_v1.0   2.991084
+89  clm_lst_mod11a2.may.daynight_m_1km_s0..0cm_2000..2017_v1.0   2.968912
+42                                                    mir.PC42   2.798241
+111      clm_precipitation_worldclim.sep_m_1km_1990..2010_v2.1   2.666062
+92  clm_lst_mod11a2.nov.daynight_m_1km_s0..0cm_2000..2017_v1.0   2.659569
+30                                                    mir.PC30   2.604811
+35                                                    mir.PC35   2.580388
+47                                                    mir.PC47   2.576271
+25                                                    mir.PC25   2.471337

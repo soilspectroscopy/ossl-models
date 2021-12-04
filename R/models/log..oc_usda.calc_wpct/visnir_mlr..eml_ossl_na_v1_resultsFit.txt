@@ -1,0 +1,82 @@
+Results of ensemble model fitting 'ranger', 'xgboost', 'Cubist', 'cvglmnet' ...:
+
+Variable: log..oc_usda.calc_wpct 
+R-square: 0.902 
+Fitted values sd: 1.09 
+RMSE: 0.358 
+
+EML model summary:
+Call:
+stats::lm(formula = f, data = d)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.1607 -0.1503  0.0042  0.1414  3.2520 
+
+Coefficients:
+               Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   -0.082106   0.002634 -31.171  < 2e-16 ***
+regr.ranger    0.731894   0.006851 106.828  < 2e-16 ***
+regr.xgboost  -0.035607   0.006180  -5.761 8.39e-09 ***
+regr.cvglmnet  0.014993   0.003857   3.887 0.000102 ***
+regr.cubist    0.357249   0.004144  86.208  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.358 on 58072 degrees of freedom
+Multiple R-squared:  0.9022,	Adjusted R-squared:  0.9022 
+F-statistic: 1.34e+05 on 4 and 58072 DF,  p-value: < 2.2e-16
+
+
+Variable importance:
+      variable importance
+2   visnir.PC2 591.280930
+1   visnir.PC1 393.311991
+6   visnir.PC6 356.987372
+3   visnir.PC3 282.070815
+8   visnir.PC8  97.408925
+5   visnir.PC5  85.336729
+9   visnir.PC9  83.192321
+18 visnir.PC18  80.867248
+13 visnir.PC13  54.806941
+4   visnir.PC4  39.942775
+23 visnir.PC23  30.329834
+11 visnir.PC11  24.220247
+15 visnir.PC15  23.472924
+12 visnir.PC12  22.707689
+7   visnir.PC7  22.324696
+16 visnir.PC16  22.089442
+10 visnir.PC10  18.277567
+52 visnir.PC52  17.428975
+34 visnir.PC34  15.709145
+41 visnir.PC41  14.743881
+51 visnir.PC51  14.109360
+31 visnir.PC31  13.789817
+26 visnir.PC26  10.947295
+44 visnir.PC44  10.621255
+21 visnir.PC21   9.557882
+27 visnir.PC27   9.360714
+17 visnir.PC17   8.380543
+55 visnir.PC55   7.964897
+37 visnir.PC37   7.450351
+36 visnir.PC36   7.133288
+32 visnir.PC32   7.110397
+49 visnir.PC49   7.077937
+39 visnir.PC39   6.943461
+59 visnir.PC59   6.904634
+33 visnir.PC33   6.879970
+56 visnir.PC56   6.639791
+43 visnir.PC43   6.528596
+53 visnir.PC53   6.233383
+24 visnir.PC24   6.184187
+45 visnir.PC45   6.017637
+30 visnir.PC30   6.013058
+50 visnir.PC50   5.998075
+40 visnir.PC40   5.811893
+19 visnir.PC19   5.786970
+28 visnir.PC28   5.527854
+58 visnir.PC58   5.454911
+54 visnir.PC54   5.452968
+29 visnir.PC29   5.262289
+48 visnir.PC48   5.158136
+57 visnir.PC57   5.090122

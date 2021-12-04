@@ -1,0 +1,82 @@
+Results of ensemble model fitting 'ranger', 'xgboost', 'Cubist', 'cvglmnet' ...:
+
+Variable: log..oc_usda.calc_wpct 
+R-square: 0.982 
+Fitted values sd: 1.12 
+RMSE: 0.152 
+
+EML model summary:
+Call:
+stats::lm(formula = f, data = d)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.99659 -0.05336  0.00524  0.05786  3.07081 
+
+Coefficients:
+                Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   -0.0226247  0.0009841  -22.99   <2e-16 ***
+regr.ranger    0.0621673  0.0041100   15.13   <2e-16 ***
+regr.xgboost   0.0689707  0.0033814   20.40   <2e-16 ***
+regr.cvglmnet  0.3799242  0.0041896   90.68   <2e-16 ***
+regr.cubist    0.5025287  0.0035725  140.66   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1516 on 61616 degrees of freedom
+Multiple R-squared:  0.9821,	Adjusted R-squared:  0.9821 
+F-statistic: 8.466e+05 on 4 and 61616 DF,  p-value: < 2.2e-16
+
+
+Variable importance:
+       variable  importance
+3       mir.PC3 1694.255639
+8       mir.PC8  220.117686
+66   visnir.PC6  122.043738
+1       mir.PC1   75.251543
+2       mir.PC2   45.556043
+14     mir.PC14   28.282415
+9       mir.PC9   26.012954
+62   visnir.PC2   25.571766
+10     mir.PC10   19.238195
+63   visnir.PC3   17.844968
+15     mir.PC15   17.271699
+61   visnir.PC1   16.452194
+28     mir.PC28   12.690542
+13     mir.PC13   12.189840
+18     mir.PC18   11.818158
+30     mir.PC30   11.602882
+7       mir.PC7    7.713658
+12     mir.PC12    7.260306
+70  visnir.PC10    7.207957
+21     mir.PC21    6.632272
+37     mir.PC37    5.942734
+17     mir.PC17    5.688387
+68   visnir.PC8    5.189746
+91  visnir.PC31    5.121030
+16     mir.PC16    4.794902
+19     mir.PC19    4.702492
+36     mir.PC36    4.509209
+35     mir.PC35    4.412642
+26     mir.PC26    4.166317
+11     mir.PC11    4.030902
+71  visnir.PC11    3.876611
+120 visnir.PC60    3.545843
+24     mir.PC24    3.420586
+5       mir.PC5    3.283181
+6       mir.PC6    3.141518
+77  visnir.PC17    2.981581
+44     mir.PC44    2.963350
+25     mir.PC25    2.927181
+73  visnir.PC13    2.755761
+76  visnir.PC16    2.686162
+40     mir.PC40    2.581006
+67   visnir.PC7    2.572934
+32     mir.PC32    2.491739
+72  visnir.PC12    2.479342
+85  visnir.PC25    2.334952
+52     mir.PC52    2.254576
+58     mir.PC58    2.113274
+69   visnir.PC9    2.077348
+22     mir.PC22    2.044253
+60     mir.PC60    1.974272

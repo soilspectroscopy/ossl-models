@@ -1,0 +1,82 @@
+Results of ensemble model fitting 'ranger', 'xgboost', 'Cubist', 'cvglmnet' ...:
+
+Variable: log..oc_usda.calc_wpct 
+R-square: 0.982 
+Fitted values sd: 1.14 
+RMSE: 0.154 
+
+EML model summary:
+Call:
+stats::lm(formula = f, data = d)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.1506 -0.0525  0.0181  0.0661  3.2965 
+
+Coefficients:
+               Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   -0.038545   0.001042  -36.98   <2e-16 ***
+regr.ranger    0.235387   0.004115   57.20   <2e-16 ***
+regr.xgboost  -0.046506   0.003291  -14.13   <2e-16 ***
+regr.cvglmnet  0.470197   0.004078  115.30   <2e-16 ***
+regr.cubist    0.362526   0.003946   91.88   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1539 on 57400 degrees of freedom
+Multiple R-squared:  0.9821,	Adjusted R-squared:  0.9821 
+F-statistic: 7.857e+05 on 4 and 57400 DF,  p-value: < 2.2e-16
+
+
+Variable importance:
+   variable  importance
+3   mir.PC3 1587.903172
+1   mir.PC1  368.124301
+8   mir.PC8  287.739587
+14 mir.PC14   76.016548
+2   mir.PC2   67.481395
+10 mir.PC10   29.043731
+7   mir.PC7   27.330132
+21 mir.PC21   26.047052
+18 mir.PC18   24.066633
+28 mir.PC28   18.842927
+11 mir.PC11   12.260000
+17 mir.PC17   10.860733
+29 mir.PC29   10.300126
+5   mir.PC5   10.107110
+13 mir.PC13    9.505967
+12 mir.PC12    9.393008
+37 mir.PC37    9.195813
+20 mir.PC20    8.810487
+16 mir.PC16    8.373260
+9   mir.PC9    7.393711
+4   mir.PC4    7.243353
+22 mir.PC22    6.941949
+23 mir.PC23    6.850227
+15 mir.PC15    6.809349
+25 mir.PC25    6.653590
+35 mir.PC35    5.850427
+24 mir.PC24    5.834252
+19 mir.PC19    5.038462
+59 mir.PC59    5.010076
+51 mir.PC51    4.958226
+31 mir.PC31    4.449135
+50 mir.PC50    4.068592
+49 mir.PC49    4.004906
+52 mir.PC52    3.749867
+44 mir.PC44    3.563942
+30 mir.PC30    3.514535
+58 mir.PC58    3.500791
+47 mir.PC47    3.497421
+46 mir.PC46    3.439528
+38 mir.PC38    3.328770
+32 mir.PC32    3.306539
+55 mir.PC55    3.272831
+48 mir.PC48    3.271581
+40 mir.PC40    3.246257
+53 mir.PC53    3.219003
+43 mir.PC43    3.159442
+60 mir.PC60    3.153915
+41 mir.PC41    3.068531
+27 mir.PC27    3.061794
+34 mir.PC34    2.914390
