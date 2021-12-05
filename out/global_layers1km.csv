@@ -1,63 +1,63 @@
-"","filename"
-"1","clm_lst_mod11a2.annual.day_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"2","clm_lst_mod11a2.annual.night_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"3","clm_lst_mod11a2.apr.day_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"4","clm_lst_mod11a2.apr.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"5","clm_lst_mod11a2.apr.night_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"6","clm_lst_mod11a2.aug.day_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"7","clm_lst_mod11a2.aug.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"8","clm_lst_mod11a2.aug.night_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"9","clm_lst_mod11a2.dec.day_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"10","clm_lst_mod11a2.dec.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"11","clm_lst_mod11a2.dec.night_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"12","clm_lst_mod11a2.feb.day_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"13","clm_lst_mod11a2.feb.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"14","clm_lst_mod11a2.feb.night_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"15","clm_lst_mod11a2.jan.day_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"16","clm_lst_mod11a2.jan.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"17","clm_lst_mod11a2.jan.night_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"18","clm_lst_mod11a2.jul.day_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"19","clm_lst_mod11a2.jul.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"20","clm_lst_mod11a2.jul.night_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"21","clm_lst_mod11a2.jun.day_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"22","clm_lst_mod11a2.jun.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"23","clm_lst_mod11a2.jun.night_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"24","clm_lst_mod11a2.mar.day_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"25","clm_lst_mod11a2.mar.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"26","clm_lst_mod11a2.mar.night_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"27","clm_lst_mod11a2.may.day_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"28","clm_lst_mod11a2.may.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"29","clm_lst_mod11a2.may.night_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"30","clm_lst_mod11a2.nov.day_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"31","clm_lst_mod11a2.nov.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"32","clm_lst_mod11a2.nov.night_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"33","clm_lst_mod11a2.oct.day_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"34","clm_lst_mod11a2.oct.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"35","clm_lst_mod11a2.oct.night_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"36","clm_lst_mod11a2.sep.day_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"37","clm_lst_mod11a2.sep.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"38","clm_lst_mod11a2.sep.night_m_1km_s0..0cm_2000..2017_v1.0.tif"
-"39","clm_precipitation_worldclim.apr_m_1km_1990..2010_v2.1.tif"
-"40","clm_precipitation_worldclim.aug_m_1km_1990..2010_v2.1.tif"
-"41","clm_precipitation_worldclim.dec_m_1km_1990..2010_v2.1.tif"
-"42","clm_precipitation_worldclim.feb_m_1km_1990..2010_v2.1.tif"
-"43","clm_precipitation_worldclim.jan_m_1km_1990..2010_v2.1.tif"
-"44","clm_precipitation_worldclim.jul_m_1km_1990..2010_v2.1.tif"
-"45","clm_precipitation_worldclim.jun_m_1km_1990..2010_v2.1.tif"
-"46","clm_precipitation_worldclim.mar_m_1km_1990..2010_v2.1.tif"
-"47","clm_precipitation_worldclim.may_m_1km_1990..2010_v2.1.tif"
-"48","clm_precipitation_worldclim.nov_m_1km_1990..2010_v2.1.tif"
-"49","clm_precipitation_worldclim.oct_m_1km_1990..2010_v2.1.tif"
-"50","clm_precipitation_worldclim.sep_m_1km_1990..2010_v2.1.tif"
-"51","clm_water.vapor.pressure_worldclim.apr_m_1km_1990..2010_v2.1.tif"
-"52","clm_water.vapor.pressure_worldclim.aug_m_1km_1990..2010_v2.1.tif"
-"53","clm_water.vapor.pressure_worldclim.dec_m_1km_1990..2010_v2.1.tif"
-"54","clm_water.vapor.pressure_worldclim.feb_m_1km_1990..2010_v2.1.tif"
-"55","clm_water.vapor.pressure_worldclim.jan_m_1km_1990..2010_v2.1.tif"
-"56","clm_water.vapor.pressure_worldclim.jul_m_1km_1990..2010_v2.1.tif"
-"57","clm_water.vapor.pressure_worldclim.jun_m_1km_1990..2010_v2.1.tif"
-"58","clm_water.vapor.pressure_worldclim.mar_m_1km_1990..2010_v2.1.tif"
-"59","clm_water.vapor.pressure_worldclim.may_m_1km_1990..2010_v2.1.tif"
-"60","clm_water.vapor.pressure_worldclim.nov_m_1km_1990..2010_v2.1.tif"
-"61","clm_water.vapor.pressure_worldclim.oct_m_1km_1990..2010_v2.1.tif"
-"62","clm_water.vapor.pressure_worldclim.sep_m_1km_1990..2010_v2.1.tif"
+Filename,URL,Description,Data_source
+clm_lst_mod11a2.annual.day_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.annual.day_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420114
+clm_lst_mod11a2.annual.night_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.annual.night_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420115
+clm_lst_mod11a2.apr.day_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.apr.day_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420116
+clm_lst_mod11a2.apr.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.apr.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420117
+clm_lst_mod11a2.apr.night_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.apr.night_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420118
+clm_lst_mod11a2.aug.day_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.aug.day_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420119
+clm_lst_mod11a2.aug.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.aug.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420120
+clm_lst_mod11a2.aug.night_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.aug.night_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420121
+clm_lst_mod11a2.dec.day_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.dec.day_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420122
+clm_lst_mod11a2.dec.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.dec.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420123
+clm_lst_mod11a2.dec.night_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.dec.night_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420124
+clm_lst_mod11a2.feb.day_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.feb.day_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420125
+clm_lst_mod11a2.feb.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.feb.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420126
+clm_lst_mod11a2.feb.night_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.feb.night_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420127
+clm_lst_mod11a2.jan.day_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.jan.day_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420128
+clm_lst_mod11a2.jan.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.jan.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420129
+clm_lst_mod11a2.jan.night_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.jan.night_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420130
+clm_lst_mod11a2.jul.day_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.jul.day_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420131
+clm_lst_mod11a2.jul.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.jul.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420132
+clm_lst_mod11a2.jul.night_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.jul.night_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420133
+clm_lst_mod11a2.jun.day_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.jun.day_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420134
+clm_lst_mod11a2.jun.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.jun.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420135
+clm_lst_mod11a2.jun.night_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.jun.night_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420136
+clm_lst_mod11a2.mar.day_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.mar.day_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420137
+clm_lst_mod11a2.mar.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.mar.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420138
+clm_lst_mod11a2.mar.night_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.mar.night_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420139
+clm_lst_mod11a2.may.day_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.may.day_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420140
+clm_lst_mod11a2.may.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.may.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420141
+clm_lst_mod11a2.may.night_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.may.night_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420142
+clm_lst_mod11a2.nov.day_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.nov.day_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420143
+clm_lst_mod11a2.nov.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.nov.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420144
+clm_lst_mod11a2.nov.night_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.nov.night_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420145
+clm_lst_mod11a2.oct.day_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.oct.day_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420146
+clm_lst_mod11a2.oct.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.oct.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420147
+clm_lst_mod11a2.oct.night_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.oct.night_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420148
+clm_lst_mod11a2.sep.day_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.sep.day_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420149
+clm_lst_mod11a2.sep.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.sep.daynight_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420150
+clm_lst_mod11a2.sep.night_m_1km_s0..0cm_2000..2017_v1.0.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_lst_mod11a2.sep.night_m_1km_s0..0cm_2000..2017_v1.0.tif,MOD11A2 long-term LST daytime / nighttime,https://doi.org/10.5281/zenodo.1420151
+clm_precipitation_worldclim.apr_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_precipitation_worldclim.apr_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2000,https://www.worldclim.org/data/worldclim21.html
+clm_precipitation_worldclim.aug_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_precipitation_worldclim.aug_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2001,https://www.worldclim.org/data/worldclim21.html
+clm_precipitation_worldclim.dec_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_precipitation_worldclim.dec_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2002,https://www.worldclim.org/data/worldclim21.html
+clm_precipitation_worldclim.feb_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_precipitation_worldclim.feb_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2003,https://www.worldclim.org/data/worldclim21.html
+clm_precipitation_worldclim.jan_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_precipitation_worldclim.jan_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2004,https://www.worldclim.org/data/worldclim21.html
+clm_precipitation_worldclim.jul_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_precipitation_worldclim.jul_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2005,https://www.worldclim.org/data/worldclim21.html
+clm_precipitation_worldclim.jun_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_precipitation_worldclim.jun_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2006,https://www.worldclim.org/data/worldclim21.html
+clm_precipitation_worldclim.mar_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_precipitation_worldclim.mar_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2007,https://www.worldclim.org/data/worldclim21.html
+clm_precipitation_worldclim.may_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_precipitation_worldclim.may_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2008,https://www.worldclim.org/data/worldclim21.html
+clm_precipitation_worldclim.nov_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_precipitation_worldclim.nov_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2009,https://www.worldclim.org/data/worldclim21.html
+clm_precipitation_worldclim.oct_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_precipitation_worldclim.oct_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2010,https://www.worldclim.org/data/worldclim21.html
+clm_precipitation_worldclim.sep_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_precipitation_worldclim.sep_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2011,https://www.worldclim.org/data/worldclim21.html
+clm_water.vapor.pressure_worldclim.apr_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_water.vapor.pressure_worldclim.apr_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2012,https://www.worldclim.org/data/worldclim21.html
+clm_water.vapor.pressure_worldclim.aug_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_water.vapor.pressure_worldclim.aug_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2013,https://www.worldclim.org/data/worldclim21.html
+clm_water.vapor.pressure_worldclim.dec_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_water.vapor.pressure_worldclim.dec_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2014,https://www.worldclim.org/data/worldclim21.html
+clm_water.vapor.pressure_worldclim.feb_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_water.vapor.pressure_worldclim.feb_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2015,https://www.worldclim.org/data/worldclim21.html
+clm_water.vapor.pressure_worldclim.jan_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_water.vapor.pressure_worldclim.jan_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2016,https://www.worldclim.org/data/worldclim21.html
+clm_water.vapor.pressure_worldclim.jul_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_water.vapor.pressure_worldclim.jul_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2017,https://www.worldclim.org/data/worldclim21.html
+clm_water.vapor.pressure_worldclim.jun_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_water.vapor.pressure_worldclim.jun_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2018,https://www.worldclim.org/data/worldclim21.html
+clm_water.vapor.pressure_worldclim.mar_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_water.vapor.pressure_worldclim.mar_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2019,https://www.worldclim.org/data/worldclim21.html
+clm_water.vapor.pressure_worldclim.may_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_water.vapor.pressure_worldclim.may_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2020,https://www.worldclim.org/data/worldclim21.html
+clm_water.vapor.pressure_worldclim.nov_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_water.vapor.pressure_worldclim.nov_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2021,https://www.worldclim.org/data/worldclim21.html
+clm_water.vapor.pressure_worldclim.oct_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_water.vapor.pressure_worldclim.oct_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2022,https://www.worldclim.org/data/worldclim21.html
+clm_water.vapor.pressure_worldclim.sep_m_1km_1990..2010_v2.1.tif,http://s3.us-east-1.wasabisys.com/soilspectroscopy/layers1km/clm_water.vapor.pressure_worldclim.sep_m_1km_1990..2010_v2.1.tif,WorldClim version 2.1 climate data for 1970-2023,https://www.worldclim.org/data/worldclim21.html
