@@ -5,11 +5,12 @@
 A repository for all model fitting development work for the [Soil Spectroscopy for Global
 Good](https://soilspectroscopy.org) project.
 
-Type of models considered:
+Important files in this repository:
 
 - The metadata table [OSSL_models_meta.csv](out/OSSL_models_meta.csv) contains total list of models currently available;  
-- Folder `R` contains modeling steps used to produce default models used in the OSSL;
-- Script `R/model_accuracy_stats.R` is used to generate accuracy plots;  
+- The table [global_layers1km.csv](out/global_layers1km.csv) contains URL of the global geographical covariates [WorldClim2.1](https://www.worldclim.org/data/worldclim21.html) layers and [MODIS LST](https://doi.org/10.5281/zenodo.1420114); 
+- Folder [`R-mlr`](R-mlr/README.md) contains explanation of modeling steps used to produce default models used in the OSSL;
+- Script [`R/model_accuracy_stats.R`](R-mlr/model_accuracy_stats.R) is used to generate accuracy plots;  
 
 For more advanced uses of the soil spectral libraries **we advise to contact the original data producers** 
 especially to get help with using, extending and improving the original SSL data.
