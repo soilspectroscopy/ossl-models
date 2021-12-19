@@ -1,14 +1,20 @@
 ## Produce summary statistics and plots
 ## tom.hengl@opengeohub.org
 
+library(hexbin)
+library(plotKML)
+library(lattice)
+library(plyr)
+source("./R-mlr/SSL_functions.R")
+
 t.vars = c("log..oc_usda.calc_wpct", "log..n.tot_usda.4h2_wpct", "silt.tot_usda.3a1_wpct",
            "clay.tot_usda.3a1_wpct", "sand.tot_usda.3a1_wpct", "log..ecec_usda.4b4_cmolkg",
            "ph.h2o_usda.4c1_index", "ph.cacl2_usda.4c1_index", "log..al.kcl_usda.4b3_cmolkg",
            "log..k.ext_usda.4b1_cmolkg", "log..caco3_usda.4e1_wpct", "log..mg.ext_usda.4b1_cmolkg",
            "log..ca.ext_usda.4b1_cmolkg", "log..gyp_usda.4e2_wpct",
            "log..cec.ext_usda.4b1_cmolkg", "bsat_usda.4b4_wpct", "bd.od_usda.3b2_gcm3")
-mn.lst = c("mir_mlr..eml_kssl_na_v1", "mir_mlr..eml_kssl_ll_v1", "visnir_mlr..eml_ossl_na_v1",
-           "mir_mlr..eml_ossl_ll_v1", "visnir.mir_mlr..eml_ossl_na_v1", "visnir.mir_mlr..eml_ossl_ll_v1")
+mn.lst = c("mir_mlr..eml_kssl_na_v1.1", "mir_mlr..eml_kssl_ll_v1.1", "visnir_mlr..eml_ossl_na_v1.1",
+           "mir_mlr..eml_ossl_ll_v1.1", "visnir.mir_mlr..eml_ossl_na_v1.1", "visnir.mir_mlr..eml_ossl_ll_v1.1")
 p.lst = c("RMSE", "R.square", "N.tot", "N.outliers")
 acc.mat = data.frame(matrix(nrow=length(t.vars), ncol=2+length(mn.lst)*4))
 colnames(acc.mat) = c("variable", "std", sapply(mn.lst, function(i){paste0(i, "_", p.lst)}))
@@ -44,9 +50,6 @@ for(i in 1:nrow(acc.matL)){
 write.csv(acc.matL, "out/accuracy_list_long.csv")
 
 ## Accuracy plots ----
-library(hexbin)
-library(plotKML)
-library(lattice)
 for(i in 1:nrow(acc.mat)){
   for(j in 1:length(mn.lst)){
     in.rds = paste0("/mnt/landmark/ossl_mlr/models/", t.vars[i], "/", mn.lst[j], ".rds")
@@ -62,9 +65,10 @@ for(i in 1:nrow(acc.mat)){
   }
 }
 
-## global layers
+## global layers ----
 cog.lst = list.files("/data/WORLDCLIM", ".tif", full.names = TRUE)
 write.csv(data.frame(filename=basename(cog.lst)), "./out/global_layers1km.csv")
+
 ## prepare sample data
 new.data = vroom::vroom("/mnt/diskstation/data/ossl/dataset/validation/JSset_KSSL.csv", n_max = 20)
 dim(new.data)
@@ -133,3 +137,8 @@ p2 <- plot(hb2, colramp = reds, main='PCA MIR KSSL')
 pushHexport(p2$plot.vp)
 grid.points(X1.pc$mir.PC3, X1.pc$mir.PC4, pch=17)
 upViewport()
+
+## move files
+#in.rds = list.files("/mnt/soilspec4gg/ossl/ossl_models", full.names = TRUE, recursive = TRUE)
+## 314
+#try( file.copy(from=gsub("/mnt/soilspec4gg/ossl/ossl_models/", "/mnt/landmark/ossl_mlr/models/", gsub("v1", "v1.1", in.rds)), to=in.rds, overwrite = TRUE) )

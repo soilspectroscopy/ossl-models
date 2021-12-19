@@ -3,9 +3,11 @@ OSSL: Global Soil Spectral Calibration Models
 Tomislav Hengl (<tom.hengl@opengeohub.org>), Leandro Parente
 (<leandro.parente@opengeohub.org>), and Jonathan Sanderman
 (<jsanderman@woodwellclimate.org>)
-04 December, 2021
+19 December, 2021
 
 
+
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.5759693.svg)](https://doi.org/10.5281/zenodo.5759693)
 
 [<img src="../img/soilspec4gg-logo_fc.png" alt="SoilSpec4GG logo" width="250"/>](https://soilspectroscopy.org/)
 
@@ -20,7 +22,7 @@ License](http://creativecommons.org/licenses/by-sa/4.0/).
 Part of: <https://github.com/soilspectroscopy>  
 Project: [Soil Spectroscopy for Global
 Good](https://soilspectroscopy.org)  
-Last update: 2021-12-04  
+Last update: 2021-12-19  
 Dataset:
 [OSSL](https://soilspectroscopy.github.io/ossl-manual/reference-soil-spectroscopy-models.html)
 
@@ -43,7 +45,7 @@ data is not recommended.
 The directory/folder path:
 
 ``` r
-dir = "/mnt/soilspec4gg/ossl/models/"
+dir = "/mnt/soilspec4gg/ossl/ossl_models/"
 ```
 
 ## Load regression matrix
@@ -62,8 +64,10 @@ if(!exists("rm.ossl")){
 summary(as.factor(rm.ossl$dataset.code_ascii_c))
 ```
 
-    ##  AFSIS1.SSL     CAF.SSL ICRAF.ISRIC    KSSL.SSL   LUCAS.SSL    NEON.SSL 
-    ##        4536        1869        4240       74049       65739         304
+    ##  AFSIS1.SSL  AFSIS2.SSL     CAF.SSL ICRAF.ISRIC    KSSL.SSL   LUCAS.SSL 
+    ##        4536         820        1903        4395       74143       65739 
+    ##    NEON.SSL 
+    ##         610
 
 ### Indicators
 
@@ -76,7 +80,7 @@ summary(rm.ossl$dataset.code_ascii_c_AFSIS1.SSL)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ## 0.00000 0.00000 0.00000 0.03009 0.00000 1.00000
+    ## 0.00000 0.00000 0.00000 0.02981 0.00000 1.00000
 
 ### PCA models
 
@@ -89,7 +93,8 @@ models for four combinations of spectra:
 3.  ALL MIR;
 4.  ALL VisNIR;
 
-PCA helps compress spectra data and reduce number of covariates.
+PCA helps compress spectra data and reduce number of covariates ([Chang,
+Laird, Mausbach, & Hurburgh Jr, 2001](#ref-chang2001near)).
 
 ``` r
 ## Remove CO2 bands from MIR spectra (2389-2268 cm-1)
@@ -98,7 +103,7 @@ summary(is.na(rm.ossl$scan_mir.602_abs))
 ```
 
     ##    Mode   FALSE    TRUE 
-    ## logical   38166  112571
+    ## logical   83520   68626
 
 ``` r
 ## 62,994
@@ -106,7 +111,7 @@ summary(is.na(rm.ossl$scan_mir.3998_abs))
 ```
 
     ##    Mode   FALSE    TRUE 
-    ## logical   37735  113002
+    ## logical   83080   69066
 
 ``` r
 ## 62,555
@@ -114,7 +119,7 @@ summary(is.na(rm.ossl$scan_visnir.452_pcnt))
 ```
 
     ##    Mode   FALSE    TRUE 
-    ## logical  100517   50220
+    ## logical  100726   51420
 
 ``` r
 ## 125,351
@@ -122,7 +127,7 @@ summary(is.na(rm.ossl$scan_visnir.2498_pcnt))
 ```
 
     ##    Mode   FALSE    TRUE 
-    ## logical  100476   50261
+    ## logical  100685   51461
 
 ``` r
 ## 125,310
@@ -135,22 +140,31 @@ lapply(spc.lst, dim)
 ```
 
     ## [[1]]
-    ## [1] 32966  1641
+    ## [1] 73194  1641
     ## 
     ## [[2]]
-    ## [1] 33664  1076
+    ## [1] 33718  1076
     ## 
     ## [[3]]
-    ## [1] 37671  1641
+    ## [1] 82659  1641
     ## 
     ## [[4]]
-    ## [1] 100476   1025
+    ## [1] 100685   1025
+
+To remove bias in spectra, convert to [1st
+derivative](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#derivatives)
+as this helps increase accuracy of calibration models ([Xu et al.,
+2020](#ref-rs12223765)):
+
+``` r
+spcf.lst = parallel::mclapply(spc.lst, function(i){ prospectr::gapDer(i, m=1, w=5, s=1, delta.wav=2)}, mc.cores=length(spc.lst))
+```
 
 Fit PCA models in parallel:
 
 ``` r
-registerDoMC(length(spc.lst))
-pca.lst <- foreach(i=1:length(spc.lst)) %dopar% prcomp(spc.lst[[i]], scale=TRUE)
+registerDoMC(length(spcf.lst))
+pca.lst <- foreach(i=1:length(spcf.lst)) %dopar% prcomp(as.data.frame(spcf.lst[[i]]))
 gc()
 pca.names = c("pca_mir_kssl_v1.rds", "pca_visnir_kssl_v1.rds", "pca_mir_ossl_v1.rds", "pca_visnir_ossl_v1.rds")
 str(pca.lst[[1]]$x[,1:20])
@@ -168,13 +182,14 @@ for(i in 1:length(pca.lst)){  saveRDS.gz(pca.lst[[i]][1:4], paste0("pca.ossl/", 
 
 ## Model fitting
 
-For soil-calibration model fitting we use first 60 PCs. This method was
+For soil-calibration model fitting we use first 120 PCs. This method was
 first time introduced by [Chang, Laird, Mausbach, & Hurburgh
-Jr](#ref-chang2001near) ([2001](#ref-chang2001near)). We focus on target
-soil variables for which there is enough training data.
+Jr](#ref-chang2001near) ([2001](#ref-chang2001near)), although at this
+stage the authors used only top 10 PCA components, here we use 120. We
+focus on target soil variables for which there is enough training data.
 
 ``` r
-n.spc = 60
+n.spc = 120
 t.vars = c("log..oc_usda.calc_wpct", "log..n.tot_usda.4h2_wpct", "silt.tot_usda.3a1_wpct",
            "clay.tot_usda.3a1_wpct", "sand.tot_usda.3a1_wpct", "log..ecec_usda.4b4_cmolkg",
            "ph.h2o_usda.4c1_index", "ph.cacl2_usda.4c1_index", "log..al.kcl_usda.4b3_cmolkg",
@@ -197,7 +212,7 @@ geo.sel = names(rm.ossl)[grep("clm_", names(rm.ossl))]
 str(geo.sel)
 ```
 
-    ##  chr [1:62] "clm_lst_mod11a2.annual.day_m_1km_s0..0cm_2000..2017_v1.0" "clm_lst_mod11a2.annual.night_m_1km_s0..0cm_2000..2017_v1.0" ...
+    ##  chr [1:86] "clm_lst_mod11a2.annual.day_m_1km_s0..0cm_2000..2017_v1.0" ...
 
 ``` r
 harm.sel = names(rm.ossl)[grep("dataset.code_ascii_c_", names(rm.ossl))]
@@ -372,8 +387,10 @@ line-spacing="2">
 <div id="ref-bischl2016mlr" class="csl-entry">
 
 Bischl, B., Lang, M., Kotthoff, L., Schiffner, J., Richter, J.,
-Studerus, E., … Jones, Z. M. (2016). Mlr: Machine learning in r. *The
-Journal of Machine Learning Research*, *17*(1), 5938–5942.
+Studerus, E., … Jones, Z. M. (2016). <span class="nocase">mlr: Machine
+Learning in R</span>. *The Journal of Machine Learning Research*,
+*17*(1), 5938–5942. Retrieved from
+<https://www.jmlr.org/papers/volume17/15-066/15-066.pdf>
 
 </div>
 
@@ -389,8 +406,19 @@ doi:[10.2136/sssaj2001.652480x](https://doi.org/10.2136/sssaj2001.652480x)
 
 <div id="ref-hengl2019predictive" class="csl-entry">
 
-Hengl, T., & MacMillan, R. A. (2019). *Predictive soil mapping with r*
-(p. 370). Wageningen, the Netherlands: Lulu. com.
+Hengl, T., & MacMillan, R. A. (2019). *<span class="nocase">Predictive
+Soil Mapping with R</span>* (p. 370). Wageningen, the Netherlands: Lulu.
+Retrieved from <https://soilmapper.org>
+
+</div>
+
+<div id="ref-rs12223765" class="csl-entry">
+
+Xu, X., Chen, S., Xu, Z., Yu, Y., Zhang, S., & Dai, R. (2020). <span
+class="nocase">Exploring Appropriate Preprocessing Techniques for
+Hyperspectral Soil Organic Matter Content Estimation in Black Soil
+Area</span>. *Remote Sensing*, *12*(22).
+doi:[10.3390/rs12223765](https://doi.org/10.3390/rs12223765)
 
 </div>
 

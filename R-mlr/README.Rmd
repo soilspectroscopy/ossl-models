@@ -51,7 +51,7 @@ The following code runs is implemented in a High Performance Computing environme
 many steps fully parallelized and with enough RAM (>450GB). Running this code on a standard
 computer without subsetting data is not recommended.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, results='hide'}
 ls <- c("rgdal", "raster", "terra", "ranger", "mlr", "parallelMap", "data.table",
         "xgboost", "Cubist", "glmnet", "matrixStats", "doMC", "landmap", "openair",
         "fastDummies", "fastSave")
@@ -63,7 +63,7 @@ x = lapply(ls, require, character.only = TRUE)
 The directory/folder path:
 
 ```{r}
-dir = "/mnt/soilspec4gg/ossl/models/"
+dir = "/mnt/soilspec4gg/ossl/ossl_models/"
 ```
 
 ```{r, echo=FALSE, eval=FALSE}
@@ -104,7 +104,7 @@ Derive and save [PCA](http://www.sthda.com/english/articles/31-principal-compone
 3. ALL MIR;
 4. ALL VisNIR;
 
-PCA helps compress spectra data and reduce number of covariates.
+PCA helps compress spectra data and reduce number of covariates [@chang2001near].
 
 ```{r}
 ## Remove CO2 bands from MIR spectra (2389-2268 cm-1)
@@ -125,11 +125,17 @@ spc.lst = lapply(spc.lst, function(i){i[complete.cases(i),]})
 lapply(spc.lst, dim)
 ```
 
+To remove bias in spectra, convert to [1st derivative](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#derivatives) as this helps increase accuracy of calibration models [@rs12223765]:
+
+```{r, eval=FALSE}
+spcf.lst = parallel::mclapply(spc.lst, function(i){ prospectr::gapDer(i, m=1, w=5, s=1, delta.wav=2)}, mc.cores=length(spc.lst))
+```
+
 Fit PCA models in parallel:
 
 ```{r, eval=FALSE}
-registerDoMC(length(spc.lst))
-pca.lst <- foreach(i=1:length(spc.lst)) %dopar% prcomp(spc.lst[[i]], scale=TRUE)
+registerDoMC(length(spcf.lst))
+pca.lst <- foreach(i=1:length(spcf.lst)) %dopar% prcomp(as.data.frame(spcf.lst[[i]]))
 gc()
 pca.names = c("pca_mir_kssl_v1.rds", "pca_visnir_kssl_v1.rds", "pca_mir_ossl_v1.rds", "pca_visnir_ossl_v1.rds")
 str(pca.lst[[1]]$x[,1:20])
@@ -147,11 +153,12 @@ for(i in 1:length(pca.lst)){  saveRDS.gz(pca.lst[[i]][1:4], paste0("pca.ossl/", 
 
 ## Model fitting
 
-For soil-calibration model fitting we use first 60 PCs. This method was first time introduced by @chang2001near.
+For soil-calibration model fitting we use first 120 PCs. This method was first time introduced by @chang2001near, 
+although at this stage the authors used only top 10 PCA components, here we use 120.
 We focus on target soil variables for which there is enough training data.
 
 ```{r}
-n.spc = 60
+n.spc = 120
 t.vars = c("log..oc_usda.calc_wpct", "log..n.tot_usda.4h2_wpct", "silt.tot_usda.3a1_wpct",
            "clay.tot_usda.3a1_wpct", "sand.tot_usda.3a1_wpct", "log..ecec_usda.4b4_cmolkg",
            "ph.h2o_usda.4c1_index", "ph.cacl2_usda.4c1_index", "log..al.kcl_usda.4b3_cmolkg",

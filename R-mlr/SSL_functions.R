@@ -46,9 +46,8 @@ retrain.ossl <- function(t.var, model.name, out.m.rds, t=3, SL.library = c("regr
 
 ## Model fine-tuning wrapper
 ## by default run spatial CV
-train.ossl <- function(t.var, pr.var, X, model.name, out.dir=paste0("./models/", t.var, "/"), SL.library = c("regr.ranger", "regr.xgboost", "regr.cvglmnet", "regr.cubist"), discrete_ps = makeParamSet(makeDiscreteParam("mtry", values = seq(5, round(length(pr.var)*.6), by=5))), ctrl = mlr::makeTuneControlGrid(), rdesc = mlr::makeResampleDesc("CV", iters = 2L), outer = mlr::makeResampleDesc("CV", iters = 2L), inner = mlr::makeResampleDesc("Holdout"), ctrlF = mlr::makeFeatSelControlRandom(maxit = 20), xg.model_Params, hzn_depth=TRUE, out.m.rds, save.rm=TRUE, rf.feature=TRUE, xg.size=2e3){
+train.ossl <- function(t.var, pr.var, X, model.name, out.dir=paste0("./models/", t.var, "/"), SL.library = c("regr.ranger", "regr.xgboost", "regr.cvglmnet", "regr.cubist"), discrete_ps = makeParamSet(makeDiscreteParam("mtry", values = seq(5, round(length(pr.var)*.7), by=5))), ctrl = mlr::makeTuneControlGrid(), rdesc = mlr::makeResampleDesc("CV", iters = 2L), outer = mlr::makeResampleDesc("CV", iters = 2L), inner = mlr::makeResampleDesc("Holdout"), ctrlF = mlr::makeFeatSelControlRandom(maxit = 20), xg.model_Params, hzn_depth=TRUE, out.m.rds, save.rm=TRUE, rf.feature=TRUE, xg.size=2e3){
   require(mlr)
-  ## "regr.glmboost",
   ## https://www.analyticsvidhya.com/blog/2016/03/complete-guide-parameter-tuning-xgboost-with-codes-python/
   if(missing(xg.model_Params)){
     xg.model_Params <- makeParamSet(
