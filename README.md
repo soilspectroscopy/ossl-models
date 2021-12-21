@@ -18,6 +18,18 @@ Important files in this repository:
 For more advanced uses of the soil spectral libraries **we advise to contact the original data producers** 
 especially to get help with using, extending and improving the original SSL data.
 
+To load the complete analysis-ready dataset (486MB) as a single table in R and run predictive modeling please use:
+
+```
+rep = "http://s3.us-east-1.wasabisys.com/soilspectroscopy/"
+rm.ossl = readRDS(url(paste0(rep, "ossl_import/rm.ossl_v1.rds", "rb")))
+dim(rm.ossl)
+## 152,146 obs. of 2962 variables
+```
+
+If you fit your own models and/or if you are interested in contributing 
+to this project please contact us and help us make better open soil data for global good!
+
 Other tools and repositories of interest:
 
 - OSSL documentation: <https://soilspectroscopy.github.io/ossl-manual/>;
