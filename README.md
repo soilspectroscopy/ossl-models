@@ -22,7 +22,7 @@ To load the complete analysis-ready dataset (486MB) as a single table in R and r
 
 ```
 rep = "http://s3.us-east-1.wasabisys.com/soilspectroscopy/"
-rm.ossl = readRDS(url(paste0(rep, "ossl_import/rm.ossl_v1.rds", "rb")))
+rm.ossl = readRDS(url(paste0(rep, "ossl_import/rm.ossl_v1.rds"), "rb"))
 dim(rm.ossl)
 ## 152,146 obs. of 2962 variables
 ```
