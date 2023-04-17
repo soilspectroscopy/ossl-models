@@ -45,7 +45,7 @@ listed.models <- sapply(models.dir, function(x) {list.files(x, pattern = "*v1.2.
          .before = model_name) %>%
   mutate(model_summary = paste0(base.url, soil_property, "/", model_name, "_resultsFit.txt"),
          model_scatterplot = paste0(base.url, soil_property, "/ap.", model_name, ".png"),
-         model_url = paste0(base.url, soil_property, "/", model_name, ".rds"),
+         model_url = paste0(base.url, soil_property, "/", model_name),
          pca_model_mir = case_when(spectra_type == "mir" & subset == "kssl" ~ paste0(base.url, "pca.ossl/pca_mir_kssl_v1.2.rds"),
                                    spectra_type == "mir" & subset == "ossl" ~ paste0(base.url, "pca.ossl/pca_mir_ossl_v1.2.rds"),
                                    spectra_type == "visnir.mir" & subset == "ossl" ~ paste0(base.url, "pca.ossl/pca_mir_ossl_v1.2.rds"),
@@ -55,6 +55,7 @@ listed.models <- sapply(models.dir, function(x) {list.files(x, pattern = "*v1.2.
                                       spectra_type == "visnir.mir" & subset == "ossl" ~ paste0(base.url, "pca.ossl/pca_visnir_ossl_v1.2.rds"),
                                       TRUE ~ ""))
 
-listed.models
+listed.models %>%
+  glimpse()
 
 write_csv(listed.models, "out/list_ossl_models_v1.2.csv")
