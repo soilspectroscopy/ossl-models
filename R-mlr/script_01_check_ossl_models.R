@@ -59,3 +59,6 @@ listed.models %>%
   glimpse()
 
 write_csv(listed.models, "out/list_ossl_models_v1.2.csv")
+
+# listed.models <- read_csv("out/list_ossl_models_v1.2.csv")
+# clipr::write_clip(listed.models)

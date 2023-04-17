@@ -1,8 +1,12 @@
 # zecojls@gmail.com
 
+options(timeout=6000)
+
 library("tidyverse")
 library("lubridate")
 library("tidymodels")
+
+listed.models <- read_csv("out/list_ossl_models_v1.2.csv")
 
 ## Goodness-of-fit statistics
 
@@ -12,41 +16,18 @@ library("tidymodels")
 # library("plyr")
 # source("./R-mlr/SSL_functions.R")
 
-t.vars = c("log..oc_usda.c729_w.pct",
-           "log..n.tot_usda.a623_w.pct",
-           "silt.tot_usda.c62_w.pct",
-           "clay.tot_usda.a334_w.pct",
-           "sand.tot_usda.a60_w.pct",
-           "log..cec_usda.a723_cmolc.kg",
-           "ph.h2o_usda.a268_index",
-           "ph.cacl2_usda.a481_index",
-           "log..al.ox_usda.a59_w.pct",
-           "log..caco3_usda.a54_w.pct",
-           "log..k.ext_usda.a725_cmolc.kg",
-           "log..mg.ext_usda.a724_cmolc.kg",
-           "log..ca.ext_usda.a722_cmolc.kg",
-           "acidity_usda.a795_cmolc.kg",
-           "bd_usda.a4_g.cm3")
-
-mn.lst = c("mir_mlr..eml_kssl_ll_v1.2.rds",
-           "mir_mlr..eml_kssl_na_v1.2.rds",
-           "mir_mlr..eml_ossl_ll_v1.2.rds",
-           "nir.neospectra_mlr..eml_ossl_ll_v1.2.rds")
-
-model.combinations <- crossing(soil_property = t.vars,
-                               model_type = mn.lst)
+names(listed.models)
 
 performance.metrics.list <- list()
 
 i=1
-for(i in 1:nrow(model.combinations)) {
+for(i in 1:nrow(listed.models)) {
 
-  isoil_property <- model.combinations[[i,"soil_property"]]
-  imodel_type <- model.combinations[[i,"model_type"]]
+  isoil_property <- listed.models[[i,"soil_property"]]
+  imodel_name <- listed.models[[i,"model_name"]]
+  imodel_url <- listed.models[[i,"model_url"]]
 
-  base.url <- "http://s3.us-east-1.wasabisys.com/soilspectroscopy/ossl_models/"
-
-  in.rds = readRDS(url(paste0(base.url, isoil_property, "/", imodel_type, ".rds"), "rb"))
+  in.rds = readRDS(url(imodel_url), "rb")
 
   predictions <- tibble(observed = (in.rds$learner.model$super.model$learner.model$residuals+
                                       in.rds$learner.model$super.model$learner.model$fitted.values),
@@ -60,7 +41,7 @@ for(i in 1:nrow(model.combinations)) {
               ccc = ccc_vec(truth = observed, estimate = predicted, bias = T),
               rpiq = rpiq_vec(truth = observed, estimate = predicted)) %>%
     mutate(soil_property = isoil_property,
-           model_type = imodel_type,
+           model_name = imodel_name,
            .before = 1)
 
   performance.metrics.list[[i]] <- performance.metrics
@@ -68,11 +49,15 @@ for(i in 1:nrow(model.combinations)) {
   rm(in.rds)
   gc()
 
-  cat(paste0("Run ", isoil_property, ", ", imodel_type, " at ", now(), "\n"))
+  cat(paste0("Run ", isoil_property, ", ", imodel_name, " at ", now(), "\n"))
 
 }
 
+performance.metrics <- Reduce(bind_rows, performance.metrics.list)
+performance.metrics
+
 # Export results
+write_csv(performance.metrics, "out/ossl_models_v1.2_performance.csv")
 
 ## Accuracy plots
 
