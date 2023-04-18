@@ -31,8 +31,8 @@ soillab <- read_csv("out/ossl_level1_names_soillab.csv")
 
 soillab <- soillab %>%
   mutate(variable_name = paste0(analyte, " (", ossl_unit_level0, ")")) %>%
-  rename(variable = ossl_name_level0) %>%
-  select(variable, variable_name)
+  rename(variable_join = ossl_name_level0) %>%
+  select(variable_join, variable_name)
 
 ## Fitted models
 models.dir <- paste(dir.ossl, soil.properties, sep = "/")
@@ -45,7 +45,9 @@ listed.models <- sapply(models.dir, function(x) {list.files(x, pattern = "*v1.2.
   rename(variable = name, model_name = value) %>%
   mutate(model_path = variable, .before = 1) %>%
   mutate(variable = str_replace(variable, paste0(dir.ossl, "/"), "")) %>%
-  left_join(soillab, by = "variable") %>%
+  mutate(variable_join = gsub("log..", "", variable)) %>%
+  left_join(soillab, by = "variable_join") %>%
+  select(-variable_join) %>%
   relocate(variable_name, .after = variable) %>%
   separate(model_name, into = c("spectra_type", "other"), sep = "_mlr..eml_", remove = F) %>%
   mutate(other = str_replace(other, ".rds", "")) %>%
