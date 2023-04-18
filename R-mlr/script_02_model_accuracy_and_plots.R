@@ -5,16 +5,11 @@ options(timeout=6000)
 library("tidyverse")
 library("lubridate")
 library("tidymodels")
+library("ggpubr")
 
 listed.models <- read_csv("out/list_ossl_models_v1.2.csv")
 
 ## Goodness-of-fit statistics
-
-# library("hexbin")
-# library("plotKML")
-# library("lattice")
-# library("plyr")
-# source("./R-mlr/SSL_functions.R")
 
 names(listed.models)
 
@@ -23,7 +18,7 @@ performance.metrics.list <- list()
 i=1
 for(i in 1:nrow(listed.models)) {
 
-  isoil_property <- listed.models[[i,"soil_property"]]
+  isoil_property <- listed.models[[i,"variable"]]
   imodel_name <- listed.models[[i,"model_name"]]
   imodel_url <- listed.models[[i,"model_url"]]
 
@@ -59,28 +54,77 @@ performance.metrics
 # Export results
 write_csv(performance.metrics, "out/ossl_models_v1.2_performance.csv")
 
-## Accuracy plots
+# performance.metrics <- read_csv("out/ossl_models_v1.2_performance.csv")
+# clipr::write_clip(performance.metrics)
 
-# for(i in 1:nrow(acc.mat)){
-#   for(j in 1:length(mn.lst)){
-#     in.rds = paste0("/mnt/landmark/ossl_mlr/models/", t.vars[i], "/", mn.lst[j], ".rds")
-#     out.file = paste0("/mnt/landmark/ossl_mlr/models/", t.vars[i], "/ap.", mn.lst[j], ".rds.png")
-#     if(file.exists(in.rds) & !file.exists(out.file)){
-#       t.m = readRDS.gz(in.rds)
-#       yh = t.m$learner.model$super.model$learner.model$fitted.values
-#       meas = t.m$learner.model$super.model$learner.model$model[,t.vars[i]]
-#       t.var.breaks = quantile(meas, c(0.001, 0.01, 0.999), na.rm=TRUE)
-#       plot_hexbin(varn=t.vars[i], breaks=c(t.var.breaks[1], seq(t.var.breaks[2], t.var.breaks[3], length=25)), meas=ifelse(meas<0, 0, meas), pred=ifelse(yh<0, 0, yh), main=t.vars[i], out.file=out.file, log.plot=FALSE, colorcut=c(0,0.01,0.02,0.03,0.06,0.12,0.20,0.35,1.0))
-#       #gc()
-#     }
-#   }
-# }
-#
-# ## global layers ----
+## Accuracy plots
+listed.models <- read_csv("out/list_ossl_models_v1.2.csv")
+performance.metrics <- read_csv("out/ossl_models_v1.2_performance.csv")
+
+performance.metrics <- performance.metrics %>%
+  mutate_if(is.numeric, round, 3)
+
+i=1
+for(i in 1:nrow(performance.metrics)) {
+
+  isoil_property <- listed.models[[i,"variable"]]
+  imodel_name <- listed.models[[i,"model_name"]]
+  imodel_url <- listed.models[[i,"model_url"]]
+
+  iperformance.metrics <- performance.metrics %>%
+    filter(soil_property == isoil_property) %>%
+    filter(model_name == imodel_name) %>%
+    select(all_of(c("n", "rmse", "bias", "rsq", "ccc", "rpiq"))) %>%
+    pivot_longer(everything(), names_to = "metric", values_to = "value") %>%
+    mutate(concat = paste0(metric, ": ", value)) %>%
+    pull(concat) %>%
+    paste(., collapse = ", ")
+
+  in.rds = readRDS(url(imodel_url), "rb")
+
+  predictions <- tibble(observed = (in.rds$learner.model$super.model$learner.model$residuals+
+                                      in.rds$learner.model$super.model$learner.model$fitted.values),
+                        predicted = in.rds$learner.model$super.model$learner.model$fitted.values)
+
+  p.hex <- ggplot(predictions, aes(x = observed, y = predicted)) +
+    geom_hex(bins = 30, alpha = 0.75) +
+    geom_abline(intercept = 0, slope = 1) +
+    scale_fill_viridis_c(trans = "log10") +
+    labs(x = "Observed", y = "Predicted", fill = bquote(log[10](count)),
+         title = isoil_property, subtitle = iperformance.metrics) +
+    theme_bw(base_size = 10) +
+    theme(legend.position = "bottom",
+          plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5),
+          legend.key.size = unit(0.35, "cm"))
+
+  r.max <- max(layer_scales(p.hex)$x$range$range)
+  r.min <- min(layer_scales(p.hex)$x$range$range)
+
+  s.max <-max(layer_scales(p.hex)$y$range$range)
+  s.min <-min(layer_scales(p.hex)$y$range$range)
+
+  t.max <-round(max(r.max,s.max),1)
+  t.min <-round(min(r.min,s.min),1)
+
+  p.hex <- p.hex + coord_equal(xlim=c(t.min,t.max),ylim=c(t.min,t.max))
+
+  ggsave(paste0("out/validation_plots/", isoil_property, "..", imodel_name, ".png"),
+         p.hex, width = 6, height = 6, units = "in", scale = 1)
+
+  rm(in.rds)
+  gc()
+
+  cat(paste0("Run ", isoil_property, ", ", imodel_name, " at ", now(), "\n"))
+
+}
+
+
+## Global layers ----
 # cog.lst = list.files("/data/WORLDCLIM", ".tif", full.names = TRUE)
 # write.csv(data.frame(filename=basename(cog.lst)), "./out/global_layers1km.csv")
-#
-# ## prepare sample data
+
+# ## Prepare sample data
 # new.data = vroom::vroom("/mnt/diskstation/data/ossl/dataset/validation/JSset_KSSL.csv", n_max = 20)
 # dim(new.data)
 # names(new.data)[1:40]
