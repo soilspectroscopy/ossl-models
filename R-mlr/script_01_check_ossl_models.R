@@ -52,7 +52,7 @@ listed.models <- sapply(models.dir, function(x) {list.files(x, pattern = "*v1.2.
   separate(model_name, into = c("spectra_type", "other"), sep = "_mlr..eml_", remove = F) %>%
   mutate(other = str_replace(other, ".rds", "")) %>%
   separate(other, into = c("subset", "geo", "version"), sep = "_") %>%
-  mutate(soil_property_description = paste0("https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html#", str_replace(variable_name, "log..", "")),
+  mutate(variable_description = paste0("https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html#", str_replace(variable, "log..", "")),
          .before = model_name) %>%
   mutate(model_summary = paste0(base.url, variable, "/", model_name, "_resultsFit.txt"),
          model_scatterplot = paste0(base.url, variable, "/ap.", model_name, ".png"),
