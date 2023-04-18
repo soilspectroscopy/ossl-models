@@ -50,8 +50,8 @@ Clay,clay.tot_usda.a334_w.pct,clay.tot,usda.a334,w.pct,clay.tot,usda.a334,w.pct,
 "Sodium, Extractable, Mehlich3",na.ext_usda.a1068_mg.kg,na.ext,usda.a1068,mg.kg,na.ext,usda.a1068,mg.kg,x,na.ext_usda.a1068_mg.kg,TRUE
 "Sodium, Extractable, NH4OAc, 2M KCl displacement",na.ext_usda.a726_cmolc.kg,na.ext,usda.a726,cmolc.kg,na.ext,usda.a726,cmolc.kg,x,na.ext_usda.a726_cmolc.kg,TRUE
 "Organic Carbon, iso 10694",oc_iso.10694_w.pct,oc,iso.10694,w.pct,oc,usda.c729,w.pct,x,oc_usda.c729_w.pct,TRUE
-"Organic Carbon, Total C without CaCO3, N prep",oc_usda.c1059_w.pct,oc,usda.c1059,w.pct,oc,usda.c729,w.pct,x,oc_usda.c729_w.pct,TRUE
-"Organic Carbon, Total C without CaCO3, S prep",oc_usda.c729_w.pct,oc,usda.c729,w.pct,oc,usda.c729,w.pct,x,oc_usda.c729_w.pct,TRUE
+"Organic Carbon, Total C without CaCO3",oc_usda.c1059_w.pct,oc,usda.c1059,w.pct,oc,usda.c729,w.pct,x,oc_usda.c729_w.pct,TRUE
+"Organic Carbon, Total C without CaCO3",oc_usda.c729_w.pct,oc,usda.c729,w.pct,oc,usda.c729,w.pct,x,oc_usda.c729_w.pct,TRUE
 "Phosphorus, Extractable, Aqua Regia",p.ext_aquaregia_mg.kg,p.ext,aquaregia,mg.kg,p.ext,aquaregia,mg.kg,x,p.ext_aquaregia_mg.kg,TRUE
 "Phosphorus, Extractable, iso 11263",p.ext_iso.11263_mg.kg,p.ext,iso.11263,mg.kg,p.ext,usda.a274,mg.kg,x,p.ext_usda.a274_mg.kg,TRUE
 "Phosphorus, Extractable, Mehlich3",p.ext_usda.a1070_mg.kg,p.ext,usda.a1070,mg.kg,p.ext,usda.a1070,mg.kg,x,p.ext_usda.a1070_mg.kg,TRUE
@@ -66,11 +66,11 @@ Clay,clay.tot_usda.a334_w.pct,clay.tot,usda.a334,w.pct,clay.tot,usda.a334,w.pct,
 "Sulphur, Extractable, Mehlich3",s.ext_mel3_mg.kg,s.ext,mel3,mg.kg,s.ext,mel3,mg.kg,x,s.ext_mel3_mg.kg,TRUE
 "Sulfur, Total NCS",s.tot_usda.a624_w.pct,s.tot,usda.a624,w.pct,s.tot,usda.a624,w.pct,x,s.tot_usda.a624_w.pct,TRUE
 "Sand, Total, iso 11277",sand.tot_iso.11277_w.pct,sand.tot,iso.11277,w.pct,sand.tot,usda.c60,w.pct,x,sand.tot_usda.c60_w.pct,TRUE
-"Sand, Total, N prep",sand.tot_usda.c405_w.pct,sand.tot,usda.c405,w.pct,sand.tot,usda.c60,w.pct,x,sand.tot_usda.c60_w.pct,TRUE
-"Sand, Total, S prep",sand.tot_usda.c60_w.pct,sand.tot,usda.c60,w.pct,sand.tot,usda.c60,w.pct,x,sand.tot_usda.c60_w.pct,TRUE
+"Sand, Total",sand.tot_usda.c405_w.pct,sand.tot,usda.c405,w.pct,sand.tot,usda.c60,w.pct,x,sand.tot_usda.c60_w.pct,TRUE
+"Sand, Total",sand.tot_usda.c60_w.pct,sand.tot,usda.c60,w.pct,sand.tot,usda.c60,w.pct,x,sand.tot_usda.c60_w.pct,TRUE
 "Silt, Total, iso 11277",silt.tot_iso.11277_w.pct,silt.tot,iso.11277,w.pct,silt.tot,usda.c62,w.pct,x,silt.tot_usda.c62_w.pct,TRUE
-"Silt, Total, N prep",silt.tot_usda.c407_w.pct,silt.tot,usda.c407,w.pct,silt.tot,usda.c62,w.pct,x,silt.tot_usda.c62_w.pct,TRUE
-"Silt, Total, S prep",silt.tot_usda.c62_w.pct,silt.tot,usda.c62,w.pct,silt.tot,usda.c62,w.pct,x,silt.tot_usda.c62_w.pct,TRUE
+"Silt, Total",silt.tot_usda.c407_w.pct,silt.tot,usda.c407,w.pct,silt.tot,usda.c62,w.pct,x,silt.tot_usda.c62_w.pct,TRUE
+"Silt, Total",silt.tot_usda.c62_w.pct,silt.tot,usda.c62,w.pct,silt.tot,usda.c62,w.pct,x,silt.tot_usda.c62_w.pct,TRUE
 "Water Retention, 1/10 Bar (10 kPa)",wr.10kPa_usda.a414_w.pct,wr.10kPa,usda.a414,w.pct,wr.10kPa,usda.a414,w.pct,x,wr.10kPa_usda.a414_w.pct,TRUE
 "Water Retention, 1/10 Bar (10 kPa), Clod",wr.10kPa_usda.a8_w.pct,wr.10kPa,usda.a8,w.pct,wr.10kPa,usda.a414,w.pct,x,wr.10kPa_usda.a414_w.pct,TRUE
 "Water Retention, 15 Bar (1500 kPa)",wr.1500kPa_usda.a417_w.pct,wr.1500kPa,usda.a417,w.pct,wr.1500kPa,usda.a417,w.pct,x,wr.1500kPa_usda.a417_w.pct,TRUE

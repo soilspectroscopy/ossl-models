@@ -27,6 +27,13 @@ soil.properties <- c("silt.tot_usda.c62_w.pct",
                      "acidity_usda.a795_cmolc.kg",
                      "bd_usda.a4_g.cm3")
 
+soillab <- read_csv("out/ossl_level1_names_soillab.csv")
+
+soillab <- soillab %>%
+  mutate(variable_name = paste0(analyte, " (", ossl_unit_level0, ")")) %>%
+  rename(variable = ossl_name_level0) %>%
+  select(variable, variable_name)
+
 ## Fitted models
 models.dir <- paste(dir.ossl, soil.properties, sep = "/")
 
@@ -35,17 +42,19 @@ base.url <- "http://s3.us-east-1.wasabisys.com/soilspectroscopy/ossl_models/"
 listed.models <- sapply(models.dir, function(x) {list.files(x, pattern = "*v1.2.rds$")}) %>%
   enframe() %>%
   unnest(value) %>%
-  rename(soil_property = name, model_name = value) %>%
-  mutate(source_dir = dir.ossl, .before = 1) %>%
-  mutate(soil_property = str_replace(soil_property, paste0(dir.ossl, "/"), "")) %>%
+  rename(variable = name, model_name = value) %>%
+  mutate(model_path = variable, .before = 1) %>%
+  mutate(variable = str_replace(variable, paste0(dir.ossl, "/"), "")) %>%
+  left_join(soillab, by = "variable") %>%
+  relocate(variable_name, .after = variable) %>%
   separate(model_name, into = c("spectra_type", "other"), sep = "_mlr..eml_", remove = F) %>%
   mutate(other = str_replace(other, ".rds", "")) %>%
   separate(other, into = c("subset", "geo", "version"), sep = "_") %>%
-  mutate(soil_property_description = paste0("https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html#", str_replace(soil_property, "log..", "")),
+  mutate(soil_property_description = paste0("https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html#", str_replace(variable_name, "log..", "")),
          .before = model_name) %>%
-  mutate(model_summary = paste0(base.url, soil_property, "/", model_name, "_resultsFit.txt"),
-         model_scatterplot = paste0(base.url, soil_property, "/ap.", model_name, ".png"),
-         model_url = paste0(base.url, soil_property, "/", model_name),
+  mutate(model_summary = paste0(base.url, variable, "/", model_name, "_resultsFit.txt"),
+         model_scatterplot = paste0(base.url, variable, "/ap.", model_name, ".png"),
+         model_url = paste0(base.url, variable, "/", model_name),
          pca_model_mir = case_when(spectra_type == "mir" & subset == "kssl" ~ paste0(base.url, "pca.ossl/pca_mir_kssl_v1.2.rds"),
                                    spectra_type == "mir" & subset == "ossl" ~ paste0(base.url, "pca.ossl/pca_mir_ossl_v1.2.rds"),
                                    spectra_type == "visnir.mir" & subset == "ossl" ~ paste0(base.url, "pca.ossl/pca_mir_ossl_v1.2.rds"),
@@ -53,7 +62,10 @@ listed.models <- sapply(models.dir, function(x) {list.files(x, pattern = "*v1.2.
          pca_model_visnir = case_when(spectra_type == "nir.neospectra" & subset == "ossl" ~ paste0(base.url, "pca.ossl/pca_nir_neospectra_v1.2.rds"),
                                       spectra_type == "visnir.mir" & subset == "kssl" ~ paste0(base.url, "pca.ossl/pca_visnir_kssl_v1.2.rds"),
                                       spectra_type == "visnir.mir" & subset == "ossl" ~ paste0(base.url, "pca.ossl/pca_visnir_ossl_v1.2.rds"),
-                                      TRUE ~ ""))
+                                      TRUE ~ "")) %>%
+  mutate(model_description = paste0("Ensemble ML model to predict ", variable_name),
+         .after = model_name) %>%
+  relocate(model_path, .after = version)
 
 listed.models %>%
   glimpse()
@@ -63,5 +75,4 @@ write_csv(listed.models, "out/list_ossl_models_v1.2.csv")
 ## Binding with soillab info
 
 # listed.models <- read_csv("out/list_ossl_models_v1.2.csv")
-# soillab <- read_csv("out/ossl_level1_names_soillab.csv")
 # clipr::write_clip(listed.models)
