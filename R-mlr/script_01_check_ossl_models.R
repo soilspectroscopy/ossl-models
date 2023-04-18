@@ -60,5 +60,8 @@ listed.models %>%
 
 write_csv(listed.models, "out/list_ossl_models_v1.2.csv")
 
+## Binding with soillab info
+
 # listed.models <- read_csv("out/list_ossl_models_v1.2.csv")
+# soillab <- read_csv("out/ossl_level1_names_soillab.csv")
 # clipr::write_clip(listed.models)
