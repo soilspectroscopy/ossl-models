@@ -1,6 +1,6 @@
 ---
 title: "OSSL: Global Soil Spectral Calibration Models"
-author: "Tomislav Hengl (tom.hengl@opengeohub.org), Leandro Parente (leandro.parente@opengeohub.org), and Jonathan Sanderman (jsanderman@woodwellclimate.org)"
+author: "Jose L. Safanelli (jsafanelli@woodwellclimate.org), Tomislav Hengl (tom.hengl@opengeohub.org), Leandro Parente (leandro.parente@opengeohub.org), and Jonathan Sanderman (jsanderman@woodwellclimate.org)"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   github_document:
@@ -28,305 +28,398 @@ library(captioner)
 fig_nums <- captioner(prefix = "Fig.")
 ```
 
-## Kellogg Soil Survey Laboratory inputs
+## Open Soil Spectral Library
 
 Part of: <https://github.com/soilspectroscopy>  
 Project: [Soil Spectroscopy for Global Good](https://soilspectroscopy.org)  
 Last update: `r Sys.Date()`  
-Dataset: [OSSL](https://soilspectroscopy.github.io/ossl-manual/reference-soil-spectroscopy-models.html)  
-
+Dataset: [OSSL](https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html)  
 
 ```{r, include=FALSE}
 options(warn=0)
 ```
 
-This tutorial explains steps required to fit Global Soil Spectral Calibration Models
-for the purpose of the [Soil Spectroscopy for Global Good project](https://soilspectroscopy.org).
-We use Ensemble Machine Learning with meta-learner / stacking where meta-learner is fitted using 
-5-fold Cross-Validation with refitting [@hengl2019predictive].
-Modeling is based on using [mlr package](https://mlr.mlr-org.com/) [@bischl2016mlr], which is currently not developed further.
-Migration to the newer modeling framework [mlr3](https://mlr3book.mlr-org.com/) in on-going.
-
-The following code runs is implemented in a High Performance Computing environment with
-many steps fully parallelized and with enough RAM (>450GB). Running this code on a standard
-computer without subsetting data is not recommended.
-
 ```{r, echo=FALSE, message=FALSE, results='hide'}
-ls <- c("rgdal", "raster", "terra", "ranger", "mlr", "parallelMap", "data.table",
-        "xgboost", "Cubist", "glmnet", "matrixStats", "doMC", "landmap", "openair",
-        "fastDummies", "fastSave")
-new.packages <- ls[!(ls %in% installed.packages()[,"Package"])]
+packages <- c("rgdal", "raster", "terra", "ranger", "mlr", "parallelMap", "data.table",
+              "xgboost", "Cubist", "glmnet", "matrixStats", "doMC", "landmap", "openair",
+              "fastDummies", "fastSave", "tidyverse", "qs")
+new.packages <- packages[!(packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
-x = lapply(ls, require, character.only = TRUE)
+invisible(lapply(packages, library, character.only = TRUE))
+source('SSL_functions.R')
 ```
 
 The directory/folder path:
 
 ```{r}
-dir = "/mnt/soilspec4gg/ossl/ossl_models/"
+dir <- "/mnt/soilspec4gg/ossl/ossl_models/"
+db.dir <- "/mnt/soilspec4gg/ossl/ossl_import/"
 ```
 
-```{r, echo=FALSE, eval=FALSE}
-#load.pigz(paste0(dir, "ossl.models.RData"))
-source('SSL_functions.R')
-```
+### Overview
 
-## Load regression matrix
+This tutorial explains the steps required to fit Global Soil Spectral Calibration Models for the purpose of the [Soil Spectroscopy for Global Good project](https://soilspectroscopy.org).
 
-The regression-matrix was produced by [binding all OSSL tables together](https://github.com/soilspectroscopy/ossl-imports/blob/main/test_bind.R).
-It is about 350MB in size.
+We use Ensemble Machine Learning with meta-learner/stacking where the meta-learner is fitted using 5-fold cross-validation with model optimization [@hengl2019predictive].
+
+Modeling framework is based on the [mlr package](https://mlr.mlr-org.com/) [@bischl2016mlr], which is currently not developed further. Migration to the newer modeling framework [mlr3](https://mlr3book.mlr-org.com/) is pending.
+
+The following code is implemented in a high-performance computing environment with many steps fully parallelized and enough RAM (> 450GB). Running this code on a standard computer without subsetting data is not recommended.
+
+For each soil property of interest, the possible model combinations are:
 
 ```{r}
-if(!exists("rm.ossl")){
-  rep = "http://s3.us-east-1.wasabisys.com/soilspectroscopy/ossl_import/"
-  rm.rds = url(paste0(rep, "rm.ossl_v1.rds"), "rb")
-  rm.ossl = readRDS(rm.rds)
-  rm.ossl$hzn_depth = log1p(rm.ossl$layer.upper.depth_usda_cm + (rm.ossl$layer.lower.depth_usda_cm - rm.ossl$layer.upper.depth_usda_cm)/2)
-}
-summary(as.factor(rm.ossl$dataset.code_ascii_c))
+# MIR, VisNIR and NIR from Neospectra
+spectra.type <- c("mir", "visnir", "nir.neospectra")
+
+# Using KSSL only or the whole OSSL
+subset <- c("kssl", "ossl")
+
+# Adding (ll) or not (na) geocovariates to models
+geocovariates <- c("ll", "na")
+
+# Basic structure
+modeling.combinations <- tibble(spectra_type = spectra.type) %>%
+  crossing(subset = subset) %>%
+  crossing(geo = geocovariates)
 ```
 
-### Indicators
-
-Add indicators i.e. an extra explanatory variable to help with calibration:
+At this stage, Neospectra models are fitted using only the OSSL subset, as they have minimal differences (OSSL ~ KSSL). In addition, models with geocovariates are omitted as additional tests are required.
 
 ```{r}
-rm.ossl <- fastDummies::dummy_cols(rm.ossl, select_columns = "dataset.code_ascii_c")
-summary(rm.ossl$dataset.code_ascii_c_AFSIS1.SSL)
+# Target models
+modeling.combinations <- modeling.combinations %>%
+  dplyr::filter(!(grepl("neospectra", spectra_type) & subset == "kssl")) %>%
+  dplyr::filter(!(geo == "ll"))
+
+# Model name
+modeling.combinations <- modeling.combinations %>%
+  mutate(model_name = paste0(spectra_type, "_mlr..eml_", subset, "_", geo, "_v1.2"), .before = 1)
+
+modeling.combinations %>%
+  knitr::kable()
 ```
 
-### PCA models
-
-Derive and save [PCA](http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/) models for four combinations of spectra:
-
-1. KSSL MIR only;
-2. KSSL VisNIR only;
-3. ALL MIR;
-4. ALL VisNIR;
-
-PCA helps compress spectra data and reduce number of covariates [@chang2001near].
+After database update v1.2, the following properties of interest have models fitted:
 
 ```{r}
-## Remove CO2 bands from MIR spectra (2389-2268 cm-1)
-wv.mir = c(seq(600, 2268, by=2), seq(2390, 4000, by=2))
-summary(is.na(rm.ossl$scan_mir.602_abs))
-## 62,994
-summary(is.na(rm.ossl$scan_mir.3998_abs))
-## 62,555
-summary(is.na(rm.ossl$scan_visnir.452_pcnt))
-## 125,351
-summary(is.na(rm.ossl$scan_visnir.2498_pcnt))
-## 125,310
-spc.lst = list(rm.ossl[rm.ossl$dataset.code_ascii_c=="KSSL.SSL", paste0("scan_mir.", wv.mir, "_abs")],
-               rm.ossl[rm.ossl$dataset.code_ascii_c=="KSSL.SSL", paste0("scan_visnir.", seq(350, 2500, by=2), "_pcnt")],
-               rm.ossl[, paste0("scan_mir.", wv.mir, "_abs")],
-               rm.ossl[, paste0("scan_visnir.", seq(452, 2500, by=2), "_pcnt")])
-spc.lst = lapply(spc.lst, function(i){i[complete.cases(i),]})
-lapply(spc.lst, dim)
+soil.properties <- c("silt.tot_usda.c62_w.pct",
+                     "clay.tot_usda.a334_w.pct",
+                     "sand.tot_usda.c60_w.pct",
+                     "log..oc_usda.c729_w.pct",
+                     "log..n.tot_usda.a623_w.pct",
+                     "log..caco3_usda.a54_w.pct",
+                     "log..al.ox_usda.a59_w.pct",
+                     "ph.h2o_usda.a268_index",
+                     "ph.cacl2_usda.a481_index",
+                     "log..k.ext_usda.a725_cmolc.kg",
+                     "log..mg.ext_usda.a724_cmolc.kg",
+                     "log..ca.ext_usda.a722_cmolc.kg",
+                     "acidity_usda.a795_cmolc.kg",
+                     "bd_usda.a4_g.cm3")
+
+soil.properties.original <- gsub("log..", "", soil.properties)
+```
+**Note: some soil properties were natural-log transformed to help models.**
+
+Final modeling combinations:
+```{r}
+modeling.combinations <- tibble(soil_property = soil.properties) %>%
+  crossing(modeling.combinations)
+
+modeling.combinations %>%
+  knitr::kable()
+
+write_csv(modeling.combinations, "../out/modeling_combinations_v1.2.csv")
 ```
 
-To remove bias in spectra, convert to [1st derivative](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#derivatives) as this helps increase accuracy of calibration models [@rs12223765]:
+## Loading regression matrix
+
+The regression-matrices were produced in the [OSSL-imports repository](https://github.com/soilspectroscopy/ossl-imports).
 
 ```{r, eval=FALSE}
-spcf.lst = parallel::mclapply(spc.lst, function(i){ prospectr::gapDer(i, m=1, w=5, s=1, delta.wav=2)}, mc.cores=length(spc.lst))
+## Reading OSSL level 1
+rm.ossl <- qread(paste0(db.dir, "ossl_all_L1_v1.2.qs"))
+
+rm.ossl <- rm.ossl %>%
+  dplyr::select(id.layer_uuid_txt, dataset.code_ascii_txt,
+                any_of(soil.properties.original), starts_with("scan_visnir"), starts_with("scan_mir"))
+
+# head(names(rm.ossl), 20)
+# tail(names(rm.ossl), 20)
+
+## Reading Neospectra datasets
+neospectra.soilsite <- qread(paste0(db.dir, "neospectra_soilsite_v1.2.qs"))
+neospectra.soillab <- qread(paste0(db.dir, "neospectra_soillab_v1.2.qs"))
+neospectra.nir <- qread(paste0(db.dir, "neospectra_nir_v1.2.qs"))
+
+# Averaging spectra collected by multiple instruments
+neospectra.nir <- neospectra.nir %>%
+  dplyr::select(id.sample_local_c, starts_with("scan_nir")) %>%
+  group_by(id.sample_local_c) %>%
+  summarise_all(mean)
+
+rm.neospectra <- left_join(neospectra.soilsite, neospectra.soillab, by = "id.sample_local_c") %>%
+  left_join(neospectra.nir, by = "id.sample_local_c")
+
+# Selecting only important columns
+rm.neospectra <- rm.neospectra %>%
+  dplyr::select(id.sample_local_c, dataset.code_ascii_txt,
+                any_of(soil.properties.original), starts_with("scan_nir"))
+
+# Preparing named list of datasets
+# Selecting only important columns, spectra range and rows with available spectra
+data.list <- list(
+  "mir_mlr..eml_kssl" = {rm.ossl %>%
+      dplyr::filter(dataset.code_ascii_txt == "KSSL.SSL") %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), starts_with("scan_mir")) %>%
+      dplyr::filter(!is.na(scan_mir.1500_abs))},
+  "mir_mlr..eml_ossl" = {rm.ossl %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), starts_with("scan_mir")) %>%
+      dplyr::filter(!is.na(scan_mir.1500_abs))},
+  "visnir_mlr..eml_kssl" = {rm.ossl %>%
+      dplyr::filter(dataset.code_ascii_txt == "KSSL.SSL") %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), starts_with("scan_visnir")) %>%
+      dplyr::filter(!is.na(scan_visnir.1500_ref))},
+  "visnir_mlr..eml_ossl" = {rm.ossl %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), starts_with("scan_visnir")) %>%
+      dplyr::filter(!is.na(scan_visnir.1500_ref))},
+  "nir.neospectra_mlr..eml_ossl" = {rm.neospectra %>%
+      mutate(id.layer_uuid_txt = id.sample_local_c) %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), starts_with("scan_nir")) %>%
+      dplyr::filter(!is.na(scan_nir.1500_ref))})
+
+# Different sizes
+lapply(data.list, function(x) dim(x))
 ```
+
+### Preprocessing
+
+To remove baseline offset, additive/multiplicative scatter, and multicollinearity in spectra from multiple sources, [SNV](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#scatter-and-baseline-corrections) preprocessing is used before PCA compression and model calibration:
+
+```{r, eval=FALSE}
+prep.list <- lapply(data.list, function(x){
+  x %>%
+    dplyr::select(-id.layer_uuid_txt, -any_of(soil.properties.original)) %>%
+    as.matrix() %>%
+    prospectr::standardNormalVariate(X = .) %>%
+    as_tibble() %>%
+    bind_cols({x %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original))}, .)
+  })
+
+# lapply(data.list, function(x) dim(x))
+```
+
+### PCA compression
+
+Compress and save [PCA](http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/) models for the combinations of spectra. This is used to reduce the number of dimensions and also control multicollinearity [@chang2001near].
 
 Fit PCA models in parallel:
-
 ```{r, eval=FALSE}
-registerDoMC(length(spcf.lst))
-pca.lst <- foreach(i=1:length(spcf.lst)) %dopar% prcomp(as.data.frame(spcf.lst[[i]]))
+registerDoMC(length(prep.list))
+
+pca.list <- foreach(i=1:length(prep.list)) %dopar% {
+  x <- prep.list[[i]] %>%
+    dplyr::select(starts_with("scan")) %>%
+    as.data.frame()
+  prcomp(x)
+}
+
+try(stopCluster())
+
 gc()
-pca.names = c("pca_mir_kssl_v1.rds", "pca_visnir_kssl_v1.rds", "pca_mir_ossl_v1.rds", "pca_visnir_ossl_v1.rds")
-str(pca.lst[[1]]$x[,1:20])
+
+# names(pca.list) = names(prep.list)
+# lapply(pca.list, function(x) dim(x))
+# lapply(pca.list, function(x) dim(x))
+# str(pca.lst[[1]]$x[,1:20])
 ```
 
-Save as RDS files:
+<!-- Save as RDS files: -->
+<!-- ```{r, eval=FALSE} -->
+<!-- ## save complete objects: -->
+<!-- for(i in 1:length(pca.lst)){  saveRDS.gz(pca.lst[[i]], paste0("pca.ossl/", pca.names[i]))  } -->
+<!-- pcam.names = paste0("m", c("pca_mir_kssl_v1.rds", "pca_visnir_kssl_v1.rds", "pca_mir_ossl_v1.rds", "pca_visnir_ossl_v1.rds")) -->
+<!-- ## save models only / for prediction purposes: -->
+<!-- for(i in 1:length(pca.lst)){  saveRDS.gz(pca.lst[[i]][1:4], paste0("pca.ossl/", pcam.names[i]))  } -->
+<!-- ``` -->
 
-```{r, eval=FALSE}
-## save complete objects:
-for(i in 1:length(pca.lst)){  saveRDS.gz(pca.lst[[i]], paste0("pca.ossl/", pca.names[i]))  }
-pcam.names = paste0("m", c("pca_mir_kssl_v1.rds", "pca_visnir_kssl_v1.rds", "pca_mir_ossl_v1.rds", "pca_visnir_ossl_v1.rds"))
-## save models only / for prediction purposes:
-for(i in 1:length(pca.lst)){  saveRDS.gz(pca.lst[[i]][1:4], paste0("pca.ossl/", pcam.names[i]))  }
-```
+<!-- ## Model fitting -->
 
-## Model fitting
+<!-- For soil-calibration model fitting we use first 120 PCs. This method was first time introduced by @chang2001near,  -->
+<!-- although at this stage the authors used only top 10 PCA components, here we use 120. -->
+<!-- We focus on target soil variables for which there is enough training data. -->
 
-For soil-calibration model fitting we use first 120 PCs. This method was first time introduced by @chang2001near, 
-although at this stage the authors used only top 10 PCA components, here we use 120.
-We focus on target soil variables for which there is enough training data.
+<!-- ```{r} -->
+<!-- n.spc = 120 -->
+<!-- t.vars = c("log..oc_usda.calc_wpct", "log..n.tot_usda.4h2_wpct", "silt.tot_usda.3a1_wpct", -->
+<!--            "clay.tot_usda.3a1_wpct", "sand.tot_usda.3a1_wpct", "log..ecec_usda.4b4_cmolkg", -->
+<!--            "ph.h2o_usda.4c1_index", "ph.cacl2_usda.4c1_index", "log..al.kcl_usda.4b3_cmolkg", -->
+<!--            "log..k.ext_usda.4b1_cmolkg", "log..caco3_usda.4e1_wpct", "log..mg.ext_usda.4b1_cmolkg", -->
+<!--            "log..ca.ext_usda.4b1_cmolkg", "log..gyp_usda.4e2_wpct", -->
+<!--            "log..cec.ext_usda.4b1_cmolkg", "bsat_usda.4b4_wpct", "bd.od_usda.3b2_gcm3") -->
+<!-- which(!gsub("log..", "", t.vars) %in% names(rm.ossl)) -->
+<!-- x <- lapply(as.vector(unlist(paste0("./models/", t.vars, "/"))), dir.create, recursive=TRUE, showWarnings=FALSE) -->
+<!-- ``` -->
 
-```{r}
-n.spc = 120
-t.vars = c("log..oc_usda.calc_wpct", "log..n.tot_usda.4h2_wpct", "silt.tot_usda.3a1_wpct",
-           "clay.tot_usda.3a1_wpct", "sand.tot_usda.3a1_wpct", "log..ecec_usda.4b4_cmolkg",
-           "ph.h2o_usda.4c1_index", "ph.cacl2_usda.4c1_index", "log..al.kcl_usda.4b3_cmolkg",
-           "log..k.ext_usda.4b1_cmolkg", "log..caco3_usda.4e1_wpct", "log..mg.ext_usda.4b1_cmolkg",
-           "log..ca.ext_usda.4b1_cmolkg", "log..gyp_usda.4e2_wpct",
-           "log..cec.ext_usda.4b1_cmolkg", "bsat_usda.4b4_wpct", "bd.od_usda.3b2_gcm3")
-which(!gsub("log..", "", t.vars) %in% names(rm.ossl))
-x <- lapply(as.vector(unlist(paste0("./models/", t.vars, "/"))), dir.create, recursive=TRUE, showWarnings=FALSE)
-```
+<!-- In addition to PC's we will also use a number of additional covariates: -->
 
-In addition to PC's we will also use a number of additional covariates:
+<!-- ```{r} -->
+<!-- geo.sel = names(rm.ossl)[grep("clm_", names(rm.ossl))] -->
+<!-- str(geo.sel) -->
+<!-- harm.sel = names(rm.ossl)[grep("dataset.code_ascii_c_", names(rm.ossl))] -->
+<!-- ``` -->
 
-```{r}
-geo.sel = names(rm.ossl)[grep("clm_", names(rm.ossl))]
-str(geo.sel)
-harm.sel = names(rm.ossl)[grep("dataset.code_ascii_c_", names(rm.ossl))]
-```
+<!-- For each soil property, we basically fit the following six type of models: -->
 
-For each soil property, we basically fit the following six type of models:
+<!-- 1. MIR only KSSL subset `mir_mlr..eml_kssl_na_v1.rds`; -->
+<!-- 2. MIR only KSSL subset with geographic covariates `mir_mlr..eml_kssl_ll_v1.rds`; -->
+<!-- 3. VisNIR only ALL data `visnir_mlr..eml_ossl_na_v1.rds`; -->
+<!-- 4. VisNIR only ALL data with geographic covariates `visnir_mlr..eml_ossl_ll_v1.rds`; -->
+<!-- 5. VisNIR and MIR fusion `visnir.mir_mlr..eml_ossl_na_v1.rds`; -->
+<!-- 6. VisNIR and MIR fusion with geographic covariates `visnir.mir_mlr..eml_ossl_ll_v1.rds`; -->
 
-1. MIR only KSSL subset `mir_mlr..eml_kssl_na_v1.rds`;
-2. MIR only KSSL subset with geographic covariates `mir_mlr..eml_kssl_ll_v1.rds`;
-3. VisNIR only ALL data `visnir_mlr..eml_ossl_na_v1.rds`;
-4. VisNIR only ALL data with geographic covariates `visnir_mlr..eml_ossl_ll_v1.rds`;
-5. VisNIR and MIR fusion `visnir.mir_mlr..eml_ossl_na_v1.rds`;
-6. VisNIR and MIR fusion with geographic covariates `visnir.mir_mlr..eml_ossl_ll_v1.rds`;
-
-```{r}
-mn.lst = c("mir_mlr..eml_kssl_na_v1", "mir_mlr..eml_kssl_ll_v1", "visnir_mlr..eml_ossl_na_v1",
-           "mir_mlr..eml_ossl_ll_v1", "visnir.mir_mlr..eml_ossl_na_v1", "visnir.mir_mlr..eml_ossl_ll_v1")
-```
-
-
-Using geographic covariates implies that lon-lat coordinates are available at relatively high
-location accuracy and not higher location error than 1000 m. For each of the models
-we specify a list of covariates:
-
-```{r}
-## Target 6 models per variable:
-pr.lst0 = list(c(paste0("mir.PC", 1:n.spc)),
-               c(paste0("mir.PC", 1:n.spc), "hzn_depth", geo.sel),
-               c(paste0("visnir.PC", 1:n.spc)),
-               c(paste0("mir.PC", 1:n.spc), "hzn_depth", geo.sel, harm.sel),
-               c(paste0("mir.PC", 1:n.spc), paste0("visnir.PC", 1:n.spc), harm.sel),
-               c(paste0("mir.PC", 1:n.spc), paste0("visnir.PC", 1:n.spc), "hzn_depth", geo.sel, harm.sel))
-```
-
-Training takes at least 24hrs on 80t server with 450GB RAM:
-
-```{r, eval=FALSE}
-## Run train ----
-max.loc.accuracy=1000
-## run in parallel for 6 combinations
-source('functions_ossl.models.R')
-for(tv in t.vars){
-  for(k in 1:length(pr.lst0)){
-    if(k==1|k==2){
-      X.pc = as.data.frame(pca.lst[[1]]$x[,1:n.spc])
-      colnames(X.pc) = paste0("mir.PC", 1:n.spc)
-    }
-    if(k==3){
-      X.pc = as.data.frame(pca.lst[[2]]$x[,1:n.spc])
-      colnames(X.pc) = paste0("visnir.PC", 1:n.spc)
-    }
-    if(k==4){
-      X.pc = as.data.frame(pca.lst[[3]]$x[,1:n.spc])
-      colnames(X.pc) = paste0("mir.PC", 1:n.spc)
-    }
-    if(k==5|k==6){
-      X1.pc = as.data.frame(pca.lst[[3]]$x[,1:n.spc])
-      colnames(X1.pc) = paste0("mir.PC", 1:n.spc)
-      X2.pc = as.data.frame(pca.lst[[4]]$x[,1:n.spc])
-      colnames(X2.pc) = paste0("visnir.PC", 1:n.spc)
-      ov.r = intersect(row.names(X1.pc), row.names(X2.pc))
-      X.pc = cbind(X1.pc[which(row.names(X1.pc) %in% ov.r),], X2.pc[which(row.names(X2.pc) %in% ov.r),])
-    }
-    if(nrow(X.pc)>0){
-      if(k==1|k==3){
-        X = cbind(rm.ossl[as.integer(row.names(X.pc)), c(gsub("log..", "", tv), "ID")], X.pc)
-        try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE) )
-        try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE, rf.feature=FALSE) )
-      }
-      if(k==2){
-        X = cbind(rm.ossl[as.integer(row.names(X.pc)), c(gsub("log..", "", tv), "location.error_any_m", "ID", "hzn_depth", geo.sel)], X.pc)
-        X = X[!is.na(X$location.error_any_m) & X$location.error_any_m < max.loc.accuracy,]
-        try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE) )
-        try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE, rf.feature=FALSE) )
-      }
-      if(k==4|k==6){
-        X = cbind(rm.ossl[as.integer(row.names(X.pc)), c(gsub("log..", "", tv), "location.error_any_m", "ID", "hzn_depth", geo.sel, harm.sel)], X.pc)
-        X = X[!is.na(X$location.error_any_m) & X$location.error_any_m < max.loc.accuracy,]
-        try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = TRUE) )
-        try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = TRUE, rf.feature=FALSE) )
-      }
-      if(k==5){
-        X = cbind(rm.ossl[as.integer(row.names(X.pc)), c(gsub("log..", "", tv), "ID", harm.sel)], X.pc)
-        try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE) )
-        try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE, rf.feature=FALSE) )
-      }
-    }
-    try( cat_eml(tv, model.name=mn.lst[k]) )
-  }
-}
-```
-
-## Model evaluation
-
-We can export the summary accuracy statistics for all soil variables into a single table:
-
-```{r, eval=FALSE}
-p.lst = c("RMSE", "R.square", "N.tot", "N.outliers")
-acc.mat = data.frame(matrix(nrow=length(t.vars), ncol=2+length(mn.lst)*4))
-colnames(acc.mat) = c("variable", "std", sapply(mn.lst, function(i){paste0(i, "_", p.lst)}))
-acc.mat$variable = t.vars
-acc.mat$std = sapply(t.vars, function(i){ if(length(grep("log..", i))>0) { sd(log1p(rm.ossl[,gsub("log..","",i)]), na.rm = TRUE) } else { sd(rm.ossl[,i], na.rm = TRUE) } })
-for(i in 1:nrow(acc.mat)){
-  for(j in 1:length(mn.lst)){
-    in.rds = paste0(dir, t.vars[i], "/", mn.lst[j], ".rds")
-    if(file.exists(in.rds)){
-      t.m = readRDS.gz(in.rds)
-      x.s = summary(t.m$learner.model$super.model$learner.model)
-      RMSE = signif(sqrt(sum(t.m$learner.model$super.model$learner.model$residuals^2) / t.m$learner.model$super.model$learner.model$df.residual), 3)
-      acc.mat[i,paste0(mn.lst[j], "_RMSE")] = RMSE
-      acc.mat[i,paste0(mn.lst[j], "_R.square")] = round(x.s$adj.r.squared, 3)
-      acc.mat[i,paste0(mn.lst[j], "_N.tot")] = x.s$df[2]
-      acc.mat[i,paste0(mn.lst[j], "_N.outliers")] = sum(abs(x.s$residuals) > 3*RMSE)
-      gc()
-    }
-  }
-}
-write.csv(acc.mat, "../out/accuracy_matrix_ossl_models.csv")
-```
-
-We also produce standard accuracy plots based on the 5-fold cross-validation by using:
-
-```{r, eval=FALSE}
-## Accuracy plots ----
-library(hexbin)
-library(plotKML)
-library(lattice)
-par(family = "sans")
-for(i in 1:nrow(acc.mat)){
-  for(j in 1:length(mn.lst)){
-    in.rds = paste0(dir, t.vars[i], "/", mn.lst[j], ".rds")
-    out.file = paste0(dir, t.vars[i], "/ap.", mn.lst[j], ".rds.png")
-    if(file.exists(in.rds) & !file.exists(out.file)){
-      t.m = readRDS.gz(in.rds)
-      yh = t.m$learner.model$super.model$learner.model$fitted.values
-      meas = t.m$learner.model$super.model$learner.model$model[,t.vars[i]]
-      t.var.breaks = quantile(meas, c(0.001, 0.01, 0.999), na.rm=TRUE)
-      plot_hexbin(varn=t.vars[i], breaks=c(t.var.breaks[1], seq(t.var.breaks[2], t.var.breaks[3], length=25)), meas=ifelse(meas<0, 0, meas), pred=ifelse(yh<0, 0, yh), main=t.vars[i], out.file=out.file, log.plot=FALSE, colorcut=c(0,0.01,0.02,0.03,0.06,0.12,0.20,0.35,1.0))
-      #gc()
-    }
-  }
-}
-```
-
-Example of an accuracy plot:
-
-```{r ac-soc1, echo=FALSE, fig.cap="Accuracy plot for `log..oc_usda.calc_wpct/mir_mlr..eml_kssl_na_v1.rds`.", out.width="60%"}
-knitr::include_graphics("./models/log..oc_usda.calc_wpct/ap.mir_mlr..eml_kssl_na_v1.rds.png")
-```
+<!-- ```{r} -->
+<!-- mn.lst = c("mir_mlr..eml_kssl_na_v1", "mir_mlr..eml_kssl_ll_v1", "visnir_mlr..eml_ossl_na_v1", -->
+<!--            "mir_mlr..eml_ossl_ll_v1", "visnir.mir_mlr..eml_ossl_na_v1", "visnir.mir_mlr..eml_ossl_ll_v1") -->
+<!-- ``` -->
 
 
-```{r, eval=FALSE}
-#save.image.pigz(file=paste0(dir, "ossl.models.RData"), n.cores=80)
-#rmarkdown::render("R-mlr/README.Rmd")
-```
+<!-- Using geographic covariates implies that lon-lat coordinates are available at relatively high -->
+<!-- location accuracy and not higher location error than 1000 m. For each of the models -->
+<!-- we specify a list of covariates: -->
 
+<!-- ```{r} -->
+<!-- ## Target 6 models per variable: -->
+<!-- pr.lst0 = list(c(paste0("mir.PC", 1:n.spc)), -->
+<!--                c(paste0("mir.PC", 1:n.spc), "hzn_depth", geo.sel), -->
+<!--                c(paste0("visnir.PC", 1:n.spc)), -->
+<!--                c(paste0("mir.PC", 1:n.spc), "hzn_depth", geo.sel, harm.sel), -->
+<!--                c(paste0("mir.PC", 1:n.spc), paste0("visnir.PC", 1:n.spc), harm.sel), -->
+<!--                c(paste0("mir.PC", 1:n.spc), paste0("visnir.PC", 1:n.spc), "hzn_depth", geo.sel, harm.sel)) -->
+<!-- ``` -->
+
+<!-- Training takes at least 24hrs on 80t server with 450GB RAM: -->
+
+<!-- ```{r, eval=FALSE} -->
+<!-- ## Run train ---- -->
+<!-- max.loc.accuracy=1000 -->
+<!-- ## run in parallel for 6 combinations -->
+<!-- source('functions_ossl.models.R') -->
+<!-- for(tv in t.vars){ -->
+<!--   for(k in 1:length(pr.lst0)){ -->
+<!--     if(k==1|k==2){ -->
+<!--       X.pc = as.data.frame(pca.lst[[1]]$x[,1:n.spc]) -->
+<!--       colnames(X.pc) = paste0("mir.PC", 1:n.spc) -->
+<!--     } -->
+<!--     if(k==3){ -->
+<!--       X.pc = as.data.frame(pca.lst[[2]]$x[,1:n.spc]) -->
+<!--       colnames(X.pc) = paste0("visnir.PC", 1:n.spc) -->
+<!--     } -->
+<!--     if(k==4){ -->
+<!--       X.pc = as.data.frame(pca.lst[[3]]$x[,1:n.spc]) -->
+<!--       colnames(X.pc) = paste0("mir.PC", 1:n.spc) -->
+<!--     } -->
+<!--     if(k==5|k==6){ -->
+<!--       X1.pc = as.data.frame(pca.lst[[3]]$x[,1:n.spc]) -->
+<!--       colnames(X1.pc) = paste0("mir.PC", 1:n.spc) -->
+<!--       X2.pc = as.data.frame(pca.lst[[4]]$x[,1:n.spc]) -->
+<!--       colnames(X2.pc) = paste0("visnir.PC", 1:n.spc) -->
+<!--       ov.r = intersect(row.names(X1.pc), row.names(X2.pc)) -->
+<!--       X.pc = cbind(X1.pc[which(row.names(X1.pc) %in% ov.r),], X2.pc[which(row.names(X2.pc) %in% ov.r),]) -->
+<!--     } -->
+<!--     if(nrow(X.pc)>0){ -->
+<!--       if(k==1|k==3){ -->
+<!--         X = cbind(rm.ossl[as.integer(row.names(X.pc)), c(gsub("log..", "", tv), "ID")], X.pc) -->
+<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE) ) -->
+<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE, rf.feature=FALSE) ) -->
+<!--       } -->
+<!--       if(k==2){ -->
+<!--         X = cbind(rm.ossl[as.integer(row.names(X.pc)), c(gsub("log..", "", tv), "location.error_any_m", "ID", "hzn_depth", geo.sel)], X.pc) -->
+<!--         X = X[!is.na(X$location.error_any_m) & X$location.error_any_m < max.loc.accuracy,] -->
+<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE) ) -->
+<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE, rf.feature=FALSE) ) -->
+<!--       } -->
+<!--       if(k==4|k==6){ -->
+<!--         X = cbind(rm.ossl[as.integer(row.names(X.pc)), c(gsub("log..", "", tv), "location.error_any_m", "ID", "hzn_depth", geo.sel, harm.sel)], X.pc) -->
+<!--         X = X[!is.na(X$location.error_any_m) & X$location.error_any_m < max.loc.accuracy,] -->
+<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = TRUE) ) -->
+<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = TRUE, rf.feature=FALSE) ) -->
+<!--       } -->
+<!--       if(k==5){ -->
+<!--         X = cbind(rm.ossl[as.integer(row.names(X.pc)), c(gsub("log..", "", tv), "ID", harm.sel)], X.pc) -->
+<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE) ) -->
+<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE, rf.feature=FALSE) ) -->
+<!--       } -->
+<!--     } -->
+<!--     try( cat_eml(tv, model.name=mn.lst[k]) ) -->
+<!--   } -->
+<!-- } -->
+<!-- ``` -->
+
+<!-- ## Model evaluation -->
+
+<!-- We can export the summary accuracy statistics for all soil variables into a single table: -->
+
+<!-- ```{r, eval=FALSE} -->
+<!-- p.lst = c("RMSE", "R.square", "N.tot", "N.outliers") -->
+<!-- acc.mat = data.frame(matrix(nrow=length(t.vars), ncol=2+length(mn.lst)*4)) -->
+<!-- colnames(acc.mat) = c("variable", "std", sapply(mn.lst, function(i){paste0(i, "_", p.lst)})) -->
+<!-- acc.mat$variable = t.vars -->
+<!-- acc.mat$std = sapply(t.vars, function(i){ if(length(grep("log..", i))>0) { sd(log1p(rm.ossl[,gsub("log..","",i)]), na.rm = TRUE) } else { sd(rm.ossl[,i], na.rm = TRUE) } }) -->
+<!-- for(i in 1:nrow(acc.mat)){ -->
+<!--   for(j in 1:length(mn.lst)){ -->
+<!--     in.rds = paste0(dir, t.vars[i], "/", mn.lst[j], ".rds") -->
+<!--     if(file.exists(in.rds)){ -->
+<!--       t.m = readRDS.gz(in.rds) -->
+<!--       x.s = summary(t.m$learner.model$super.model$learner.model) -->
+<!--       RMSE = signif(sqrt(sum(t.m$learner.model$super.model$learner.model$residuals^2) / t.m$learner.model$super.model$learner.model$df.residual), 3) -->
+<!--       acc.mat[i,paste0(mn.lst[j], "_RMSE")] = RMSE -->
+<!--       acc.mat[i,paste0(mn.lst[j], "_R.square")] = round(x.s$adj.r.squared, 3) -->
+<!--       acc.mat[i,paste0(mn.lst[j], "_N.tot")] = x.s$df[2] -->
+<!--       acc.mat[i,paste0(mn.lst[j], "_N.outliers")] = sum(abs(x.s$residuals) > 3*RMSE) -->
+<!--       gc() -->
+<!--     } -->
+<!--   } -->
+<!-- } -->
+<!-- write.csv(acc.mat, "../out/accuracy_matrix_ossl_models.csv") -->
+<!-- ``` -->
+
+<!-- We also produce standard accuracy plots based on the 5-fold cross-validation by using: -->
+
+<!-- ```{r, eval=FALSE} -->
+<!-- ## Accuracy plots ---- -->
+<!-- library(hexbin) -->
+<!-- library(plotKML) -->
+<!-- library(lattice) -->
+<!-- par(family = "sans") -->
+<!-- for(i in 1:nrow(acc.mat)){ -->
+<!--   for(j in 1:length(mn.lst)){ -->
+<!--     in.rds = paste0(dir, t.vars[i], "/", mn.lst[j], ".rds") -->
+<!--     out.file = paste0(dir, t.vars[i], "/ap.", mn.lst[j], ".rds.png") -->
+<!--     if(file.exists(in.rds) & !file.exists(out.file)){ -->
+<!--       t.m = readRDS.gz(in.rds) -->
+<!--       yh = t.m$learner.model$super.model$learner.model$fitted.values -->
+<!--       meas = t.m$learner.model$super.model$learner.model$model[,t.vars[i]] -->
+<!--       t.var.breaks = quantile(meas, c(0.001, 0.01, 0.999), na.rm=TRUE) -->
+<!--       plot_hexbin(varn=t.vars[i], breaks=c(t.var.breaks[1], seq(t.var.breaks[2], t.var.breaks[3], length=25)), meas=ifelse(meas<0, 0, meas), pred=ifelse(yh<0, 0, yh), main=t.vars[i], out.file=out.file, log.plot=FALSE, colorcut=c(0,0.01,0.02,0.03,0.06,0.12,0.20,0.35,1.0)) -->
+<!--       #gc() -->
+<!--     } -->
+<!--   } -->
+<!-- } -->
+<!-- ``` -->
+
+<!-- Example of an accuracy plot: -->
+
+<!-- ```{r ac-soc1, echo=FALSE, fig.cap="Accuracy plot for `log..oc_usda.calc_wpct/mir_mlr..eml_kssl_na_v1.rds`.", out.width="60%"} -->
+<!-- knitr::include_graphics("./models/log..oc_usda.calc_wpct/ap.mir_mlr..eml_kssl_na_v1.rds.png") -->
+<!-- ``` -->
+
+
+<!-- ```{r, eval=FALSE} -->
+<!-- #save.image.pigz(file=paste0(dir, "ossl.models.RData"), n.cores=80) -->
+<!-- #rmarkdown::render("R-mlr/README.Rmd") -->
+<!-- ``` -->
 
 ## References

@@ -11,38 +11,38 @@ readRDS.gz <- function(file,threads=parallel::detectCores()) {
   return(object)
 }
 
-## remove extreme residuals and retrain models
-retrain.ossl <- function(t.var, model.name, out.m.rds, t=3, SL.library = c("regr.ranger", "regr.xgboost", "regr.cvglmnet", "regr.cubist", "regr.plsr")){
-  in.dir=paste0("./models/", t.var, "/")
-  out.dir=paste0("./modelsF/", t.var, "/")
-  t.m = readRDS.gz(paste0(in.dir, model.name, ".rds"))
-  res = t.m$learner.model$super.model$learner.model$residuals
-  q <- quantile(res, probs=c(.25, .75), na.rm = FALSE)
-  iqr <- IQR(res)
-  sel.rm <- !(res > (q[1] - t*iqr) & res < (q[2] + t*iqr))
-  #summary(sel.rm)
-  id.rm = as.integer(attr(res, "names")[which(sel.rm)])
-  #t.var = all.vars(t.m$learner.model$super.model$learner.model$terms)[1]
-  if(missing(out.m.rds)){ out.m.rds <- paste0(out.dir, model.name, ".rds") }
-  out.t.mrf = paste0(in.dir, model.name, "_t.mrf.rds")
-  out.t.xgb = paste0(in.dir, model.name, "_t.xgb.rds")
-  if(!file.exists(out.m.rds) & file.exists(out.t.mrf) & file.exists(out.t.xgb)){
-    rm.x = readRDS.gz(paste0(in.dir, model.name, "_rm.rds"))
-    rm.x = rm.x[-id.rm,]
-    parallelMap::parallelStartSocket(parallel::detectCores())
-    tskF <- mlr::makeRegrTask(data = rm.x, target = t.var, blocking = attr(rm.x, "ID")[-id.rm])
-    var.mod1 <- readRDS.gz(out.t.mrf)
-    var.mod2 <- readRDS.gz(out.t.xgb)
-    lrn.rf = mlr::setHyperPars(mlr::makeLearner(SL.library[1]), par.vals = getHyperPars(var.mod1$learner))
-    lrn.xg = mlr::setHyperPars(mlr::makeLearner(SL.library[2]), par.vals = getHyperPars(var.mod2$learner))
-    lrnsE <- list(lrn.rf, lrn.xg, mlr::makeLearner(SL.library[3]), mlr::makeLearner(SL.library[4]), mlr::makeLearner(SL.library[5]))
-    init.m <- mlr::makeStackedLearner(base.learners = lrnsE, predict.type = "response", method = "stack.cv", super.learner = "regr.lm", resampling=makeResampleDesc(method = "CV", blocking.cv=TRUE))
-    t.m <- mlr::train(init.m, tskF)
-    #summary(t.m$learner.model$super.model$learner.model)
-    saveRDS.gz(t.m, out.m.rds)
-    parallelMap::parallelStop()
-  }
-}
+# ## remove extreme residuals and retrain models
+# retrain.ossl <- function(t.var, model.name, out.m.rds, t=3, SL.library = c("regr.ranger", "regr.xgboost", "regr.cvglmnet", "regr.cubist", "regr.plsr")){
+#   in.dir=paste0("./models/", t.var, "/")
+#   out.dir=paste0("./modelsF/", t.var, "/")
+#   t.m = readRDS.gz(paste0(in.dir, model.name, ".rds"))
+#   res = t.m$learner.model$super.model$learner.model$residuals
+#   q <- quantile(res, probs=c(.25, .75), na.rm = FALSE)
+#   iqr <- IQR(res)
+#   sel.rm <- !(res > (q[1] - t*iqr) & res < (q[2] + t*iqr))
+#   #summary(sel.rm)
+#   id.rm = as.integer(attr(res, "names")[which(sel.rm)])
+#   #t.var = all.vars(t.m$learner.model$super.model$learner.model$terms)[1]
+#   if(missing(out.m.rds)){ out.m.rds <- paste0(out.dir, model.name, ".rds") }
+#   out.t.mrf = paste0(in.dir, model.name, "_t.mrf.rds")
+#   out.t.xgb = paste0(in.dir, model.name, "_t.xgb.rds")
+#   if(!file.exists(out.m.rds) & file.exists(out.t.mrf) & file.exists(out.t.xgb)){
+#     rm.x = readRDS.gz(paste0(in.dir, model.name, "_rm.rds"))
+#     rm.x = rm.x[-id.rm,]
+#     parallelMap::parallelStartSocket(parallel::detectCores())
+#     tskF <- mlr::makeRegrTask(data = rm.x, target = t.var, blocking = attr(rm.x, "ID")[-id.rm])
+#     var.mod1 <- readRDS.gz(out.t.mrf)
+#     var.mod2 <- readRDS.gz(out.t.xgb)
+#     lrn.rf = mlr::setHyperPars(mlr::makeLearner(SL.library[1]), par.vals = getHyperPars(var.mod1$learner))
+#     lrn.xg = mlr::setHyperPars(mlr::makeLearner(SL.library[2]), par.vals = getHyperPars(var.mod2$learner))
+#     lrnsE <- list(lrn.rf, lrn.xg, mlr::makeLearner(SL.library[3]), mlr::makeLearner(SL.library[4]), mlr::makeLearner(SL.library[5]))
+#     init.m <- mlr::makeStackedLearner(base.learners = lrnsE, predict.type = "response", method = "stack.cv", super.learner = "regr.lm", resampling=makeResampleDesc(method = "CV", blocking.cv=TRUE))
+#     t.m <- mlr::train(init.m, tskF)
+#     #summary(t.m$learner.model$super.model$learner.model)
+#     saveRDS.gz(t.m, out.m.rds)
+#     parallelMap::parallelStop()
+#   }
+# }
 
 ## Model fine-tuning wrapper
 ## by default run spatial CV
