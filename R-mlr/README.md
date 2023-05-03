@@ -4,7 +4,7 @@ Jose L. Safanelli (<jsafanelli@woodwellclimate.org>), Tomislav Hengl
 (<tom.hengl@opengeohub.org>), Leandro Parente
 (<leandro.parente@opengeohub.org>), and Jonathan Sanderman
 (<jsanderman@woodwellclimate.org>)
-27 April, 2023
+03 May, 2023
 
 
 
@@ -23,12 +23,9 @@ License](http://creativecommons.org/licenses/by-sa/4.0/).
 Part of: <https://github.com/soilspectroscopy>  
 Project: [Soil Spectroscopy for Global
 Good](https://soilspectroscopy.org)  
-Last update: 2023-04-27  
+Last update: 2023-05-03  
 Dataset:
 [OSSL](https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html)
-
-    ## Warning in system("timedatectl", intern = TRUE): running command 'timedatectl'
-    ## had status 1
 
 The directory/folder path:
 
@@ -54,7 +51,7 @@ Migration to the newer modeling framework
 [mlr3](https://mlr3book.mlr-org.com/) is pending.
 
 The following code is implemented in a high-performance computing
-environment with many steps fully parallelized and enough RAM (&gt;
+environment with many steps fully parallelized and enough RAM (\>
 450GB). Running this code on a standard computer without subsetting data
 is not recommended.
 
@@ -67,7 +64,7 @@ spectra.type <- c("mir", "visnir", "nir.neospectra")
 # Using KSSL only or the whole OSSL
 subset <- c("kssl", "ossl")
 
-# Adding (ll) or not (na) geocovariates to models
+# Adding (ll) or not adding (na) geocovariates to models
 geocovariates <- c("ll", "na")
 
 # Basic structure
@@ -94,13 +91,13 @@ modeling.combinations %>%
   knitr::kable()
 ```
 
-| model\_name                              | spectra\_type  | subset | geo |
-|:-----------------------------------------|:---------------|:-------|:----|
-| mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
+| model_name                           | spectra_type   | subset | geo |
+|:-------------------------------------|:---------------|:-------|:----|
+| mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
 
 After database update v1.2, the following properties of interest have
 models fitted:
@@ -124,8 +121,8 @@ soil.properties <- c("silt.tot_usda.c62_w.pct",
 soil.properties.original <- gsub("log..", "", soil.properties)
 ```
 
-**Note: some soil properties were natural-log transformed to help
-models.**
+**Note: some soil properties were natural-log transformed to help models
+fitting.**
 
 Final modeling combinations:
 
@@ -133,85 +130,123 @@ Final modeling combinations:
 modeling.combinations <- tibble(soil_property = soil.properties) %>%
   crossing(modeling.combinations)
 
+write_csv(modeling.combinations, "../out/modeling_combinations_v1.2.csv")
+
 modeling.combinations %>%
   knitr::kable()
 ```
 
-| soil\_property                   | model\_name                              | spectra\_type  | subset | geo |
-|:---------------------------------|:-----------------------------------------|:---------------|:-------|:----|
-| acidity\_usda.a795\_cmolc.kg     | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| acidity\_usda.a795\_cmolc.kg     | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| acidity\_usda.a795\_cmolc.kg     | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| acidity\_usda.a795\_cmolc.kg     | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| acidity\_usda.a795\_cmolc.kg     | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
-| bd\_usda.a4\_g.cm3               | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| bd\_usda.a4\_g.cm3               | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| bd\_usda.a4\_g.cm3               | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| bd\_usda.a4\_g.cm3               | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| bd\_usda.a4\_g.cm3               | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
-| clay.tot\_usda.a334\_w.pct       | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| clay.tot\_usda.a334\_w.pct       | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| clay.tot\_usda.a334\_w.pct       | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| clay.tot\_usda.a334\_w.pct       | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| clay.tot\_usda.a334\_w.pct       | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
-| log..al.ox\_usda.a59\_w.pct      | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| log..al.ox\_usda.a59\_w.pct      | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| log..al.ox\_usda.a59\_w.pct      | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| log..al.ox\_usda.a59\_w.pct      | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| log..al.ox\_usda.a59\_w.pct      | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
-| log..ca.ext\_usda.a722\_cmolc.kg | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| log..ca.ext\_usda.a722\_cmolc.kg | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| log..ca.ext\_usda.a722\_cmolc.kg | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| log..ca.ext\_usda.a722\_cmolc.kg | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| log..ca.ext\_usda.a722\_cmolc.kg | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
-| log..caco3\_usda.a54\_w.pct      | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| log..caco3\_usda.a54\_w.pct      | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| log..caco3\_usda.a54\_w.pct      | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| log..caco3\_usda.a54\_w.pct      | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| log..caco3\_usda.a54\_w.pct      | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
-| log..k.ext\_usda.a725\_cmolc.kg  | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| log..k.ext\_usda.a725\_cmolc.kg  | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| log..k.ext\_usda.a725\_cmolc.kg  | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| log..k.ext\_usda.a725\_cmolc.kg  | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| log..k.ext\_usda.a725\_cmolc.kg  | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
-| log..mg.ext\_usda.a724\_cmolc.kg | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| log..mg.ext\_usda.a724\_cmolc.kg | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| log..mg.ext\_usda.a724\_cmolc.kg | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| log..mg.ext\_usda.a724\_cmolc.kg | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| log..mg.ext\_usda.a724\_cmolc.kg | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
-| log..n.tot\_usda.a623\_w.pct     | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| log..n.tot\_usda.a623\_w.pct     | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| log..n.tot\_usda.a623\_w.pct     | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| log..n.tot\_usda.a623\_w.pct     | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| log..n.tot\_usda.a623\_w.pct     | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
-| log..oc\_usda.c729\_w.pct        | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| log..oc\_usda.c729\_w.pct        | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| log..oc\_usda.c729\_w.pct        | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| log..oc\_usda.c729\_w.pct        | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| log..oc\_usda.c729\_w.pct        | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
-| ph.cacl2\_usda.a481\_index       | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| ph.cacl2\_usda.a481\_index       | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| ph.cacl2\_usda.a481\_index       | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| ph.cacl2\_usda.a481\_index       | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| ph.cacl2\_usda.a481\_index       | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
-| ph.h2o\_usda.a268\_index         | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| ph.h2o\_usda.a268\_index         | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| ph.h2o\_usda.a268\_index         | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| ph.h2o\_usda.a268\_index         | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| ph.h2o\_usda.a268\_index         | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
-| sand.tot\_usda.c60\_w.pct        | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| sand.tot\_usda.c60\_w.pct        | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| sand.tot\_usda.c60\_w.pct        | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| sand.tot\_usda.c60\_w.pct        | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| sand.tot\_usda.c60\_w.pct        | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
-| silt.tot\_usda.c62\_w.pct        | mir\_mlr..eml\_kssl\_na\_v1.2            | mir            | kssl   | na  |
-| silt.tot\_usda.c62\_w.pct        | mir\_mlr..eml\_ossl\_na\_v1.2            | mir            | ossl   | na  |
-| silt.tot\_usda.c62\_w.pct        | nir.neospectra\_mlr..eml\_ossl\_na\_v1.2 | nir.neospectra | ossl   | na  |
-| silt.tot\_usda.c62\_w.pct        | visnir\_mlr..eml\_kssl\_na\_v1.2         | visnir         | kssl   | na  |
-| silt.tot\_usda.c62\_w.pct        | visnir\_mlr..eml\_ossl\_na\_v1.2         | visnir         | ossl   | na  |
+| soil_property                  | model_name                           | spectra_type   | subset | geo |
+|:-------------------------------|:-------------------------------------|:---------------|:-------|:----|
+| acidity_usda.a795_cmolc.kg     | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| acidity_usda.a795_cmolc.kg     | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| acidity_usda.a795_cmolc.kg     | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| acidity_usda.a795_cmolc.kg     | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| acidity_usda.a795_cmolc.kg     | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| bd_usda.a4_g.cm3               | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| bd_usda.a4_g.cm3               | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| bd_usda.a4_g.cm3               | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| bd_usda.a4_g.cm3               | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| bd_usda.a4_g.cm3               | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| clay.tot_usda.a334_w.pct       | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| clay.tot_usda.a334_w.pct       | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| clay.tot_usda.a334_w.pct       | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| clay.tot_usda.a334_w.pct       | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| clay.tot_usda.a334_w.pct       | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| log..al.ox_usda.a59_w.pct      | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| log..al.ox_usda.a59_w.pct      | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| log..al.ox_usda.a59_w.pct      | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| log..al.ox_usda.a59_w.pct      | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| log..al.ox_usda.a59_w.pct      | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| log..ca.ext_usda.a722_cmolc.kg | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| log..ca.ext_usda.a722_cmolc.kg | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| log..ca.ext_usda.a722_cmolc.kg | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| log..ca.ext_usda.a722_cmolc.kg | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| log..ca.ext_usda.a722_cmolc.kg | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| log..caco3_usda.a54_w.pct      | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| log..caco3_usda.a54_w.pct      | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| log..caco3_usda.a54_w.pct      | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| log..caco3_usda.a54_w.pct      | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| log..caco3_usda.a54_w.pct      | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| log..k.ext_usda.a725_cmolc.kg  | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| log..k.ext_usda.a725_cmolc.kg  | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| log..k.ext_usda.a725_cmolc.kg  | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| log..k.ext_usda.a725_cmolc.kg  | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| log..k.ext_usda.a725_cmolc.kg  | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| log..mg.ext_usda.a724_cmolc.kg | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| log..mg.ext_usda.a724_cmolc.kg | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| log..mg.ext_usda.a724_cmolc.kg | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| log..mg.ext_usda.a724_cmolc.kg | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| log..mg.ext_usda.a724_cmolc.kg | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| log..n.tot_usda.a623_w.pct     | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| log..n.tot_usda.a623_w.pct     | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| log..n.tot_usda.a623_w.pct     | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| log..n.tot_usda.a623_w.pct     | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| log..n.tot_usda.a623_w.pct     | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| log..oc_usda.c729_w.pct        | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| log..oc_usda.c729_w.pct        | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| log..oc_usda.c729_w.pct        | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| log..oc_usda.c729_w.pct        | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| log..oc_usda.c729_w.pct        | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| ph.cacl2_usda.a481_index       | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| ph.cacl2_usda.a481_index       | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| ph.cacl2_usda.a481_index       | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| ph.cacl2_usda.a481_index       | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| ph.cacl2_usda.a481_index       | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| ph.h2o_usda.a268_index         | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| ph.h2o_usda.a268_index         | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| ph.h2o_usda.a268_index         | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| ph.h2o_usda.a268_index         | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| ph.h2o_usda.a268_index         | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| sand.tot_usda.c60_w.pct        | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| sand.tot_usda.c60_w.pct        | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| sand.tot_usda.c60_w.pct        | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| sand.tot_usda.c60_w.pct        | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| sand.tot_usda.c60_w.pct        | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| silt.tot_usda.c62_w.pct        | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| silt.tot_usda.c62_w.pct        | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| silt.tot_usda.c62_w.pct        | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| silt.tot_usda.c62_w.pct        | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| silt.tot_usda.c62_w.pct        | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+
+## Spectral ranges
+
+Few datasets from the OSSL have distinct spectral ranges. We strictly
+define them in the chunk below and format the the OSSL naming. MIR is
+represented in [log10 absorbance
+units](https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html#mir-table),
+while the VisNIR and NIR are represented in [reflectance
+units](https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html#mir-table).
 
 ``` r
-write_csv(modeling.combinations, "../out/modeling_combinations_v1.2.csv")
+mir.spectral.range <- paste0("scan_mir.", seq(600, 4000, by = 2), "_abs")
+visnir.spectral.range <- paste0("scan_visnir.", seq(400, 2500, by = 2), "_ref")
+nir.neospectra.spectral.range <- paste0("scan_nir.", seq(1350, 2550, by = 2), "_ref")
+```
+
+## Checking folders and already-fitted models
+
+``` r
+target.dirs <- paste0(dir, soil.properties)
+
+# Folders already created?
+dir.exists(target.dirs)
+
+invisible(sapply(target.dirs, function(x) {
+  if(!dir.exists(x)){dir.create(x)}
+}))
+
+# Models already fitted?
+for(i in 1:nrow(modeling.combinations)) {
+  isoil_property <- modeling.combinations[[i,"soil_property"]]
+  imodel_name <- modeling.combinations[[i,"model_name"]]
+  modeling.combinations[[i,"exists"]] <- file.exists(paste0(dir, isoil_property, "/", imodel_name, ".rds"))
+}
+
+# Summary
+modeling.combinations %>%
+  count(exists) %>%
+  knitr::kable()
 ```
 
 ## Loading regression matrix
@@ -223,62 +258,70 @@ repository](https://github.com/soilspectroscopy/ossl-imports).
 ## Reading OSSL level 1
 rm.ossl <- qread(paste0(db.dir, "ossl_all_L1_v1.2.qs"))
 
+# Preparing the bind of soil data level 1 for Neospectra 
+neospectra.soillab <- rm.ossl %>%
+  dplyr::select(id.layer_local_c, id.layer_uuid_txt,
+         all_of(soil.properties.original))
+
+# Keeping only the important columns
 rm.ossl <- rm.ossl %>%
   dplyr::select(id.layer_uuid_txt, dataset.code_ascii_txt,
-                any_of(soil.properties.original), starts_with("scan_visnir"), starts_with("scan_mir"))
+                any_of(soil.properties.original), all_of(visnir.spectral.range), all_of(mir.spectral.range))
 
 # head(names(rm.ossl), 20)
 # tail(names(rm.ossl), 20)
 
 ## Reading Neospectra datasets
 neospectra.soilsite <- qread(paste0(db.dir, "neospectra_soilsite_v1.2.qs"))
-neospectra.soillab <- qread(paste0(db.dir, "neospectra_soillab_v1.2.qs"))
 neospectra.nir <- qread(paste0(db.dir, "neospectra_nir_v1.2.qs"))
+
+# head(names(neospectra.nir), 20)
 
 # Averaging spectra collected by multiple instruments
 neospectra.nir <- neospectra.nir %>%
-  dplyr::select(id.sample_local_c, starts_with("scan_nir")) %>%
+  dplyr::select(id.sample_local_c, all_of(nir.neospectra.spectral.range)) %>%
   group_by(id.sample_local_c) %>%
   summarise_all(mean)
 
-rm.neospectra <- left_join(neospectra.soilsite, neospectra.soillab, by = "id.sample_local_c") %>%
+rm.neospectra <- left_join(neospectra.soilsite, neospectra.soillab, by = "id.layer_local_c") %>%
   left_join(neospectra.nir, by = "id.sample_local_c")
 
 # Selecting only important columns
 rm.neospectra <- rm.neospectra %>%
-  dplyr::select(id.sample_local_c, dataset.code_ascii_txt,
-                any_of(soil.properties.original), starts_with("scan_nir"))
+  dplyr::select(id.layer_uuid_txt, dataset.code_ascii_txt,
+                any_of(soil.properties.original), all_of(nir.neospectra.spectral.range))
 
 # Preparing named list of datasets
 # Selecting only important columns, spectra range and rows with available spectra
 data.list <- list(
-  "mir_mlr..eml_kssl" = {rm.ossl %>%
+  "mir_mlr..eml_kssl_v1.2" = {rm.ossl %>%
       dplyr::filter(dataset.code_ascii_txt == "KSSL.SSL") %>%
-      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), starts_with("scan_mir")) %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), all_of(mir.spectral.range)) %>%
       dplyr::filter(!is.na(scan_mir.1500_abs))},
-  "mir_mlr..eml_ossl" = {rm.ossl %>%
-      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), starts_with("scan_mir")) %>%
+  "mir_mlr..eml_ossl_v1.2" = {rm.ossl %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), all_of(mir.spectral.range)) %>%
       dplyr::filter(!is.na(scan_mir.1500_abs))},
-  "visnir_mlr..eml_kssl" = {rm.ossl %>%
+  "visnir_mlr..eml_kssl_v1.2" = {rm.ossl %>%
       dplyr::filter(dataset.code_ascii_txt == "KSSL.SSL") %>%
-      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), starts_with("scan_visnir")) %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), all_of(visnir.spectral.range)) %>%
       dplyr::filter(!is.na(scan_visnir.1500_ref))},
-  "visnir_mlr..eml_ossl" = {rm.ossl %>%
-      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), starts_with("scan_visnir")) %>%
+  "visnir_mlr..eml_ossl_v1.2" = {rm.ossl %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), all_of(visnir.spectral.range)) %>%
       dplyr::filter(!is.na(scan_visnir.1500_ref))},
-  "nir.neospectra_mlr..eml_ossl" = {rm.neospectra %>%
-      mutate(id.layer_uuid_txt = id.sample_local_c) %>%
-      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), starts_with("scan_nir")) %>%
-      dplyr::filter(!is.na(scan_nir.1500_ref))})
+  "nir.neospectra_mlr..eml_ossl_v1.2" = {rm.neospectra %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), all_of(nir.neospectra.spectral.range)) %>%
+      dplyr::filter(!is.na(scan_nir.1500_ref))}
+  )
 
-# Different sizes
-lapply(data.list, function(x) dim(x))
+# # Different sizes
+# lapply(data.list, function(x) dim(x))
+# lapply(data.list, function(x) head(x))
 ```
 
 ### Preprocessing
 
-To remove baseline offset, additive/multiplicative scatter, and
-multicollinearity in spectra from multiple sources,
+To remove baseline offset, additive/multiplicative scattering effects,
+and multicollinearity in spectra from multiple sources,
 [SNV](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#scatter-and-baseline-corrections)
 preprocessing is used before PCA compression and model calibration:
 
@@ -293,97 +336,114 @@ prep.list <- lapply(data.list, function(x){
       dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original))}, .)
   })
 
+# Checking preprocessing. Names are kept consistently across list objects and table columns
 # lapply(data.list, function(x) dim(x))
+# lapply(data.list, function(x) head(x))
 ```
 
 ### PCA compression
 
-Compress and save
-[PCA](http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/)
-models for the combinations of spectra. This is used to reduce the
-number of dimensions and also control multicollinearity ([Chang, Laird,
-Mausbach, & Hurburgh Jr, 2001](#ref-chang2001near)).
+Compress and save [PCA
+models](http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/)
+for the different versions of spectra. This is used to reduce the number
+of dimension and also control multicollinearity ([Chang, Laird,
+Mausbach, & Hurburgh Jr, 2001](#ref-chang2001near)). Only 120 components
+will be used in the models but the remaining deeper components are used
+for the trustworthiness test.
+
+Objects from `prcomp`:  
+- `sdev`: the standard deviations of the principal components.  
+- `rotation`: the matrix of variable loadings (columns are
+eigenvectors).  
+- `center`: the variable means (means that were substracted).  
+- `scale`: the variable standard deviations (the scaling applied to each
+variable).  
+- `x`: the coordinates of the individuals (observations) on the
+principal components, known as scores.
+
+We can omit the `x` in the objects to save to disk, later reassigning
+the class `prcomp` for making predictions.
 
 Fit PCA models in parallel:
 
 ``` r
-registerDoMC(length(prep.list))
-
-pca.list <- foreach(i=1:length(prep.list)) %dopar% {
+pca.list <- mclapply(1:length(prep.list), function(i) {
+  
   x <- prep.list[[i]] %>%
     dplyr::select(starts_with("scan")) %>%
     as.data.frame()
-  prcomp(x)
-}
+  
+  prcomp(x, center = T, scale = T)
+  
+}, mc.cores = length(prep.list))
 
-try(stopCluster())
+names(pca.list) <- names(prep.list)
 
-gc()
+# # Checking pca compression. Names kept consistently across list objects and tables
+# names(pca.list)
+ 
+# # Checking prcomp objects
+# lapply(pca.list, function(x) names(x))
+ 
+# # Checking the number of components of each spectra type
+# lapply(pca.list, function(x) ncol(x$rotation))
 
-# names(pca.list) = names(prep.list)
-# lapply(pca.list, function(x) dim(x))
-# lapply(pca.list, function(x) dim(x))
-# str(pca.lst[[1]]$x[,1:20])
+# Checking how many components explain 95%, 99%, 99.9%, 99.99% of the original variance
+lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.95)[1]})
+lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.99)[1]})
+lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.999)[1]})
+lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.9999)[1]})
 ```
 
-<!-- Save as RDS files: -->
+Saving as `qs` files:
+
+``` r
+## Saving simplified pca models only for prediction purposes (m = modified):
+# Omitting 5th object of prcomp, i.e x table (scores)
+for(i in 1:length(pca.list)){
+  qsave(pca.list[[i]][1:4], paste0(dir, "pca.ossl/mpca_", names(pca.list)[i], ".qs"))
+}
+
+## Saving the scores for being used as predictors
+for(i in 1:length(pca.list)){
+  
+  idata <- prep.list[[i]] %>%
+    dplyr::select(id.layer_uuid_txt, all_of(soil.properties.original))
+  
+  iscores <- pca.list[[i]]$x %>%
+    as_tibble()
+  
+  idata.export <- bind_cols(idata, iscores)
+  
+  qsave(idata.export, paste0(dir, "pca.ossl/pca_scores_", names(pca.list)[i], ".qs"))
+  
+}
+```
+
+## Model fitting
+
+For calibration model fitting we use the first 120 PCs. This method was
+first time introduced by Chang et al. ([2001](#ref-chang2001near)),
+although the authors used only top 10 PCA components, here we use 120 to
+account for small variations of the spectra in small absorption
+features. We focus on target soil variables for which there is enough
+training data:
+
+Training takes at least 24hrs on 80t server with 450GB RAM:
+
+<!-- ```{r} -->
+<!-- modeling.combinations -->
+<!-- i=1 -->
+<!-- for(i in 1:length(modeling.combinations)) { -->
+<!--   isoil_property = modeling.combinations[[i,"soil_property"]] -->
+<!--   imodel_name = modeling.combinations[[i,"model_name"]] -->
+<!--   igeo = modeling.combinations[[i,"geo"]] -->
+<!--   imodel_name.pca <- str_replace(imodel_name, paste0("_", igeo), "") -->
+<!--   ipca <- qread(paste0(dir, "pca.ossl/pca_scores_", imodel_name.pca, ".qs")) -->
+<!-- } -->
+<!-- ``` -->
 <!-- ```{r, eval=FALSE} -->
-<!-- ## save complete objects: -->
-<!-- for(i in 1:length(pca.lst)){  saveRDS.gz(pca.lst[[i]], paste0("pca.ossl/", pca.names[i]))  } -->
-<!-- pcam.names = paste0("m", c("pca_mir_kssl_v1.rds", "pca_visnir_kssl_v1.rds", "pca_mir_ossl_v1.rds", "pca_visnir_ossl_v1.rds")) -->
-<!-- ## save models only / for prediction purposes: -->
-<!-- for(i in 1:length(pca.lst)){  saveRDS.gz(pca.lst[[i]][1:4], paste0("pca.ossl/", pcam.names[i]))  } -->
-<!-- ``` -->
-<!-- ## Model fitting -->
-<!-- For soil-calibration model fitting we use first 120 PCs. This method was first time introduced by @chang2001near,  -->
-<!-- although at this stage the authors used only top 10 PCA components, here we use 120. -->
-<!-- We focus on target soil variables for which there is enough training data. -->
-<!-- ```{r} -->
-<!-- n.spc = 120 -->
-<!-- t.vars = c("log..oc_usda.calc_wpct", "log..n.tot_usda.4h2_wpct", "silt.tot_usda.3a1_wpct", -->
-<!--            "clay.tot_usda.3a1_wpct", "sand.tot_usda.3a1_wpct", "log..ecec_usda.4b4_cmolkg", -->
-<!--            "ph.h2o_usda.4c1_index", "ph.cacl2_usda.4c1_index", "log..al.kcl_usda.4b3_cmolkg", -->
-<!--            "log..k.ext_usda.4b1_cmolkg", "log..caco3_usda.4e1_wpct", "log..mg.ext_usda.4b1_cmolkg", -->
-<!--            "log..ca.ext_usda.4b1_cmolkg", "log..gyp_usda.4e2_wpct", -->
-<!--            "log..cec.ext_usda.4b1_cmolkg", "bsat_usda.4b4_wpct", "bd.od_usda.3b2_gcm3") -->
-<!-- which(!gsub("log..", "", t.vars) %in% names(rm.ossl)) -->
-<!-- x <- lapply(as.vector(unlist(paste0("./models/", t.vars, "/"))), dir.create, recursive=TRUE, showWarnings=FALSE) -->
-<!-- ``` -->
-<!-- In addition to PC's we will also use a number of additional covariates: -->
-<!-- ```{r} -->
-<!-- geo.sel = names(rm.ossl)[grep("clm_", names(rm.ossl))] -->
-<!-- str(geo.sel) -->
-<!-- harm.sel = names(rm.ossl)[grep("dataset.code_ascii_c_", names(rm.ossl))] -->
-<!-- ``` -->
-<!-- For each soil property, we basically fit the following six type of models: -->
-<!-- 1. MIR only KSSL subset `mir_mlr..eml_kssl_na_v1.rds`; -->
-<!-- 2. MIR only KSSL subset with geographic covariates `mir_mlr..eml_kssl_ll_v1.rds`; -->
-<!-- 3. VisNIR only ALL data `visnir_mlr..eml_ossl_na_v1.rds`; -->
-<!-- 4. VisNIR only ALL data with geographic covariates `visnir_mlr..eml_ossl_ll_v1.rds`; -->
-<!-- 5. VisNIR and MIR fusion `visnir.mir_mlr..eml_ossl_na_v1.rds`; -->
-<!-- 6. VisNIR and MIR fusion with geographic covariates `visnir.mir_mlr..eml_ossl_ll_v1.rds`; -->
-<!-- ```{r} -->
-<!-- mn.lst = c("mir_mlr..eml_kssl_na_v1", "mir_mlr..eml_kssl_ll_v1", "visnir_mlr..eml_ossl_na_v1", -->
-<!--            "mir_mlr..eml_ossl_ll_v1", "visnir.mir_mlr..eml_ossl_na_v1", "visnir.mir_mlr..eml_ossl_ll_v1") -->
-<!-- ``` -->
-<!-- Using geographic covariates implies that lon-lat coordinates are available at relatively high -->
-<!-- location accuracy and not higher location error than 1000 m. For each of the models -->
-<!-- we specify a list of covariates: -->
-<!-- ```{r} -->
-<!-- ## Target 6 models per variable: -->
-<!-- pr.lst0 = list(c(paste0("mir.PC", 1:n.spc)), -->
-<!--                c(paste0("mir.PC", 1:n.spc), "hzn_depth", geo.sel), -->
-<!--                c(paste0("visnir.PC", 1:n.spc)), -->
-<!--                c(paste0("mir.PC", 1:n.spc), "hzn_depth", geo.sel, harm.sel), -->
-<!--                c(paste0("mir.PC", 1:n.spc), paste0("visnir.PC", 1:n.spc), harm.sel), -->
-<!--                c(paste0("mir.PC", 1:n.spc), paste0("visnir.PC", 1:n.spc), "hzn_depth", geo.sel, harm.sel)) -->
-<!-- ``` -->
-<!-- Training takes at least 24hrs on 80t server with 450GB RAM: -->
-<!-- ```{r, eval=FALSE} -->
-<!-- ## Run train ---- -->
-<!-- max.loc.accuracy=1000 -->
-<!-- ## run in parallel for 6 combinations -->
-<!-- source('functions_ossl.models.R') -->
+<!-- ## Parallelization is done inside the train function with model tunning -->
 <!-- for(tv in t.vars){ -->
 <!--   for(k in 1:length(pr.lst0)){ -->
 <!--     if(k==1|k==2){ -->

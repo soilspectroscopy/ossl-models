@@ -1,9 +1,12 @@
+
+## Reading compressed RDS
 saveRDS.gz <- function(object,file,threads=parallel::detectCores()) {
   con <- pipe(paste0("pigz -p",threads," > ",file),"wb")
   saveRDS(object, file = con)
   close(con)
 }
 
+## Reading compressed RDS
 readRDS.gz <- function(file,threads=parallel::detectCores()) {
   con <- pipe(paste0("pigz -d -c -p",threads," ",file))
   object <- readRDS(file = con)
@@ -11,69 +14,208 @@ readRDS.gz <- function(file,threads=parallel::detectCores()) {
   return(object)
 }
 
-# ## remove extreme residuals and retrain models
-# retrain.ossl <- function(t.var, model.name, out.m.rds, t=3, SL.library = c("regr.ranger", "regr.xgboost", "regr.cvglmnet", "regr.cubist", "regr.plsr")){
-#   in.dir=paste0("./models/", t.var, "/")
-#   out.dir=paste0("./modelsF/", t.var, "/")
-#   t.m = readRDS.gz(paste0(in.dir, model.name, ".rds"))
-#   res = t.m$learner.model$super.model$learner.model$residuals
-#   q <- quantile(res, probs=c(.25, .75), na.rm = FALSE)
-#   iqr <- IQR(res)
-#   sel.rm <- !(res > (q[1] - t*iqr) & res < (q[2] + t*iqr))
-#   #summary(sel.rm)
-#   id.rm = as.integer(attr(res, "names")[which(sel.rm)])
-#   #t.var = all.vars(t.m$learner.model$super.model$learner.model$terms)[1]
-#   if(missing(out.m.rds)){ out.m.rds <- paste0(out.dir, model.name, ".rds") }
-#   out.t.mrf = paste0(in.dir, model.name, "_t.mrf.rds")
-#   out.t.xgb = paste0(in.dir, model.name, "_t.xgb.rds")
-#   if(!file.exists(out.m.rds) & file.exists(out.t.mrf) & file.exists(out.t.xgb)){
-#     rm.x = readRDS.gz(paste0(in.dir, model.name, "_rm.rds"))
-#     rm.x = rm.x[-id.rm,]
-#     parallelMap::parallelStartSocket(parallel::detectCores())
-#     tskF <- mlr::makeRegrTask(data = rm.x, target = t.var, blocking = attr(rm.x, "ID")[-id.rm])
-#     var.mod1 <- readRDS.gz(out.t.mrf)
-#     var.mod2 <- readRDS.gz(out.t.xgb)
-#     lrn.rf = mlr::setHyperPars(mlr::makeLearner(SL.library[1]), par.vals = getHyperPars(var.mod1$learner))
-#     lrn.xg = mlr::setHyperPars(mlr::makeLearner(SL.library[2]), par.vals = getHyperPars(var.mod2$learner))
-#     lrnsE <- list(lrn.rf, lrn.xg, mlr::makeLearner(SL.library[3]), mlr::makeLearner(SL.library[4]), mlr::makeLearner(SL.library[5]))
-#     init.m <- mlr::makeStackedLearner(base.learners = lrnsE, predict.type = "response", method = "stack.cv", super.learner = "regr.lm", resampling=makeResampleDesc(method = "CV", blocking.cv=TRUE))
-#     t.m <- mlr::train(init.m, tskF)
-#     #summary(t.m$learner.model$super.model$learner.model)
-#     saveRDS.gz(t.m, out.m.rds)
-#     parallelMap::parallelStop()
-#   }
-# }
+## Model training and fine-tuning with MLR3
 
-## Model fine-tuning wrapper
-## by default run spatial CV
-train.ossl <- function(t.var, pr.var, X, model.name, out.dir=paste0("./models/", t.var, "/"), SL.library = c("regr.ranger", "regr.xgboost", "regr.cvglmnet", "regr.cubist"), discrete_ps = makeParamSet(makeDiscreteParam("mtry", values = seq(5, round(length(pr.var)*.7), by=5))), ctrl = mlr::makeTuneControlGrid(), rdesc = mlr::makeResampleDesc("CV", iters = 2L), outer = mlr::makeResampleDesc("CV", iters = 2L), inner = mlr::makeResampleDesc("Holdout"), ctrlF = mlr::makeFeatSelControlRandom(maxit = 20), xg.model_Params, hzn_depth=TRUE, out.m.rds, save.rm=TRUE, rf.feature=TRUE, xg.size=2e3){
-  require(mlr)
-  ## https://www.analyticsvidhya.com/blog/2016/03/complete-guide-parameter-tuning-xgboost-with-codes-python/
-  if(missing(xg.model_Params)){
-    xg.model_Params <- makeParamSet(
-      #nrounds=50; max_depth=4; eta=0.2; subsample=1; min_child_weight=4; colsample_bytree=0.6
-      makeDiscreteParam("nrounds", value=c(20,50)),
-      makeDiscreteParam("max_depth", value=c(3,4,5,6)),
-      makeDiscreteParam("eta", value=c(0.3,0.4)),
-      makeDiscreteParam("subsample", value=c(1)),
-      makeDiscreteParam("min_child_weight", value=c(1,4)),
-      makeDiscreteParam("colsample_bytree", value=c(0.6))
+train.ossl <- function(target, # Soil property name
+                       predictors, # Predictors
+                       regression.matrix, # Regression matrix
+                       ncomps = 120, # Number of components
+                       geocovariates, # geocovariates for joining
+                       model.name, # Model name
+                       out.dir, # Output directory
+                       out.model, # Output model name
+                       save.rm = TRUE, # Save regression matrix?
+                       subset.fraction = 0.10){ # For speeding up optimization
+
+  # Packages
+  library("mlr3verse")
+
+  ncomps = 120
+  save.rm = TRUE
+  subset.fraction = 0.10
+  block_var = NULL
+
+  # Basic parameters
+  sel.target <- target <- isoil_property
+  sel.predictors <- predictors <- paste0("PC", seq(1, ncomps))
+  sel.data <- regression.matrix <- ipca
+  sel.geocovariates <- geocovariates <- igeo
+  sel.modelname <- model.name <- imodel_name
+  sel.out.dir <- out.dir <- paste0(dir, sel.target, "/")
+  sel.out.model <- out.model <- paste0(sel.modelname, "trained.qs")
+  sel.subset.fraction <- subset.fraction
+
+  # Regression matrix
+  sel.data <- sel.data %>%
+    select(id.layer_uuid_txt, all_of(block_var), all_of(sel.target), all_of(sel.predictors)) %>%
+    filter(!is.na(!!as.name(sel.target))) %>%
+    as.data.frame()
+
+  if(save.rm == TRUE) {
+    qsave(sel.data, paste0(sel.out.dir, sel.modelname, "_rm.qs"))
+  }
+
+  # set.seed(1993)
+  # sel.data <- sel.data %>%
+  #   sample_n(100) %>%
+  #   as.data.frame()
+
+  # Modeling pipeline
+
+  stacked_learner <- function(data, target, predictors, block = FALSE, block_var = NULL) {
+
+    set.seed(1993)
+    data <- sel.data
+
+    # Set up parallelization
+    # plan(multisession)
+
+    # Create regression task
+    task <- as_task_regr(data, id = "train", target = target, type = "regression")
+    task$set_col_roles("id.layer_uuid_txt", roles = "name")
+
+    # For block cv. If not in the data.frame, default to random CV
+    task$set_col_roles(block_var, roles = "group")
+
+    # Define base learners
+    # Some number of threads are set to 1 to avoid mixing with process multiprocessing
+
+    # Will use some defaults
+    # Tune: s (lambda), and alpha (0 ridge, 1 lasso)
+    lrn_glmnet <- lrn("regr.glmnet",
+                      s = to_tune(0.0001, 1),
+                      alpha = to_tune(0, 1),
+                      predict_sets=c("test", "train"))
+
+    # Will use some defaults, num.trees=100, replace=TRUE
+    # Tune mtry, min.bucket, min.node.size
+    lrn_ranger <- lrn("regr.ranger", num.trees = 100, replace=TRUE, num.threads = 1L,
+                      seed = 1993,
+                      mtry = to_tune(ceiling(sqrt(ncomps)), ceiling(ncomps/2)),
+                      max.depth = to_tune(5, 50),
+                      min.node.size = to_tune(5, 50))
+
+    # Will some defaults, booster = "gbtree", subsample = 0.67, colsample_bytree=0.67
+    # Tune eta (learning rate), max_depth, min_child_weight
+    lrn_xgboost <- lrn("regr.xgboost", booster = "gbtree",
+                       subsample = 0.67,
+                       colsample_bytree = 0.67,
+                       nthread = 1L,
+                       eta = to_tune(0.3, 0.5),
+                       max_depth = to_tune(3, 10),
+                       min_child_weight = to_tune(1, 10))
+
+    # Will some defaults, neighbors = 0
+    # Tune committees
+    lrn_cubist <- lrn("regr.cubist",
+                      committees = to_tune(1, 20),
+                      neighbors = 0)
+
+    # Define resampling strategy
+    # resampling = rsmp("cv", folds = 5)
+    # rr = resample(task, lrn_glmnet, resampling)
+
+    at_glmnet = auto_tuner(tuner = tnr("grid_search", resolution = 5, batch_size = 32), # batch_size ~ ncores
+                           learner = lrn_glmnet,
+                           resampling = rsmp("cv", folds = 5),
+                           measure = msr("regr.mse"),
+                           terminator = trm("none"),
+                           store_models = TRUE)
+
+    # Evaluation
+    outer_resampling = rsmp("cv", folds = 5)
+    rr = resample(task, at_glmnet, outer_resampling, store_models = TRUE)
+    # rr$predict_sets=c("test", "train")
+
+    # Define learner stack
+
+    # Define tuning grid
+    ps_glmnet <- ParamSet$new(list(
+      ParamDbl$new("alpha", lower = 0, upper = 1),
+      ParamDbl$new("s", lower = -5, upper = 5, trafo = function(x) 2^x)
+    ))
+
+    ps_ranger <- ParamSet$new(list(
+      ParamInt$new("mtry", lower = floor(sqrt(task$ncol)), upper = ceiling(sqrt(task$ncol))),
+      ParamInt$new("num.trees", lower = 50, upper = 100)
+    ))
+
+    ps_xgboost <- ParamSet$new(list(
+      ParamFct$new("booster", levels = c("gbtree")),
+      ParamDbl$new("eta", lower = -5, upper = -1, trafo = function(x) 2^x),
+      ParamInt$new("max_depth", lower = 3, upper = 6),
+      ParamInt$new("nrounds", lower = 20L, upper = 50L)
+    ))
+
+    ps_cubist <- ParamSet$new(list(
+      ParamInt$new("committees", lower = 10L, upper = 20L),
+      ParamInt$new("neighbors", lower = 0L, upper = 9L),
+      ParamFct$new("unbiased", levels = c(FALSE))
+    ))
+
+    at <- AutoTuner$new(
+      learner = stack,
+      resampling = resampling,
+      measure = msr("regr.mse"),
+      search_space = ps_glmnet$cross(ps_ranger)$cross(ps_xgboost)$cross(ps_cubist),
+      terminator = trm("none"),
+      tuner = tnr("grid_search")
     )
+
+    # Train stacked model
+    at$train(task)
+
+    return(at)
+
   }
-  if(substr(t.var, 1, 5)=="log.."){
-    X[,t.var] = log1p(X[,gsub("log..", "", t.var)])
-  }
-  ## regression matrix
-  rm.x = X[,c(t.var, pr.var)]
-  r.sel = complete.cases(rm.x)
-  rm.x = rm.x[r.sel,]
-  attr(rm.x, "ID") = as.factor(X$ID[r.sel])
-  if(save.rm==TRUE){ saveRDS.gz(rm.x, paste0(out.dir, model.name, "_rm.rds")) }
+
+  # Train stacked model
+  sel.data <- sel.data %>%
+    sample_frac(sel.subset.fraction) %>%
+    as.data.frame
+
+  at <- stacked_learner(data = sel.data[,-1],
+                        target = sel.target,
+                        predictors = sel.predictors,
+                        block = FALSE,
+                        block_var = NULL)
+
+  # Make predictions on new data
+  newdata <- data.frame(...) # Replace ... with your new data
+  newtask <- TaskRegr$new(id = "newdata", backend = newdata, target = target)
+  predictions <- at$predict(newtask)
+
+  # Train stacked model
+  at <- stacked_learner(data, target, predictors, block_var)
+
+  # Get cross-validated predictions
+  rr <- at$resample(task)
+  cv_predictions <- rr$predictions()
+
+  # Train stacked model
+  at <- stacked_learner(data, target, predictors, block_var)
+
+  # Save trained model to disk
+  saveRDS(at, file = "stacked_model.rds")
+
+  # Load trained model from disk
+  at <- readRDS(file = "stacked_model.rds")
+
+
+
+
+
+
+
+
   parallelMap::parallelStartSocket(parallel::detectCores())
-  ## subset to speed up fine-tuning
-  sel.rf = sample.int(nrow(rm.x), size=xg.size)
+
+  # Subset to speed up fine-tuning
+  sel.rf = sample.int(nrow(rm.x), size=XXX) # Switch to subset fraction
+
   tsk0 <- mlr::makeRegrTask(data = rm.x[sel.rf,], target = t.var, blocking = as.factor(X$ID[r.sel][sel.rf]))
   out.t.mrf = paste0(out.dir, model.name, "_t.mrf.rds")
+
   if(!file.exists(out.t.mrf)){
     ## fine-tune mtry
     resR.lst = tuneParams(mlr::makeLearner("regr.ranger", num.threads = round(parallel::detectCores()/length(discrete_ps$pars$mtry$values)), num.trees=85), task = tsk0, resampling = rdesc, par.set = discrete_ps, control = ctrl)
