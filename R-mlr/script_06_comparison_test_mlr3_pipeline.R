@@ -105,14 +105,12 @@ for(i in 1:nrow(modeling.combinations)) {
 
     } else if(ispectra == "visnir") {
 
-      data <- qread(file.path(mnt.dir, "pca_scores_mir_kssl_subset_v1.2.qs")) %>%
+      data <- qread(file.path(mnt.dir, "pca_scores_visnir_kssl_subset_v1.2.qs")) %>%
         mutate(!!isoil_property := log1p(!!as.name(isoil_property)))
-
-      pca.model <- qread(file.path(dirname(mnt.dir), "mpca_mir_mlr..eml_kssl_v1.2.qs"))
 
       if(ipca_compression == "cumvar99perc"){
 
-        pca.model <- qread(file.path(dirname(mnt.dir), "mpca_mir_mlr..eml_kssl_v1.2.qs"))
+        pca.model <- qread(file.path(dirname(mnt.dir), "mpca_visnir_mlr..eml_kssl_v1.2.qs"))
 
         # Defining the number of PCs by cumulative percent variance (99%)
         n.comps <- which(cumsum(pca.model$sdev/sum(pca.model$sdev)) > 0.99)[1]
