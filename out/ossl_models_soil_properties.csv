@@ -1,0 +1,56 @@
+soil_property,description,include,log
+dataset.code_ascii_txt,OSSL dataset code,FALSE,FALSE
+id.layer_uuid_txt,OSSL unique identifier,FALSE,FALSE
+acidity_usda.a795_cmolc.kg,"Acidity, BaCl2-TEA Extractable, pH 8.2",TRUE,TRUE
+aggstb_usda.a1_w.pct,Aggregate Stability,TRUE,TRUE
+al.dith_usda.a65_w.pct,"Aluminum, Crystalline, Total Pedogenic Iron",TRUE,TRUE
+al.ext_aquaregia_g.kg,"Aluminum, Extractable, Aqua Regia",FALSE,FALSE
+al.ext_usda.a1056_mg.kg,"Aluminum, Extractable, Mehlich3",TRUE,TRUE
+al.ext_usda.a69_cmolc.kg,"Aluminum, Extractable, KCl",TRUE,TRUE
+al.ox_usda.a59_w.pct,"Aluminum, Amorphous, Total Non-Crystalline Iron",TRUE,TRUE
+awc.33.1500kPa_usda.c80_w.frac,"Available Water Content, Difference 33-1500 kPa",TRUE,TRUE
+b.ext_mel3_mg.kg,"Boron, Extractable, Mehlich3",TRUE,TRUE
+bd_usda.a4_g.cm3,"Bulk Density, <2mm fraction, Clod",TRUE,TRUE
+c.tot_usda.a622_w.pct,"Carbon, Total NCS",TRUE,TRUE
+ca.ext_aquaregia_mg.kg,"Calcium, Extractable, Aqua Regia",FALSE,FALSE
+ca.ext_usda.a1059_mg.kg,"Calcium, Extractable, Mehlich3",TRUE,TRUE
+ca.ext_usda.a722_cmolc.kg,"Calcium, Extractable, NH4OAc",TRUE,TRUE
+caco3_usda.a54_w.pct,"Carbonate, <2mm Fraction",TRUE,TRUE
+cec_usda.a723_cmolc.kg,"CEC, pH 7.0, NH4OAc, 2M KCl displacement",TRUE,TRUE
+cf_usda.c236_w.pct,"Coarse Fragments, Greater 2mm",TRUE,TRUE
+clay.tot_usda.a334_w.pct,Clay,TRUE,FALSE
+cu.ext_usda.a1063_mg.kg,"Copper, Extractable, Mehlich3",TRUE,TRUE
+ec_usda.a364_ds.m,"Electrical Conductivity, (w/w)",TRUE,TRUE
+efferv_usda.a479_class,"Effervescense, 1N HCl",TRUE,FALSE
+fe.dith_usda.a66_w.pct,"Iron, Crystalline, Total Pedogenic Iron",TRUE,TRUE
+fe.ext_aquaregia_g.kg,"Iron, Extractable, Aqua Regia",FALSE,FALSE
+fe.ext_usda.a1064_mg.kg,"Iron, Extractable, Mehlich3",TRUE,TRUE
+fe.ox_usda.a60_w.pct,"Iron, Amorphous, Total Non-Crystalline Iron",TRUE,TRUE
+k.ext_aquaregia_mg.kg,"Potassium, Extractable, Aqua Regia",FALSE,FALSE
+k.ext_usda.a1065_mg.kg,"Potassium, Extractable, Mehlich3",TRUE,TRUE
+k.ext_usda.a725_cmolc.kg,"Potassium, Extractable, NH4OAc, 2M KCl displacement",TRUE,TRUE
+mg.ext_aquaregia_mg.kg,"Magnesium, Extractable, Aqua Regia",FALSE,FALSE
+mg.ext_usda.a1066_mg.kg,"Magnesium, Extractable, Mehlich3",TRUE,TRUE
+mg.ext_usda.a724_cmolc.kg,"Magnesium, Extractable, NH4OAc, 2M KCl displacement",TRUE,TRUE
+mn.ext_aquaregia_mg.kg,"Manganese, Extractable, Aqua Regia",FALSE,FALSE
+mn.ext_usda.a1067_mg.kg,"Manganese, Extractable, Mehlich3",TRUE,TRUE
+mn.ext_usda.a70_mg.kg,"Manganese, Extractable, KCl",TRUE,TRUE
+n.tot_usda.a623_w.pct,"Nitrogen, Total NCS",TRUE,TRUE
+na.ext_aquaregia_mg.kg,"Sodium, Extractable, Aqua Regia",FALSE,FALSE
+na.ext_usda.a1068_mg.kg,"Sodium, Extractable, Mehlich3",TRUE,TRUE
+na.ext_usda.a726_cmolc.kg,"Sodium, Extractable, NH4OAc, 2M KCl displacement",TRUE,TRUE
+oc_usda.c729_w.pct,"Organic Carbon, Total C without CaCO3, S prep",TRUE,TRUE
+p.ext_aquaregia_mg.kg,"Phosphorus, Extractable, Aqua Regia",FALSE,FALSE
+p.ext_usda.a274_mg.kg,"Phosphorus, Extractable, Olsen",TRUE,TRUE
+p.ext_usda.a1070_mg.kg,"Phosphorus, Extractable, Mehlich3",TRUE,TRUE
+p.ext_usda.a270_mg.kg,"Phosphorus, Extractable, Bray1",TRUE,TRUE
+ph.cacl2_usda.a481_index,"pH, 1:2 Soil-CaCl2 Suspension",TRUE,FALSE
+ph.h2o_usda.a268_index,"pH, 1:1 Soil-Water Suspension",TRUE,FALSE
+s.ext_mel3_mg.kg,"Sulphur, Extractable, Mehlich3",FALSE,FALSE
+s.tot_usda.a624_w.pct,"Sulfur, Total NCS",TRUE,TRUE
+sand.tot_usda.c60_w.pct,"Sand, Total, S prep",TRUE,FALSE
+silt.tot_usda.c62_w.pct,"Silt, Total, S prep",TRUE,FALSE
+wr.10kPa_usda.a414_w.pct,"Water Retention, 1/10 Bar (10 kPa)",FALSE,FALSE
+wr.1500kPa_usda.a417_w.pct,"Water Retention, 15 Bar (1500 kPa)",TRUE,TRUE
+wr.33kPa_usda.a415_w.pct,"Water Retention, 1/3 Bar (33 kPa)",TRUE,TRUE
+zn.ext_usda.a1073_mg.kg,"Zinc, Extractable, Mehlich3",TRUE,TRUE

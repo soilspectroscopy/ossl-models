@@ -4,7 +4,7 @@ Jose L. Safanelli (<jsafanelli@woodwellclimate.org>), Tomislav Hengl
 (<tom.hengl@opengeohub.org>), Leandro Parente
 (<leandro.parente@opengeohub.org>), and Jonathan Sanderman
 (<jsanderman@woodwellclimate.org>)
-03 May, 2023
+07 May, 2023
 
 
 
@@ -23,14 +23,14 @@ License](http://creativecommons.org/licenses/by-sa/4.0/).
 Part of: <https://github.com/soilspectroscopy>  
 Project: [Soil Spectroscopy for Global
 Good](https://soilspectroscopy.org)  
-Last update: 2023-05-03  
+Last update: 2023-05-07  
 Dataset:
 [OSSL](https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html)
 
 The directory/folder path:
 
 ``` r
-dir <- "/mnt/soilspec4gg/ossl/ossl_models/"
+dir <- "/mnt/soilspec4gg/ossl/ossl_models/mlr3/"
 db.dir <- "/mnt/soilspec4gg/ossl/ossl_import/"
 ```
 
@@ -65,7 +65,7 @@ spectra.type <- c("mir", "visnir", "nir.neospectra")
 subset <- c("kssl", "ossl")
 
 # Adding (ll) or not adding (na) geocovariates to models
-geocovariates <- c("ll", "na")
+geocovariates <- c("na")
 
 # Basic structure
 modeling.combinations <- tibble(spectra_type = spectra.type) %>%
@@ -85,129 +85,94 @@ modeling.combinations <- modeling.combinations %>%
 
 # Model name
 modeling.combinations <- modeling.combinations %>%
-  mutate(model_name = paste0(spectra_type, "_mlr..eml_", subset, "_", geo, "_v1.2"), .before = 1)
+  mutate(model_name = paste0(spectra_type, "_mlr3..eml_", subset, "_", geo, "_v1.2"), .before = 1)
 
 modeling.combinations %>%
   knitr::kable()
 ```
 
-| model_name                           | spectra_type   | subset | geo |
-|:-------------------------------------|:---------------|:-------|:----|
-| mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
+| model_name                            | spectra_type   | subset | geo |
+|:--------------------------------------|:---------------|:-------|:----|
+| mir_mlr3..eml_kssl_na_v1.2            | mir            | kssl   | na  |
+| mir_mlr3..eml_ossl_na_v1.2            | mir            | ossl   | na  |
+| nir.neospectra_mlr3..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
+| visnir_mlr3..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
+| visnir_mlr3..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
 
 After database update v1.2, the following properties of interest have
 models fitted:
 
 ``` r
-soil.properties <- c("silt.tot_usda.c62_w.pct",
-                     "clay.tot_usda.a334_w.pct",
-                     "sand.tot_usda.c60_w.pct",
-                     "log..oc_usda.c729_w.pct",
-                     "log..n.tot_usda.a623_w.pct",
-                     "log..caco3_usda.a54_w.pct",
-                     "log..al.ox_usda.a59_w.pct",
-                     "ph.h2o_usda.a268_index",
-                     "ph.cacl2_usda.a481_index",
-                     "log..k.ext_usda.a725_cmolc.kg",
-                     "log..mg.ext_usda.a724_cmolc.kg",
-                     "log..ca.ext_usda.a722_cmolc.kg",
-                     "acidity_usda.a795_cmolc.kg",
-                     "bd_usda.a4_g.cm3")
+soil.properties <- read_csv("../out/ossl_models_soil_properties.csv")
 
-soil.properties.original <- gsub("log..", "", soil.properties)
+soil.properties <- soil.properties %>%
+  filter(include == TRUE) %>%
+  mutate(export_name = ifelse(log == TRUE, paste0("log..", soil_property), soil_property)) %>%
+  select(-include, -log)
+
+soil.properties.names <- soil.properties %>%
+  pull(soil_property)
+
+knitr::kable(soil.properties)
 ```
 
-**Note: some soil properties were natural-log transformed to help models
-fitting.**
+| soil_property                  | description                                         | export_name                         |
+|:-------------------------------|:----------------------------------------------------|:------------------------------------|
+| acidity_usda.a795_cmolc.kg     | Acidity, BaCl2-TEA Extractable, pH 8.2              | log..acidity_usda.a795_cmolc.kg     |
+| aggstb_usda.a1_w.pct           | Aggregate Stability                                 | log..aggstb_usda.a1_w.pct           |
+| al.dith_usda.a65_w.pct         | Aluminum, Crystalline, Total Pedogenic Iron         | log..al.dith_usda.a65_w.pct         |
+| al.ext_usda.a1056_mg.kg        | Aluminum, Extractable, Mehlich3                     | log..al.ext_usda.a1056_mg.kg        |
+| al.ext_usda.a69_cmolc.kg       | Aluminum, Extractable, KCl                          | log..al.ext_usda.a69_cmolc.kg       |
+| al.ox_usda.a59_w.pct           | Aluminum, Amorphous, Total Non-Crystalline Iron     | log..al.ox_usda.a59_w.pct           |
+| awc.33.1500kPa_usda.c80_w.frac | Available Water Content, Difference 33-1500 kPa     | log..awc.33.1500kPa_usda.c80_w.frac |
+| b.ext_mel3_mg.kg               | Boron, Extractable, Mehlich3                        | log..b.ext_mel3_mg.kg               |
+| bd_usda.a4_g.cm3               | Bulk Density, \<2mm fraction, Clod                  | log..bd_usda.a4_g.cm3               |
+| c.tot_usda.a622_w.pct          | Carbon, Total NCS                                   | log..c.tot_usda.a622_w.pct          |
+| ca.ext_usda.a1059_mg.kg        | Calcium, Extractable, Mehlich3                      | log..ca.ext_usda.a1059_mg.kg        |
+| ca.ext_usda.a722_cmolc.kg      | Calcium, Extractable, NH4OAc                        | log..ca.ext_usda.a722_cmolc.kg      |
+| caco3_usda.a54_w.pct           | Carbonate, \<2mm Fraction                           | log..caco3_usda.a54_w.pct           |
+| cec_usda.a723_cmolc.kg         | CEC, pH 7.0, NH4OAc, 2M KCl displacement            | log..cec_usda.a723_cmolc.kg         |
+| cf_usda.c236_w.pct             | Coarse Fragments, Greater 2mm                       | log..cf_usda.c236_w.pct             |
+| clay.tot_usda.a334_w.pct       | Clay                                                | clay.tot_usda.a334_w.pct            |
+| cu.ext_usda.a1063_mg.kg        | Copper, Extractable, Mehlich3                       | log..cu.ext_usda.a1063_mg.kg        |
+| ec_usda.a364_ds.m              | Electrical Conductivity, (w/w)                      | log..ec_usda.a364_ds.m              |
+| efferv_usda.a479_class         | Effervescense, 1N HCl                               | efferv_usda.a479_class              |
+| fe.dith_usda.a66_w.pct         | Iron, Crystalline, Total Pedogenic Iron             | log..fe.dith_usda.a66_w.pct         |
+| fe.ext_usda.a1064_mg.kg        | Iron, Extractable, Mehlich3                         | log..fe.ext_usda.a1064_mg.kg        |
+| fe.ox_usda.a60_w.pct           | Iron, Amorphous, Total Non-Crystalline Iron         | log..fe.ox_usda.a60_w.pct           |
+| k.ext_usda.a1065_mg.kg         | Potassium, Extractable, Mehlich3                    | log..k.ext_usda.a1065_mg.kg         |
+| k.ext_usda.a725_cmolc.kg       | Potassium, Extractable, NH4OAc, 2M KCl displacement | log..k.ext_usda.a725_cmolc.kg       |
+| mg.ext_usda.a1066_mg.kg        | Magnesium, Extractable, Mehlich3                    | log..mg.ext_usda.a1066_mg.kg        |
+| mg.ext_usda.a724_cmolc.kg      | Magnesium, Extractable, NH4OAc, 2M KCl displacement | log..mg.ext_usda.a724_cmolc.kg      |
+| mn.ext_usda.a1067_mg.kg        | Manganese, Extractable, Mehlich3                    | log..mn.ext_usda.a1067_mg.kg        |
+| mn.ext_usda.a70_mg.kg          | Manganese, Extractable, KCl                         | log..mn.ext_usda.a70_mg.kg          |
+| n.tot_usda.a623_w.pct          | Nitrogen, Total NCS                                 | log..n.tot_usda.a623_w.pct          |
+| na.ext_usda.a1068_mg.kg        | Sodium, Extractable, Mehlich3                       | log..na.ext_usda.a1068_mg.kg        |
+| na.ext_usda.a726_cmolc.kg      | Sodium, Extractable, NH4OAc, 2M KCl displacement    | log..na.ext_usda.a726_cmolc.kg      |
+| oc_usda.c729_w.pct             | Organic Carbon, Total C without CaCO3, S prep       | log..oc_usda.c729_w.pct             |
+| p.ext_usda.a274_mg.kg          | Phosphorus, Extractable, Olsen                      | log..p.ext_usda.a274_mg.kg          |
+| p.ext_usda.a1070_mg.kg         | Phosphorus, Extractable, Mehlich3                   | log..p.ext_usda.a1070_mg.kg         |
+| p.ext_usda.a270_mg.kg          | Phosphorus, Extractable, Bray1                      | log..p.ext_usda.a270_mg.kg          |
+| ph.cacl2_usda.a481_index       | pH, 1:2 Soil-CaCl2 Suspension                       | ph.cacl2_usda.a481_index            |
+| ph.h2o_usda.a268_index         | pH, 1:1 Soil-Water Suspension                       | ph.h2o_usda.a268_index              |
+| s.tot_usda.a624_w.pct          | Sulfur, Total NCS                                   | log..s.tot_usda.a624_w.pct          |
+| sand.tot_usda.c60_w.pct        | Sand, Total, S prep                                 | sand.tot_usda.c60_w.pct             |
+| silt.tot_usda.c62_w.pct        | Silt, Total, S prep                                 | silt.tot_usda.c62_w.pct             |
+| wr.1500kPa_usda.a417_w.pct     | Water Retention, 15 Bar (1500 kPa)                  | log..wr.1500kPa_usda.a417_w.pct     |
+| wr.33kPa_usda.a415_w.pct       | Water Retention, 1/3 Bar (33 kPa)                   | log..wr.33kPa_usda.a415_w.pct       |
+| zn.ext_usda.a1073_mg.kg        | Zinc, Extractable, Mehlich3                         | log..zn.ext_usda.a1073_mg.kg        |
+
+Note: some soil properties are natural-log transformed to help models
+fitting.
 
 Final modeling combinations:
 
 ``` r
-modeling.combinations <- tibble(soil_property = soil.properties) %>%
+modeling.combinations <- soil.properties %>%
   crossing(modeling.combinations)
 
 write_csv(modeling.combinations, "../out/modeling_combinations_v1.2.csv")
-
-modeling.combinations %>%
-  knitr::kable()
 ```
-
-| soil_property                  | model_name                           | spectra_type   | subset | geo |
-|:-------------------------------|:-------------------------------------|:---------------|:-------|:----|
-| acidity_usda.a795_cmolc.kg     | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| acidity_usda.a795_cmolc.kg     | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| acidity_usda.a795_cmolc.kg     | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| acidity_usda.a795_cmolc.kg     | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| acidity_usda.a795_cmolc.kg     | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
-| bd_usda.a4_g.cm3               | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| bd_usda.a4_g.cm3               | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| bd_usda.a4_g.cm3               | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| bd_usda.a4_g.cm3               | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| bd_usda.a4_g.cm3               | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
-| clay.tot_usda.a334_w.pct       | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| clay.tot_usda.a334_w.pct       | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| clay.tot_usda.a334_w.pct       | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| clay.tot_usda.a334_w.pct       | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| clay.tot_usda.a334_w.pct       | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
-| log..al.ox_usda.a59_w.pct      | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| log..al.ox_usda.a59_w.pct      | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| log..al.ox_usda.a59_w.pct      | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| log..al.ox_usda.a59_w.pct      | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| log..al.ox_usda.a59_w.pct      | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
-| log..ca.ext_usda.a722_cmolc.kg | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| log..ca.ext_usda.a722_cmolc.kg | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| log..ca.ext_usda.a722_cmolc.kg | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| log..ca.ext_usda.a722_cmolc.kg | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| log..ca.ext_usda.a722_cmolc.kg | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
-| log..caco3_usda.a54_w.pct      | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| log..caco3_usda.a54_w.pct      | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| log..caco3_usda.a54_w.pct      | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| log..caco3_usda.a54_w.pct      | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| log..caco3_usda.a54_w.pct      | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
-| log..k.ext_usda.a725_cmolc.kg  | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| log..k.ext_usda.a725_cmolc.kg  | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| log..k.ext_usda.a725_cmolc.kg  | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| log..k.ext_usda.a725_cmolc.kg  | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| log..k.ext_usda.a725_cmolc.kg  | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
-| log..mg.ext_usda.a724_cmolc.kg | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| log..mg.ext_usda.a724_cmolc.kg | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| log..mg.ext_usda.a724_cmolc.kg | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| log..mg.ext_usda.a724_cmolc.kg | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| log..mg.ext_usda.a724_cmolc.kg | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
-| log..n.tot_usda.a623_w.pct     | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| log..n.tot_usda.a623_w.pct     | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| log..n.tot_usda.a623_w.pct     | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| log..n.tot_usda.a623_w.pct     | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| log..n.tot_usda.a623_w.pct     | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
-| log..oc_usda.c729_w.pct        | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| log..oc_usda.c729_w.pct        | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| log..oc_usda.c729_w.pct        | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| log..oc_usda.c729_w.pct        | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| log..oc_usda.c729_w.pct        | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
-| ph.cacl2_usda.a481_index       | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| ph.cacl2_usda.a481_index       | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| ph.cacl2_usda.a481_index       | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| ph.cacl2_usda.a481_index       | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| ph.cacl2_usda.a481_index       | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
-| ph.h2o_usda.a268_index         | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| ph.h2o_usda.a268_index         | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| ph.h2o_usda.a268_index         | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| ph.h2o_usda.a268_index         | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| ph.h2o_usda.a268_index         | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
-| sand.tot_usda.c60_w.pct        | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| sand.tot_usda.c60_w.pct        | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| sand.tot_usda.c60_w.pct        | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| sand.tot_usda.c60_w.pct        | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| sand.tot_usda.c60_w.pct        | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
-| silt.tot_usda.c62_w.pct        | mir_mlr..eml_kssl_na_v1.2            | mir            | kssl   | na  |
-| silt.tot_usda.c62_w.pct        | mir_mlr..eml_ossl_na_v1.2            | mir            | ossl   | na  |
-| silt.tot_usda.c62_w.pct        | nir.neospectra_mlr..eml_ossl_na_v1.2 | nir.neospectra | ossl   | na  |
-| silt.tot_usda.c62_w.pct        | visnir_mlr..eml_kssl_na_v1.2         | visnir         | kssl   | na  |
-| silt.tot_usda.c62_w.pct        | visnir_mlr..eml_ossl_na_v1.2         | visnir         | ossl   | na  |
 
 ## Spectral ranges
 
@@ -224,29 +189,15 @@ visnir.spectral.range <- paste0("scan_visnir.", seq(400, 2500, by = 2), "_ref")
 nir.neospectra.spectral.range <- paste0("scan_nir.", seq(1350, 2550, by = 2), "_ref")
 ```
 
-## Checking folders and already-fitted models
+## Checking folders
 
 ``` r
-target.dirs <- paste0(dir, soil.properties)
+target.dirs <- paste0(dir, soil.properties$export_name)
 
 # Folders already created?
-dir.exists(target.dirs)
-
 invisible(sapply(target.dirs, function(x) {
   if(!dir.exists(x)){dir.create(x)}
 }))
-
-# Models already fitted?
-for(i in 1:nrow(modeling.combinations)) {
-  isoil_property <- modeling.combinations[[i,"soil_property"]]
-  imodel_name <- modeling.combinations[[i,"model_name"]]
-  modeling.combinations[[i,"exists"]] <- file.exists(paste0(dir, isoil_property, "/", imodel_name, ".rds"))
-}
-
-# Summary
-modeling.combinations %>%
-  count(exists) %>%
-  knitr::kable()
 ```
 
 ## Loading regression matrix
@@ -261,12 +212,12 @@ rm.ossl <- qread(paste0(db.dir, "ossl_all_L1_v1.2.qs"))
 # Preparing the bind of soil data level 1 for Neospectra 
 neospectra.soillab <- rm.ossl %>%
   dplyr::select(id.layer_local_c, id.layer_uuid_txt,
-         all_of(soil.properties.original))
+         all_of(soil.properties.names))
 
 # Keeping only the important columns
 rm.ossl <- rm.ossl %>%
   dplyr::select(id.layer_uuid_txt, dataset.code_ascii_txt,
-                any_of(soil.properties.original), all_of(visnir.spectral.range), all_of(mir.spectral.range))
+                any_of(soil.properties.names), all_of(visnir.spectral.range), all_of(mir.spectral.range))
 
 # head(names(rm.ossl), 20)
 # tail(names(rm.ossl), 20)
@@ -289,57 +240,90 @@ rm.neospectra <- left_join(neospectra.soilsite, neospectra.soillab, by = "id.lay
 # Selecting only important columns
 rm.neospectra <- rm.neospectra %>%
   dplyr::select(id.layer_uuid_txt, dataset.code_ascii_txt,
-                any_of(soil.properties.original), all_of(nir.neospectra.spectral.range))
+                any_of(soil.properties.names), all_of(nir.neospectra.spectral.range))
 
 # Preparing named list of datasets
 # Selecting only important columns, spectra range and rows with available spectra
 data.list <- list(
-  "mir_mlr..eml_kssl_v1.2" = {rm.ossl %>%
+  "mir_mlr3..eml_kssl_v1.2" = {rm.ossl %>%
       dplyr::filter(dataset.code_ascii_txt == "KSSL.SSL") %>%
-      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), all_of(mir.spectral.range)) %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.names),
+                    all_of(mir.spectral.range)) %>%
       dplyr::filter(!is.na(scan_mir.1500_abs))},
-  "mir_mlr..eml_ossl_v1.2" = {rm.ossl %>%
-      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), all_of(mir.spectral.range)) %>%
+  "mir_mlr3..eml_ossl_v1.2" = {rm.ossl %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.names),
+                    all_of(mir.spectral.range)) %>%
       dplyr::filter(!is.na(scan_mir.1500_abs))},
-  "visnir_mlr..eml_kssl_v1.2" = {rm.ossl %>%
+  "visnir_mlr3..eml_kssl_v1.2" = {rm.ossl %>%
       dplyr::filter(dataset.code_ascii_txt == "KSSL.SSL") %>%
-      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), all_of(visnir.spectral.range)) %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.names),
+                    all_of(visnir.spectral.range)) %>%
       dplyr::filter(!is.na(scan_visnir.1500_ref))},
-  "visnir_mlr..eml_ossl_v1.2" = {rm.ossl %>%
-      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), all_of(visnir.spectral.range)) %>%
+  "visnir_mlr3..eml_ossl_v1.2" = {rm.ossl %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.names),
+                    all_of(visnir.spectral.range)) %>%
       dplyr::filter(!is.na(scan_visnir.1500_ref))},
-  "nir.neospectra_mlr..eml_ossl_v1.2" = {rm.neospectra %>%
-      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original), all_of(nir.neospectra.spectral.range)) %>%
+  "nir.neospectra_mlr3..eml_ossl_v1.2" = {rm.neospectra %>%
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.names),
+                    all_of(nir.neospectra.spectral.range)) %>%
       dplyr::filter(!is.na(scan_nir.1500_ref))}
   )
 
-# # Different sizes
-# lapply(data.list, function(x) dim(x))
-# lapply(data.list, function(x) head(x))
+# Different sizes
+lapply(data.list, function(x) dim(x))
 ```
+
+    ## $mir_mlr3..eml_kssl_v1.2
+    ## [1] 76813  1745
+    ## 
+    ## $mir_mlr3..eml_ossl_v1.2
+    ## [1] 85684  1745
+    ## 
+    ## $visnir_mlr3..eml_kssl_v1.2
+    ## [1] 19807  1095
+    ## 
+    ## $visnir_mlr3..eml_ossl_v1.2
+    ## [1] 64644  1095
+    ## 
+    ## $nir.neospectra_mlr3..eml_ossl_v1.2
+    ## [1] 2106  645
 
 ### Preprocessing
 
 To remove baseline offset, additive/multiplicative scattering effects,
-and multicollinearity in spectra from multiple sources,
+and multicollinearity of spectra from multiple sources,
 [SNV](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#scatter-and-baseline-corrections)
 preprocessing is used before PCA compression and model calibration:
 
 ``` r
 prep.list <- lapply(data.list, function(x){
   x %>%
-    dplyr::select(-id.layer_uuid_txt, -any_of(soil.properties.original)) %>%
+    dplyr::select(-id.layer_uuid_txt, -any_of(soil.properties.names)) %>%
     as.matrix() %>%
     prospectr::standardNormalVariate(X = .) %>%
     as_tibble() %>%
     bind_cols({x %>%
-      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.original))}, .)
+      dplyr::select(id.layer_uuid_txt, any_of(soil.properties.names))}, .)
   })
 
 # Checking preprocessing. Names are kept consistently across list objects and table columns
-# lapply(data.list, function(x) dim(x))
-# lapply(data.list, function(x) head(x))
+lapply(data.list, function(x) dim(x))
 ```
+
+    ## $mir_mlr3..eml_kssl_v1.2
+    ## [1] 76813  1745
+    ## 
+    ## $mir_mlr3..eml_ossl_v1.2
+    ## [1] 85684  1745
+    ## 
+    ## $visnir_mlr3..eml_kssl_v1.2
+    ## [1] 19807  1095
+    ## 
+    ## $visnir_mlr3..eml_ossl_v1.2
+    ## [1] 64644  1095
+    ## 
+    ## $nir.neospectra_mlr3..eml_ossl_v1.2
+    ## [1] 2106  645
 
 ### PCA compression
 
@@ -370,7 +354,7 @@ Fit PCA models in parallel:
 pca.list <- mclapply(1:length(prep.list), function(i) {
   
   x <- prep.list[[i]] %>%
-    dplyr::select(starts_with("scan")) %>%
+    dplyr::select(starts_with("scan_")) %>%
     as.data.frame()
   
   prcomp(x, center = T, scale = T)
@@ -379,21 +363,104 @@ pca.list <- mclapply(1:length(prep.list), function(i) {
 
 names(pca.list) <- names(prep.list)
 
-# # Checking pca compression. Names kept consistently across list objects and tables
-# names(pca.list)
- 
-# # Checking prcomp objects
-# lapply(pca.list, function(x) names(x))
- 
-# # Checking the number of components of each spectra type
-# lapply(pca.list, function(x) ncol(x$rotation))
+# Checking the number of components of each spectra type
+lapply(pca.list, function(x) ncol(x$rotation))
+```
 
-# Checking how many components explain 95%, 99%, 99.9%, 99.99% of the original variance
+    ## $mir_mlr3..eml_kssl_v1.2
+    ## [1] 1701
+    ## 
+    ## $mir_mlr3..eml_ossl_v1.2
+    ## [1] 1701
+    ## 
+    ## $visnir_mlr3..eml_kssl_v1.2
+    ## [1] 1051
+    ## 
+    ## $visnir_mlr3..eml_ossl_v1.2
+    ## [1] 1051
+    ## 
+    ## $nir.neospectra_mlr3..eml_ossl_v1.2
+    ## [1] 601
+
+``` r
+# Checking how many components explain 95% of the original variance
 lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.95)[1]})
+```
+
+    ## $mir_mlr3..eml_kssl_v1.2
+    ## [1] 75
+    ## 
+    ## $mir_mlr3..eml_ossl_v1.2
+    ## [1] 90
+    ## 
+    ## $visnir_mlr3..eml_kssl_v1.2
+    ## [1] 30
+    ## 
+    ## $visnir_mlr3..eml_ossl_v1.2
+    ## [1] 32
+    ## 
+    ## $nir.neospectra_mlr3..eml_ossl_v1.2
+    ## [1] 20
+
+``` r
+# Checking how many components explain 99% of the original variance
 lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.99)[1]})
+```
+
+    ## $mir_mlr3..eml_kssl_v1.2
+    ## [1] 241
+    ## 
+    ## $mir_mlr3..eml_ossl_v1.2
+    ## [1] 323
+    ## 
+    ## $visnir_mlr3..eml_kssl_v1.2
+    ## [1] 263
+    ## 
+    ## $visnir_mlr3..eml_ossl_v1.2
+    ## [1] 160
+    ## 
+    ## $nir.neospectra_mlr3..eml_ossl_v1.2
+    ## [1] 45
+
+``` r
+# Checking how many components explain 99.9%of the original variance
 lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.999)[1]})
+```
+
+    ## $mir_mlr3..eml_kssl_v1.2
+    ## [1] 891
+    ## 
+    ## $mir_mlr3..eml_ossl_v1.2
+    ## [1] 973
+    ## 
+    ## $visnir_mlr3..eml_kssl_v1.2
+    ## [1] 850
+    ## 
+    ## $visnir_mlr3..eml_ossl_v1.2
+    ## [1] 785
+    ## 
+    ## $nir.neospectra_mlr3..eml_ossl_v1.2
+    ## [1] 90
+
+``` r
+# Checking how many components explain 99.99% of the original variance
 lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.9999)[1]})
 ```
+
+    ## $mir_mlr3..eml_kssl_v1.2
+    ## [1] 1490
+    ## 
+    ## $mir_mlr3..eml_ossl_v1.2
+    ## [1] 1499
+    ## 
+    ## $visnir_mlr3..eml_kssl_v1.2
+    ## [1] 1015
+    ## 
+    ## $visnir_mlr3..eml_ossl_v1.2
+    ## [1] 1010
+    ## 
+    ## $nir.neospectra_mlr3..eml_ossl_v1.2
+    ## [1] 484
 
 Saving as `qs` files:
 
@@ -404,11 +471,11 @@ for(i in 1:length(pca.list)){
   qsave(pca.list[[i]][1:4], paste0(dir, "pca.ossl/mpca_", names(pca.list)[i], ".qs"))
 }
 
-## Saving the scores for being used as predictors
+## Saving the scores to be used as predictors
 for(i in 1:length(pca.list)){
   
   idata <- prep.list[[i]] %>%
-    dplyr::select(id.layer_uuid_txt, all_of(soil.properties.original))
+    dplyr::select(id.layer_uuid_txt, all_of(soil.properties.names))
   
   iscores <- pca.list[[i]]$x %>%
     as_tibble()
@@ -420,80 +487,226 @@ for(i in 1:length(pca.list)){
 }
 ```
 
+## Checking target soil properties
+
+``` r
+modeling.combinations <- read_csv("../out/modeling_combinations_v1.2.csv")
+count.table <- read_csv("../out/tab_dataset_count.csv")
+
+# Defining available data from ossl-import
+count.table <- count.table %>%
+  filter(dataset %in% c("KSSL.SSL", "OSSL")) %>%
+  rename(subset = dataset) %>%
+  mutate(subset = recode(subset,
+                         "KSSL.SSL" = "kssl",
+                         "OSSL" = "ossl")) %>%
+  pivot_longer(-all_of(c("soil_property", "subset")),
+               names_to = "spectra_type", values_to = "count") %>%
+  mutate(spectra_type = recode(spectra_type,
+                               "n_mir" = "mir",
+                               "n_visnir" = "visnir",
+                               "n_neospectra" = "nir.neospectra"))
+
+# Defining models with at least 500 observations
+modeling.combinations <- left_join(modeling.combinations,
+                                   count.table,
+                                   by = c("soil_property", "spectra_type", "subset"))
+
+modeling.combinations <- modeling.combinations %>%
+  filter(count > 500)
+
+# Available soil properties
+modeling.combinations %>%
+  distinct(soil_property) %>%
+  count()
+```
+
+    ## # A tibble: 1 × 1
+    ##       n
+    ##   <int>
+    ## 1    43
+
+``` r
+# Final modeling combinations
+modeling.combinations %>%
+  count(spectra_type, subset)
+```
+
+    ## # A tibble: 5 × 3
+    ##   spectra_type   subset     n
+    ##   <chr>          <chr>  <int>
+    ## 1 mir            kssl      42
+    ## 2 mir            ossl      43
+    ## 3 nir.neospectra ossl      30
+    ## 4 visnir         kssl       7
+    ## 5 visnir         ossl      24
+
 ## Model fitting
 
-For calibration model fitting we use the first 120 PCs. This method was
-first time introduced by Chang et al. ([2001](#ref-chang2001near)),
-although the authors used only top 10 PCA components, here we use 120 to
-account for small variations of the spectra in small absorption
-features. We focus on target soil variables for which there is enough
-training data:
+For calibration model fitting we use the first 120 PCs, a cutoff
+considering the tradeoff between spectral representation and compression
+level. We did a internal experiment and found this number to be optimal
+when compared to a cumulative explained variance of 99%. In addition,
+this internal experiment demonstrated that climate geocovariates haven’t
+helped the models, but further tests must be done.
 
-Training takes at least 24hrs on 80t server with 450GB RAM:
+The use of compressed PCs is presented in Chang et al.
+([2001](#ref-chang2001near)), although the authors used only top 10 PCA
+components.
 
-<!-- ```{r} -->
-<!-- modeling.combinations -->
-<!-- i=1 -->
-<!-- for(i in 1:length(modeling.combinations)) { -->
-<!--   isoil_property = modeling.combinations[[i,"soil_property"]] -->
-<!--   imodel_name = modeling.combinations[[i,"model_name"]] -->
-<!--   igeo = modeling.combinations[[i,"geo"]] -->
-<!--   imodel_name.pca <- str_replace(imodel_name, paste0("_", igeo), "") -->
-<!--   ipca <- qread(paste0(dir, "pca.ossl/pca_scores_", imodel_name.pca, ".qs")) -->
-<!-- } -->
-<!-- ``` -->
-<!-- ```{r, eval=FALSE} -->
-<!-- ## Parallelization is done inside the train function with model tunning -->
-<!-- for(tv in t.vars){ -->
-<!--   for(k in 1:length(pr.lst0)){ -->
-<!--     if(k==1|k==2){ -->
-<!--       X.pc = as.data.frame(pca.lst[[1]]$x[,1:n.spc]) -->
-<!--       colnames(X.pc) = paste0("mir.PC", 1:n.spc) -->
-<!--     } -->
-<!--     if(k==3){ -->
-<!--       X.pc = as.data.frame(pca.lst[[2]]$x[,1:n.spc]) -->
-<!--       colnames(X.pc) = paste0("visnir.PC", 1:n.spc) -->
-<!--     } -->
-<!--     if(k==4){ -->
-<!--       X.pc = as.data.frame(pca.lst[[3]]$x[,1:n.spc]) -->
-<!--       colnames(X.pc) = paste0("mir.PC", 1:n.spc) -->
-<!--     } -->
-<!--     if(k==5|k==6){ -->
-<!--       X1.pc = as.data.frame(pca.lst[[3]]$x[,1:n.spc]) -->
-<!--       colnames(X1.pc) = paste0("mir.PC", 1:n.spc) -->
-<!--       X2.pc = as.data.frame(pca.lst[[4]]$x[,1:n.spc]) -->
-<!--       colnames(X2.pc) = paste0("visnir.PC", 1:n.spc) -->
-<!--       ov.r = intersect(row.names(X1.pc), row.names(X2.pc)) -->
-<!--       X.pc = cbind(X1.pc[which(row.names(X1.pc) %in% ov.r),], X2.pc[which(row.names(X2.pc) %in% ov.r),]) -->
-<!--     } -->
-<!--     if(nrow(X.pc)>0){ -->
-<!--       if(k==1|k==3){ -->
-<!--         X = cbind(rm.ossl[as.integer(row.names(X.pc)), c(gsub("log..", "", tv), "ID")], X.pc) -->
-<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE) ) -->
-<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE, rf.feature=FALSE) ) -->
-<!--       } -->
-<!--       if(k==2){ -->
-<!--         X = cbind(rm.ossl[as.integer(row.names(X.pc)), c(gsub("log..", "", tv), "location.error_any_m", "ID", "hzn_depth", geo.sel)], X.pc) -->
-<!--         X = X[!is.na(X$location.error_any_m) & X$location.error_any_m < max.loc.accuracy,] -->
-<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE) ) -->
-<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE, rf.feature=FALSE) ) -->
-<!--       } -->
-<!--       if(k==4|k==6){ -->
-<!--         X = cbind(rm.ossl[as.integer(row.names(X.pc)), c(gsub("log..", "", tv), "location.error_any_m", "ID", "hzn_depth", geo.sel, harm.sel)], X.pc) -->
-<!--         X = X[!is.na(X$location.error_any_m) & X$location.error_any_m < max.loc.accuracy,] -->
-<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = TRUE) ) -->
-<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = TRUE, rf.feature=FALSE) ) -->
-<!--       } -->
-<!--       if(k==5){ -->
-<!--         X = cbind(rm.ossl[as.integer(row.names(X.pc)), c(gsub("log..", "", tv), "ID", harm.sel)], X.pc) -->
-<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE) ) -->
-<!--         try( i <- train.ossl(tv, pr.var=pr.lst0[[k]], X, model.name=mn.lst[k], hzn_depth = FALSE, rf.feature=FALSE) ) -->
-<!--       } -->
-<!--     } -->
-<!--     try( cat_eml(tv, model.name=mn.lst[k]) ) -->
-<!--   } -->
-<!-- } -->
-<!-- ``` -->
+The following framework is used:  
+- Ensemble machine learning (`mlr3..eml`) composed of a linear
+regression (meta-learner) of base learners.  
+- Base learners: Elastic net (`glmnet`), Random Forest (`ranger`),
+XGBoost trees (`xgboost`), and Cubist (`cubist`).  
+- Cross-validated predictions (folds = 5, `cv5`) of base learners are
+used as inputs for the the meta-learner. In a previous internal
+experiment, CV predictions were superior than plain predicitons
+(`insample`).  
+- Hyperparameter optimization is done with internal resampling (`inner`)
+using 5-fold cross-validation. RMSE is set as the loss function.  
+- Final evaluation is performed with external (`outer`) 10-fold cross
+(`cv10`) validation of autotuned models.
+
+``` r
+## Parallelization is done inside the the autotuner
+
+i=1
+for(i in 1:length(modeling.combinations)) {
+
+  isoil_property = modeling.combinations[[i,"soil_property"]]
+  imodel_name = modeling.combinations[[i,"model_name"]]
+  iexport_name = modeling.combinations[[i,"export_name"]]
+  ispectra_type = modeling.combinations[[i,"spectra_type"]]
+  isubset = modeling.combinations[[i,"subset"]]
+  igeo = modeling.combinations[[i,"geo"]]
+  
+  lgr::get_logger("mlr3")$set_threshold("warn")
+  future::plan("multisession")
+
+  # Learners
+  learner_glmnet = lrn("regr.glmnet", predict_type = "response")
+  
+  learner_ranger = lrn("regr.ranger", predict_type = "response",
+                       replace = TRUE, num.threads = 1)
+  
+  learner_xgboost = lrn("regr.xgboost", predict_type = "response",
+                        booster = "gbtree", nthread = 1,
+                        subsample = 0.67)
+  
+  learner_cubist = lrn("regr.cubist", predict_type = "response",
+                       neighbors = 0, unbiased = FALSE, seed = 1993)
+  
+  # Base learners
+  base_learners = list(learner_glmnet, learner_ranger, learner_xgboost, learner_cubist)
+  
+  # Meta learner: linear model of base learners
+  learner_lm = lrn("regr.lm", predict_type = "response")
+
+  meta_learner = pipeline_stacking(base_learners, learner_lm,
+                                   method = "cv", folds = 5,
+                                   use_features = FALSE)
+  
+  # Setting ensemble as a learner
+  learner_ensemble = as_learner(meta_learner)
+  learner_ensemble$id = "ensemble"
+  learner_ensemble$predict_type = "response"
+
+  # Hyperparameters space, all crossed, i.e. not tuned separately
+  search_space_ensemble = ps(
+    regr.glmnet.alpha = p_dbl(0, 1),
+    regr.glmnet.lambda = p_dbl(0.001, 0.1),
+    regr.ranger.num.trees = p_int(20, 100),
+    regr.ranger.min.node.size = p_int(5, 20),
+    regr.xgboost.nrounds = p_int(20, 100),
+    regr.xgboost.eta = p_dbl(0.3, 0.5),
+    regr.xgboost.max_depth = p_int(5, 20),
+    regr.cubist.committees = p_int(5, 10)
+  )
+  
+  # PCA scores
+  n.comps <- 120
+  selected.comps <- paste0("PC", seq(1, n.comps, by = 1))
+  
+  data <- qread(paste0(dir, "pca.ossl/pca_scores_", ispectra_type, "_mlr3..eml_", isubset, "_v1.2.qs"))
+  
+  # Apply log transform to soil property
+  if(grepl("log..", iexport_name)){
+    
+    data <- data %>%
+      mutate(!!isoil_property := log1p(!!as.name(isoil_property)))
+    
+  }
+  
+  # Defining train data
+  if(igeo == "ll") {
+    
+    sel.data <- data %>%
+      select(id.layer_uuid_txt, # ID column
+             id.tile, # ID for block CV
+             all_of(isoil_property), # Target
+             all_of(selected.comps), # Compressed spectra
+             starts_with("clm")) %>% # Geocovariates
+      filter(!is.na(!!as.name(isoil_property)))
+    
+  } else if(igeo == "na") {
+    
+    sel.data <- data %>%
+      select(id.layer_uuid_txt, # ID column
+             all_of(isoil_property), # Target
+             all_of(selected.comps)) %>% # Only compressed spectra
+      filter(!is.na(!!as.name(isoil_property)))
+    
+  }
+  
+  # Exporting train data
+  qsave(sel.data, paste0(dir,
+                         iexport_name,
+                         "/task_",
+                         imodel_name,
+                         ".qs"))
+  
+  # Create regression task
+  task <- as_task_regr(sel.data, id = "train", target = isoil_property, type = "regression")
+  
+  # Defining id column
+  task$set_col_roles("id.layer_uuid_txt", roles = "name")
+  
+  # For block CV. If 'id.tile' not present in the data.frame, default to random CV
+  if("id.tile" %in% colnames(sel.data)) {
+    task$set_col_roles("id.tile", roles = "group")
+  }
+
+  # Inner resampling for HPO with 5-fold cv
+  inner_resampling = rsmp("cv", folds = 5)
+
+  # Auto tuner
+  at = auto_tuner(tuner = tnr("random_search"),
+                  learner = learner_ensemble,
+                  resampling = inner_resampling,
+                  measure = msr("regr.rmse"),
+                  search_space = search_space_ensemble,
+                  terminator = trm("evals", n_evals = 20),
+                  store_models = TRUE)
+
+  # Fit
+  at$train(task)
+
+  # Overview
+  # at$tuning_result
+  # at$tuning_instance
+  # summary(at$model$learner$model$regr.lm$model)
+  
+  # Saving tuned model to disk
+  qsave(at, paste0(dir,
+                   iexport_name,
+                   "/model_",
+                   imodel_name,
+                   ".qs"))
+  
+}
+```
+
 <!-- ## Model evaluation -->
 <!-- We can export the summary accuracy statistics for all soil variables into a single table: -->
 <!-- ```{r, eval=FALSE} -->
