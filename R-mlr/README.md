@@ -211,8 +211,10 @@ rm.ossl <- qread(paste0(db.dir, "ossl_all_L1_v1.2.qs"))
 
 # Preparing the bind of soil data level 1 for Neospectra 
 neospectra.soillab <- rm.ossl %>%
-  dplyr::select(id.layer_local_c, id.layer_uuid_txt,
-         all_of(soil.properties.names))
+  dplyr::select(id.layer_uuid_txt, id.scan_local_c,
+                all_of(soil.properties.names)) %>%
+  filter(grepl("XS|XN", id.scan_local_c)) %>%
+  mutate(id.scan_local_c = gsub("XS|XN", "", id.scan_local_c))
 
 # Keeping only the important columns
 rm.ossl <- rm.ossl %>%
@@ -223,7 +225,6 @@ rm.ossl <- rm.ossl %>%
 # tail(names(rm.ossl), 20)
 
 ## Reading Neospectra datasets
-neospectra.soilsite <- qread(paste0(db.dir, "neospectra_soilsite_v1.2.qs"))
 neospectra.nir <- qread(paste0(db.dir, "neospectra_nir_v1.2.qs"))
 
 # head(names(neospectra.nir), 20)
@@ -234,12 +235,12 @@ neospectra.nir <- neospectra.nir %>%
   group_by(id.sample_local_c) %>%
   summarise_all(mean)
 
-rm.neospectra <- left_join(neospectra.soilsite, neospectra.soillab, by = "id.layer_local_c") %>%
-  left_join(neospectra.nir, by = "id.sample_local_c")
+rm.neospectra <- inner_join(neospectra.soillab, neospectra.nir,
+                            by = c("id.scan_local_c" = "id.sample_local_c"))
 
 # Selecting only important columns
 rm.neospectra <- rm.neospectra %>%
-  dplyr::select(id.layer_uuid_txt, dataset.code_ascii_txt,
+  dplyr::select(id.layer_uuid_txt,
                 any_of(soil.properties.names), all_of(nir.neospectra.spectral.range))
 
 # Preparing named list of datasets
@@ -286,7 +287,7 @@ lapply(data.list, function(x) dim(x))
     ## [1] 64644  1095
     ## 
     ## $nir.neospectra_mlr3..eml_ossl_v1.2
-    ## [1] 2106  645
+    ## [1] 1976  645
 
 ### Preprocessing
 
@@ -323,7 +324,7 @@ lapply(data.list, function(x) dim(x))
     ## [1] 64644  1095
     ## 
     ## $nir.neospectra_mlr3..eml_ossl_v1.2
-    ## [1] 2106  645
+    ## [1] 1976  645
 
 ### PCA compression
 
@@ -440,7 +441,7 @@ lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.999)[1]})
     ## [1] 785
     ## 
     ## $nir.neospectra_mlr3..eml_ossl_v1.2
-    ## [1] 90
+    ## [1] 94
 
 ``` r
 # Checking how many components explain 99.99% of the original variance
@@ -487,7 +488,7 @@ for(i in 1:length(pca.list)){
 }
 ```
 
-## Checking target soil properties
+## Target models
 
 ``` r
 modeling.combinations <- read_csv("../out/modeling_combinations_v1.2.csv")
@@ -513,33 +514,25 @@ modeling.combinations <- left_join(modeling.combinations,
                                    by = c("soil_property", "spectra_type", "subset"))
 
 modeling.combinations <- modeling.combinations %>%
-  filter(count > 500)
+  filter(count > 500) %>%
+  filter(!(soil_property == "efferv_usda.a479_class"))
+
+# # Filtering already fitted models
+# modeling.combinations <- modeling.combinations %>%
+#   mutate(fitted = file.exists(paste0(dir, export_name, "/model_", model_name, ".qs")))
+# 
+# modeling.combinations <- modeling.combinations  %>%
+#   filter(!fitted)
 
 # Available soil properties
 modeling.combinations %>%
   distinct(soil_property) %>%
   count()
-```
 
-    ## # A tibble: 1 × 1
-    ##       n
-    ##   <int>
-    ## 1    43
-
-``` r
 # Final modeling combinations
 modeling.combinations %>%
   count(spectra_type, subset)
 ```
-
-    ## # A tibble: 5 × 3
-    ##   spectra_type   subset     n
-    ##   <chr>          <chr>  <int>
-    ## 1 mir            kssl      42
-    ## 2 mir            ossl      43
-    ## 3 nir.neospectra ossl      30
-    ## 4 visnir         kssl       7
-    ## 5 visnir         ossl      24
 
 ## Model fitting
 
@@ -559,18 +552,23 @@ The following framework is used:
 regression (meta-learner) of base learners.  
 - Base learners: Elastic net (`glmnet`), Random Forest (`ranger`),
 XGBoost trees (`xgboost`), and Cubist (`cubist`).  
-- Cross-validated predictions (folds = 5, `cv5`) of base learners are
-used as inputs for the the meta-learner. In a previous internal
-experiment, CV predictions were superior than plain predicitons
-(`insample`).  
+- Calibration (`insample`) or cross-validated predictions (folds = 5,
+`cv5`) from base learners are used as input for the the meta-learner. In
+a previous internal experiment, both performed quite similar, but
+`insample` is faster to tune.  
 - Hyperparameter optimization is done with internal resampling (`inner`)
-using 5-fold cross-validation. RMSE is set as the loss function.  
-- Final evaluation is performed with external (`outer`) 10-fold cross
-(`cv10`) validation of autotuned models.
+using 5-fold cross-validation. RMSE is set as the loss function. As this
+task is computing intensive, we autoune using a data subset and define
+the final model with the best HPO and the full data. This task is
+performed with random search of HP space testing up to 20
+configurations. - Final evaluation is performed with external (`outer`)
+10-fold cross (`cv10`) validation of autotuned models.
 
 ``` r
 ## Parallelization is done inside the the autotuner
-
+lgr::get_logger("mlr3")$set_threshold("warn")
+future::plan("multisession")
+  
 i=1
 for(i in 1:length(modeling.combinations)) {
 
@@ -580,15 +578,12 @@ for(i in 1:length(modeling.combinations)) {
   ispectra_type = modeling.combinations[[i,"spectra_type"]]
   isubset = modeling.combinations[[i,"subset"]]
   igeo = modeling.combinations[[i,"geo"]]
-  
-  lgr::get_logger("mlr3")$set_threshold("warn")
-  future::plan("multisession")
 
   # Learners
   learner_glmnet = lrn("regr.glmnet", predict_type = "response")
   
   learner_ranger = lrn("regr.ranger", predict_type = "response",
-                       replace = TRUE, num.threads = 1)
+                       replace = TRUE, num.threads = 1, verbose = FALSE)
   
   learner_xgboost = lrn("regr.xgboost", predict_type = "response",
                         booster = "gbtree", nthread = 1,
@@ -604,7 +599,8 @@ for(i in 1:length(modeling.combinations)) {
   learner_lm = lrn("regr.lm", predict_type = "response")
 
   meta_learner = pipeline_stacking(base_learners, learner_lm,
-                                   method = "cv", folds = 5,
+                                   # method = "cv", folds = 5,
+                                   method = "insample",
                                    use_features = FALSE)
   
   # Setting ensemble as a learner
@@ -659,6 +655,19 @@ for(i in 1:length(modeling.combinations)) {
     
   }
   
+  # Subset for speeding up HPO
+  if(nrow(sel.data) >= 2000) {
+    
+    set.seed(1993)
+    sel.data.hpo <- sel.data %>%
+      sample_n(2000)
+    
+  } else {
+    
+    sel.data.hpo <- sel.data
+    
+  }
+  
   # Exporting train data
   qsave(sel.data, paste0(dir,
                          iexport_name,
@@ -667,38 +676,48 @@ for(i in 1:length(modeling.combinations)) {
                          ".qs"))
   
   # Create regression task
-  task <- as_task_regr(sel.data, id = "train", target = isoil_property, type = "regression")
+  task.hpo <- as_task_regr(sel.data.hpo, id = "hpo", target = isoil_property, type = "regression")
+  task.train <- as_task_regr(sel.data, id = "train", target = isoil_property, type = "regression")
   
   # Defining id column
-  task$set_col_roles("id.layer_uuid_txt", roles = "name")
+  task.hpo$set_col_roles("id.layer_uuid_txt", roles = "name")
+  task.train$set_col_roles("id.layer_uuid_txt", roles = "name")
   
   # For block CV. If 'id.tile' not present in the data.frame, default to random CV
   if("id.tile" %in% colnames(sel.data)) {
-    task$set_col_roles("id.tile", roles = "group")
+    task.hpo$set_col_roles("id.tile", roles = "group")
+    task.train$set_col_roles("id.tile", roles = "group")
   }
 
   # Inner resampling for HPO with 5-fold cv
   inner_resampling = rsmp("cv", folds = 5)
 
   # Auto tuner
-  at = auto_tuner(tuner = tnr("random_search"),
+  at = auto_tuner(tuner = tnr("random_search", batch_size = 10), # 10 X 5 folds = 50 cores
                   learner = learner_ensemble,
                   resampling = inner_resampling,
                   measure = msr("regr.rmse"),
                   search_space = search_space_ensemble,
                   terminator = trm("evals", n_evals = 20),
-                  store_models = TRUE)
+                  store_models = FALSE)
 
   # Fit
-  at$train(task)
+  at$train(task.hpo)
 
-  # Overview
+  # # Overview
   # at$tuning_result
   # at$tuning_instance
-  # summary(at$model$learner$model$regr.lm$model)
+  
+  # Final model
+  final.model <- learner_ensemble
+  final.model$param_set$values = at$tuning_result$learner_param_vals[[1]]
+  final.model$train(task.train)
+  
+  # # Overview
+  # summary(final.model$model$regr.lm$model)
   
   # Saving tuned model to disk
-  qsave(at, paste0(dir,
+  qsave(final.model, paste0(dir,
                    iexport_name,
                    "/model_",
                    imodel_name,
