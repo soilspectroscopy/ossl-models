@@ -51,8 +51,10 @@ invisible(lapply(packages, library, character.only = TRUE))
 The directory/folder path:
 
 ```{r dir, include=TRUE, message=FALSE, eval=TRUE}
-dir <- "/mnt/soilspec4gg/ossl/ossl_models/mlr3/"
-db.dir <- "/mnt/soilspec4gg/ossl/ossl_import/"
+# dir <- "/mnt/soilspec4gg/ossl/ossl_models/mlr3/"
+dir <- "~/mnt-ossl/ossl_models/"
+# db.dir <- "/mnt/soilspec4gg/ossl/ossl_import/"
+db.dir <- "~/mnt-ossl/ossl_import/"
 ```
 
 ### Overview
@@ -343,12 +345,12 @@ modeling.combinations %>%
 modeling.combinations %>%
   count(spectra_type, subset)
 
-# Filtering already fitted models
-modeling.combinations <- modeling.combinations %>%
-  mutate(fitted = file.exists(paste0(dir, export_name, "/model_", model_name, ".qs")))
-
-modeling.combinations <- modeling.combinations  %>%
-  filter(!fitted)
+# # Filtering already fitted models
+# modeling.combinations <- modeling.combinations %>%
+#   mutate(fitted = file.exists(paste0(dir, export_name, "/model_", model_name, ".qs")))
+# 
+# modeling.combinations <- modeling.combinations  %>%
+#   filter(!fitted)
 
 ```
 
@@ -494,7 +496,7 @@ for(i in 1:length(modeling.combinations)) {
   inner_resampling = rsmp("cv", folds = 5)
 
   # Auto tuner
-  at = auto_tuner(tuner = tnr("random_search", batch_size = 10), # 10 X 5 folds = 50 cores
+  at = auto_tuner(tuner = tnr("random_search", batch_size = 3), # batch_size X 5 folds = 50 cores
                   learner = learner_ensemble,
                   resampling = inner_resampling,
                   measure = msr("regr.rmse"),
@@ -527,68 +529,25 @@ for(i in 1:length(modeling.combinations)) {
 }
 ```
 
-<!-- ## Model evaluation -->
+## Model evaluation
 
-<!-- We can export the summary accuracy statistics for all soil variables into a single table: -->
+We can export the summary accuracy statistics and standard plot visualizations for all modeling combinations using 10-fold cross validation.
 
-<!-- ```{r, eval=FALSE} -->
-<!-- p.lst = c("RMSE", "R.square", "N.tot", "N.outliers") -->
-<!-- acc.mat = data.frame(matrix(nrow=length(t.vars), ncol=2+length(mn.lst)*4)) -->
-<!-- colnames(acc.mat) = c("variable", "std", sapply(mn.lst, function(i){paste0(i, "_", p.lst)})) -->
-<!-- acc.mat$variable = t.vars -->
-<!-- acc.mat$std = sapply(t.vars, function(i){ if(length(grep("log..", i))>0) { sd(log1p(rm.ossl[,gsub("log..","",i)]), na.rm = TRUE) } else { sd(rm.ossl[,i], na.rm = TRUE) } }) -->
-<!-- for(i in 1:nrow(acc.mat)){ -->
-<!--   for(j in 1:length(mn.lst)){ -->
-<!--     in.rds = paste0(dir, t.vars[i], "/", mn.lst[j], ".rds") -->
-<!--     if(file.exists(in.rds)){ -->
-<!--       t.m = readRDS.gz(in.rds) -->
-<!--       x.s = summary(t.m$learner.model$super.model$learner.model) -->
-<!--       RMSE = signif(sqrt(sum(t.m$learner.model$super.model$learner.model$residuals^2) / t.m$learner.model$super.model$learner.model$df.residual), 3) -->
-<!--       acc.mat[i,paste0(mn.lst[j], "_RMSE")] = RMSE -->
-<!--       acc.mat[i,paste0(mn.lst[j], "_R.square")] = round(x.s$adj.r.squared, 3) -->
-<!--       acc.mat[i,paste0(mn.lst[j], "_N.tot")] = x.s$df[2] -->
-<!--       acc.mat[i,paste0(mn.lst[j], "_N.outliers")] = sum(abs(x.s$residuals) > 3*RMSE) -->
-<!--       gc() -->
-<!--     } -->
-<!--   } -->
-<!-- } -->
-<!-- write.csv(acc.mat, "../out/accuracy_matrix_ossl_models.csv") -->
-<!-- ``` -->
+```{r accuracy, include=TRUE, message=FALSE, eval=TRUE}
 
-<!-- We also produce standard accuracy plots based on the 5-fold cross-validation by using: -->
 
-<!-- ```{r, eval=FALSE} -->
-<!-- ## Accuracy plots ---- -->
-<!-- library(hexbin) -->
-<!-- library(plotKML) -->
-<!-- library(lattice) -->
-<!-- par(family = "sans") -->
-<!-- for(i in 1:nrow(acc.mat)){ -->
-<!--   for(j in 1:length(mn.lst)){ -->
-<!--     in.rds = paste0(dir, t.vars[i], "/", mn.lst[j], ".rds") -->
-<!--     out.file = paste0(dir, t.vars[i], "/ap.", mn.lst[j], ".rds.png") -->
-<!--     if(file.exists(in.rds) & !file.exists(out.file)){ -->
-<!--       t.m = readRDS.gz(in.rds) -->
-<!--       yh = t.m$learner.model$super.model$learner.model$fitted.values -->
-<!--       meas = t.m$learner.model$super.model$learner.model$model[,t.vars[i]] -->
-<!--       t.var.breaks = quantile(meas, c(0.001, 0.01, 0.999), na.rm=TRUE) -->
-<!--       plot_hexbin(varn=t.vars[i], breaks=c(t.var.breaks[1], seq(t.var.breaks[2], t.var.breaks[3], length=25)), meas=ifelse(meas<0, 0, meas), pred=ifelse(yh<0, 0, yh), main=t.vars[i], out.file=out.file, log.plot=FALSE, colorcut=c(0,0.01,0.02,0.03,0.06,0.12,0.20,0.35,1.0)) -->
-<!--       #gc() -->
-<!--     } -->
-<!--   } -->
-<!-- } -->
-<!-- ``` -->
+```
 
 <!-- Example of an accuracy plot: -->
 
-<!-- ```{r ac-soc1, echo=FALSE, fig.cap="Accuracy plot for `log..oc_usda.calc_wpct/mir_mlr..eml_kssl_na_v1.rds`.", out.width="60%"} -->
+<!-- ```{r ac-soc1, echo=FALSE, fig.cap="Accuracy plot for log..oc_usda.calc_wpct/mir_mlr..eml_kssl_na_v1.rds`.", out.width="60%"} -->
 <!-- knitr::include_graphics("./models/log..oc_usda.calc_wpct/ap.mir_mlr..eml_kssl_na_v1.rds.png") -->
 <!-- ``` -->
 
 
-<!-- ```{r, eval=FALSE} -->
-<!-- #save.image.pigz(file=paste0(dir, "ossl.models.RData"), n.cores=80) -->
-<!-- #rmarkdown::render("R-mlr/README.Rmd") -->
-<!-- ``` -->
+```{r, eval=FALSE}
+#save.image.pigz(file=paste0(dir, "ossl.models.RData"), n.cores=80)
+#rmarkdown::render("R-mlr/README.Rmd")
+```
 
 ## References
