@@ -71,6 +71,7 @@ for(i in 1:nrow(modeling.combinations)) {
 
           sel.data <- data %>%
             select(id.layer_uuid_txt, # ID column
+                   id.tile, # ID for block CV
                    all_of(isoil_property), # Target
                    all_of(selected.comps)) # Only compressed spectra
 
@@ -95,6 +96,7 @@ for(i in 1:nrow(modeling.combinations)) {
 
           sel.data <- data %>%
             select(id.layer_uuid_txt, # ID column
+                   id.tile, # ID for block CV
                    all_of(isoil_property), # Target
                    all_of(selected.comps)) # Only compressed spectra
 
@@ -130,6 +132,7 @@ for(i in 1:nrow(modeling.combinations)) {
 
           sel.data <- data %>%
             select(id.layer_uuid_txt, # ID column
+                   id.tile, # ID for block CV
                    all_of(isoil_property), # Target
                    all_of(selected.comps)) # Only compressed spectra
 
@@ -154,6 +157,7 @@ for(i in 1:nrow(modeling.combinations)) {
 
           sel.data <- data %>%
             select(id.layer_uuid_txt, # ID column
+                   id.tile, # ID for block CV
                    all_of(isoil_property), # Target
                    all_of(selected.comps)) # Only compressed spectra
 
@@ -286,6 +290,7 @@ for(i in 1:nrow(modeling.combinations)) {
 
           sel.data <- data %>%
             select(id.layer_uuid_txt, # ID column
+                   id.tile, # ID for block CV
                    all_of(isoil_property), # Target
                    all_of(selected.comps)) # Only compressed spectra
 
@@ -310,6 +315,7 @@ for(i in 1:nrow(modeling.combinations)) {
 
           sel.data <- data %>%
             select(id.layer_uuid_txt, # ID column
+                   id.tile, # ID for block CV
                    all_of(isoil_property), # Target
                    all_of(selected.comps)) # Only compressed spectra
 
@@ -345,6 +351,7 @@ for(i in 1:nrow(modeling.combinations)) {
 
           sel.data <- data %>%
             select(id.layer_uuid_txt, # ID column
+                   id.tile, # ID for block CV
                    all_of(isoil_property), # Target
                    all_of(selected.comps)) # Only compressed spectra
 
@@ -369,6 +376,7 @@ for(i in 1:nrow(modeling.combinations)) {
 
           sel.data <- data %>%
             select(id.layer_uuid_txt, # ID column
+                   id.tile, # ID for block CV
                    all_of(isoil_property), # Target
                    all_of(selected.comps)) # Only compressed spectra
 

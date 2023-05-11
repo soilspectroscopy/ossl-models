@@ -214,21 +214,21 @@ ggplot(final.performance, aes(x = pca_compression, y = ccc, color = soil_propert
 final.performance %>%
   filter(geocovariates == "na") %>%
   filter(pca_compression == "n120") %>%
-  filter(base_predictions == "cv5") %>%
+  filter(base_predictions == "insample") %>%
   filter(model_type == "ensemble")
 
 p.best <- final.performance %>%
   filter(geocovariates == "na") %>%
   filter(pca_compression == "n120") %>%
-  filter(!(model_type == "ensemble" & base_predictions == "insample")) %>%
+  filter(base_predictions == "insample") %>%
   ggplot(aes(x = model_type,
              y = ccc,
              color = model_type)) +
   geom_boxplot() +
   facet_grid(soil_property~spectra, scales = "free_y") +
   labs(x = NULL, y = "Lin's CCC", color = NULL,
-       title = paste0("Best configuration: model ensemble, without geocovariates,\n",
-                      "CV predictions as input, and PCA compression with 120 comps")) +
+       title = paste0("OSSL configuration: model ensemble, without geocovariates,\n",
+                      "insample predictions, and PCA compression with 120 comps")) +
   theme_light() +
   theme(legend.position = "bottom",
         axis.text.x = element_text(vjust = 1, hjust = 1, angle = 45),
