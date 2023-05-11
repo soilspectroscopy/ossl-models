@@ -231,7 +231,7 @@ q.stats %>%
 # Visualization
 ggplot(q.stats) +
   geom_histogram(aes(x = log10(q_stats))) +
-  geom_vline(aes(xintercept = Qa)) +
+  geom_vline(aes(xintercept = log10(Qa))) +
   labs(title = "Q-stats distribution for test set") +
   theme_light()
 

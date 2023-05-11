@@ -1,7 +1,6 @@
 
 ## Packages
 library("tidyverse")
-library("mlr3verse")
 library("yardstick")
 library("qs")
 
@@ -10,11 +9,10 @@ dir <- "~/mnt-ossl/ossl_models/"
 db.dir <- "~/mnt-ossl/ossl_import/"
 
 ## Fitted models
-fitted.modeling.combinations <- read_csv("../out/fitted_modeling_combinations_v1.2.csv",
+fitted.modeling.combinations <- read_csv("./out/fitted_modeling_combinations_v1.2.csv",
                                          show_col_types = FALSE)
 
-## Evaluation pipeline
-lgr::get_logger("mlr3")$set_threshold("warn")
+## Re-exporting plots due to inconsistencies
 
 i=1
 for(i in 1:nrow(fitted.modeling.combinations)) {
@@ -29,69 +27,12 @@ for(i in 1:nrow(fitted.modeling.combinations)) {
 
   cat(paste0("Run ", i, "/", nrow(fitted.modeling.combinations), " at ", lubridate::now(), "\n"))
 
-  # Task
-  sel.data <- qread(paste0(dir,
-                           iexport_name,
-                           "/task_",
-                           imodel_name,
-                           ".qs"))
-
-  # Create regression task
-  task <- as_task_regr(sel.data, id = "train",
-                       target = isoil_property,
-                       type = "regression")
-
-  # Defining id column
-  task$set_col_roles("id.layer_uuid_txt", roles = "name")
-
-  # For block CV. If 'id.tile' not present in the data.frame, default to random CV
-  if("id.tile" %in% colnames(sel.data)) {
-    task$set_col_roles("id.tile", roles = "group")
-  }
-
-  # Autotuned model
-  model <- qread(paste0(dir,
-                        iexport_name,
-                        "/model_",
-                        imodel_name,
-                        ".qs"))
-
-  # Outer 10-CV evaluation
-  tuned_learner <- as_learner(model$graph_model)
-
-  future::plan("multisession")
-
-  set.seed(1993)
-  rr = mlr3::resample(task = task,
-                      learner = tuned_learner,
-                      resampling = rsmp("cv", folds = 10))
-
-  cv.results <- lapply(1:length(rr$predictions("test")), function(i){
-    as.data.table(rr$predictions("test")[[i]]) %>%
-      mutate(fold = i)})
-
-  cv.results <- Reduce(rbind, cv.results)
-
-  cv.export <- left_join(task$row_names, cv.results, by = c("row_id" = "row_ids")) %>%
-    rename(id.layer_uuid_txt = row_name) %>%
-    select(-row_id)
-
-  tryCatch(
-    expr = {
-      qsave(cv.export, paste0(dir,
+  # Predictions
+  cv.results <- qread(paste0(dir,
                               iexport_name,
                               "/cvpred_",
                               imodel_name,
                               ".qs"))
-    },
-    error = function(e){
-      write_csv(cv.export, paste0(dir,
-                                  iexport_name,
-                                  "/cvpred_",
-                                  imodel_name,
-                                  ".csv"))
-    }
-  )
 
   # Metrics
   performance.metrics <- cv.results %>%
@@ -104,17 +45,6 @@ for(i in 1:nrow(fitted.modeling.combinations)) {
 
   perfomance.annotation <- paste0("Lin's CCC = ", round(performance.metrics[[1,"ccc"]], 3),
                                   "\nRMSE = ", round(performance.metrics[[1,"rmse"]], 3))
-
-  performance.metrics <- performance.metrics %>%
-    mutate(soil_property = isoil_property,
-           model_name = imodel_name,
-           .before = 1)
-
-  write_csv(performance.metrics, paste0(dir,
-                                        iexport_name,
-                                        "/perfmetrics_",
-                                        imodel_name,
-                                        ".csv"))
 
   # Plot
   if(grepl("log..", iexport_name)) {
@@ -183,10 +113,73 @@ for(i in 1:nrow(fitted.modeling.combinations)) {
                   "/valplot_",
                   imodel_name,
                   ".png"),
-           p.hex, dpi = 200, width = 5, height = 5, units = "in", scale = 1)
+           p.hex, dpi = 100, width = 5, height = 5, units = "in", scale = 1)
 
   }
 
-  cat(paste0("Run ", i, "/", nrow(fitted.modeling.combinations), "\n\n"))
-
 }
+
+## Full table with final performance
+
+metrics.files <- list.files(dir, pattern = "perfmetrics_",
+                            full.names = T, recursive = T)
+
+performance <- metrics.files %>%
+  purrr::map_dfr(.f = read_csv, show_col_types = FALSE)
+
+write_csv(performance, "./out/fitted_models_performance_v1.2.csv")
+
+# missing.files <- left_join(fitted.modeling.combinations,
+#                            performance,
+#                            by = c("soil_property",
+#                                   "model_name"))
+#
+# missing.files <- missing.files %>%
+#   filter(is.na(ccc))
+#
+# i=1
+# for(i in 1:nrow(missing.files)) {
+#
+#   # Parameters
+#   isoil_property = missing.files[[i,"soil_property"]]
+#   imodel_name = missing.files[[i,"model_name"]]
+#   iexport_name = missing.files[[i,"export_name"]]
+#   ispectra_type = missing.files[[i,"spectra_type"]]
+#   isubset = missing.files[[i,"subset"]]
+#   igeo = missing.files[[i,"geo"]]
+#
+#   cat(paste0("Run ", i, "/", nrow(missing.files), " at ", lubridate::now(), "\n"))
+#
+#   # Predictions
+#   cv.results <- qread(paste0(dir,
+#                              iexport_name,
+#                              "/cvpred_",
+#                              imodel_name,
+#                              ".qs"))
+#
+#   performance.metrics <- cv.results %>%
+#     summarise(n = n(),
+#               rmse = rmse_vec(truth = truth, estimate = response),
+#               bias = msd_vec(truth = truth, estimate = response),
+#               rsq = rsq_vec(truth = truth, estimate = response),
+#               ccc = ccc_vec(truth = truth, estimate = response, bias = T),
+#               rpiq = rpiq_vec(truth = truth, estimate = response))
+#
+#   performance.metrics <- performance.metrics %>%
+#     mutate(soil_property = isoil_property,
+#            model_name = imodel_name,
+#            .before = 1)
+#
+#   export.file <- paste0(dir,
+#                        iexport_name,
+#                        "/perfmetrics_",
+#                        imodel_name,
+#                        ".csv")
+#
+#   if(file.exists(export.file)){file.remove(export.file)}
+#
+#   write_csv(performance.metrics, export.file)
+#
+# }
+
+
