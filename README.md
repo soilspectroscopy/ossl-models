@@ -54,6 +54,33 @@ at the end with the full train data.
 The search space was composed of crossed combinations, i.e. each model
 is not individually tuned:
 
+``` r
+# Default values
+learner_glmnet = lrn("regr.glmnet", predict_type = "response")
+
+learner_ranger = lrn("regr.ranger", predict_type = "response",
+                     replace = TRUE, num.threads = 1, verbose = FALSE)
+
+learner_xgboost = lrn("regr.xgboost", predict_type = "response",
+                      booster = "gbtree", nthread = 1,
+                      subsample = 0.67)
+
+learner_cubist = lrn("regr.cubist", predict_type = "response",
+                     neighbors = 0, unbiased = FALSE, seed = 1993)
+
+# Search space for HPO
+search_space_ensemble = ps(
+  regr.glmnet.alpha = p_dbl(0, 1),
+  regr.glmnet.lambda = p_dbl(0.001, 0.1),
+  regr.ranger.num.trees = p_int(20, 100),
+  regr.ranger.min.node.size = p_int(5, 20),
+  regr.xgboost.nrounds = p_int(20, 100),
+  regr.xgboost.eta = p_dbl(0.3, 0.5),
+  regr.xgboost.max_depth = p_int(5, 20),
+  regr.cubist.committees = p_int(5, 10)
+)
+```
+
 As predictors, we have use the first 120 PCs of the compressed spectra,
 a threshold that considers the tradeoff between spectral representation
 and compression magnitude.

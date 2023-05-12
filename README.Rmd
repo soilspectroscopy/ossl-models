@@ -37,7 +37,7 @@ Hyperparameter optimization was done with internal resampling (`inner`) using 5-
 
 The search space was composed of crossed combinations, i.e. each model is not individually tuned:
 
-```{r hpo, echo=FALSE, eval=FALSE}
+```{r hpo, echo=TRUE, eval=FALSE}
 # Default values
 learner_glmnet = lrn("regr.glmnet", predict_type = "response")
 
