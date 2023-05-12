@@ -10,6 +10,9 @@ Spectroscopy for Global Good](https://soilspectroscopy.org) project and
 based on the Open Soil Spectral Library
 [(OSSL)](https://soilspectroscopy.github.io/ossl-manual/).
 
+We have used the [MLR3 framework](https://mlr3book.mlr-org.com/) for
+fitting machine learning ensemble models.
+
 The `README` of folder [`R-mlr`](R-mlr/README.md) explains the steps
 used to calibrate the models used in the OSSL.
 
@@ -22,9 +25,6 @@ KSSL soil spectral library alone (`kssl` code) or the full OSSL database
 (`ossl` code), in combinations with three spectral ranges: VisNIR
 (`visnir` code), NIR from the Neospectra instrument (`nir.neospectra`
 code), and MIR (`mir` code).
-
-We have used the [MLR3 framework](https://mlr3book.mlr-org.com/) for
-fitting machine learning ensemble models.
 
 | spectra_type   | subset | geo | model_name                            |
 |:---------------|:-------|:----|:--------------------------------------|
@@ -107,7 +107,9 @@ The following soil properties have models fitted:
 
 Final evaluation was performed with external (`outer`) 10-fold cross
 validation of the final models using root mean square error (`rmse`),
-mean error (`bias`),
+mean error (`bias`), R squared (`rsq`), Lin’s concordance correlation
+coefficient (`ccc`), and ratio of performance to the interquartile range
+(`rpiq`).
 
 Validation plots are available in the [`out/plots`](out/plots) folder.
 
@@ -160,12 +162,13 @@ predictions <- dplyr::left_join(task$row_names, predictions, by = c("row_id" = "
 > of the OSSL database (in the previous example we used the
 > `nir.neospectra` model).
 
-PCA models are available in:  
--<https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_kssl_v1.2.qs>.  
--<https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_ossl_v1.2.qs>.  
--<https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs>.  
--<https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_kssl_v1.2.qs>.  
--<https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_ossl_v1.2.qs>.
+PCA models are available in:
+
+- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_kssl_v1.2.qs>.  
+- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_ossl_v1.2.qs>.  
+- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs>.  
+- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_kssl_v1.2.qs>.  
+- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_ossl_v1.2.qs>.
 
 Example:
 

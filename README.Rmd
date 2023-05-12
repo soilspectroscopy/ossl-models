@@ -13,13 +13,13 @@ output:
 This is repository for all model fitting development for the [Soil Spectroscopy for Global
 Good](https://soilspectroscopy.org) project and based on the Open Soil Spectral Library [(OSSL)](https://soilspectroscopy.github.io/ossl-manual/).
 
+We have used the [MLR3 framework](https://mlr3book.mlr-org.com/) for fitting machine learning ensemble models.
+
 The `README` of folder [`R-mlr`](R-mlr/README.md) explains the steps used to calibrate the models used in the OSSL.
 
 In summary, we have provided 5 different model types depending on the availability of samples in the OSSL database, without the use of geocovariates (`na` code).
 
 The model types are composed of two different subsets, i.e. using the KSSL soil spectral library alone (`kssl` code) or the full OSSL database (`ossl` code), in combinations with three spectral ranges: VisNIR (`visnir` code), NIR from the Neospectra instrument (`nir.neospectra` code), and MIR (`mir` code).
-
-We have used the [MLR3 framework](https://mlr3book.mlr-org.com/) for fitting machine learning ensemble models.
 
 ```{r model_types, echo=FALSE}
 readr::read_csv("out/modeling_combinations_v1.2.csv", show_col_types = FALSE) |>
@@ -75,7 +75,7 @@ readr::read_csv("out/fitted_modeling_combinations_v1.2.csv", show_col_types = FA
   knitr::kable()
 ```
 
-Final evaluation was performed with external (`outer`) 10-fold cross validation of the final models using root mean square error (`rmse`), mean error (`bias`),  
+Final evaluation was performed with external (`outer`) 10-fold cross validation of the final models using root mean square error (`rmse`), mean error (`bias`), R squared (`rsq`), Lin's concordance correlation coefficient (`ccc`), and ratio of performance to the interquartile range (`rpiq`).
 
 Validation plots are available in the [`out/plots`](out/plots) folder.
 
@@ -116,11 +116,12 @@ predictions <- dplyr::left_join(task$row_names, predictions, by = c("row_id" = "
 > NOTE: For using the trained model with new predictions, the PC scores should be predicted from the [Standard Normal Variate (SNV) preprocessed](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#scatter-and-baseline-corrections) spectra following the [same specifications and nomenclature](https://soilspectroscopy.github.io/ossl-manual/neospectra-database.html#database-description) of the OSSL database (in the previous example we used the `nir.neospectra` model).  
 
 PCA models are available in:  
--[https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_kssl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_kssl_v1.2.qs).  
--[https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_ossl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_ossl_v1.2.qs).  
--[https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs).  
--[https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_kssl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_kssl_v1.2.qs).  
--[https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_ossl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_ossl_v1.2.qs).  
+
+- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_kssl_v1.2.qs>.  
+- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_ossl_v1.2.qs>.  
+- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs>.  
+- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_kssl_v1.2.qs>.  
+- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_ossl_v1.2.qs>.  
 
 Example:
 ```{r pca, echo=TRUE, eval=FALSE}
