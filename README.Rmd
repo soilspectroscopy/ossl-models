@@ -1,3 +1,9 @@
+---
+output:
+  github_document:
+  toc: false
+---
+
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.5759693.svg)](https://doi.org/10.5281/zenodo.5759693)
 
 # Fitting OSSL models
@@ -107,16 +113,16 @@ predictions <- trained.model$predict(task) %>% data.table::as.data.table()
 predictions <- dplyr::left_join(task$row_names, predictions, by = c("row_id" = "row_ids"))
 ```
 
-> NOTE: For using the trained model with new predictions, the PC scores should be predicted from the [Standard Normal Variate (SNV) preprocessed](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#scatter-and-baseline-corrections) spectra following the [same specifications and nomenclature](https://soilspectroscopy.github.io/ossl-manual/neospectra-database.html#database-description) of the OSSL database (in the previous example we used the `nir.neospectra` model).
+> NOTE: For using the trained model with new predictions, the PC scores should be predicted from the [Standard Normal Variate (SNV) preprocessed](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#scatter-and-baseline-corrections) spectra following the [same specifications and nomenclature](https://soilspectroscopy.github.io/ossl-manual/neospectra-database.html#database-description) of the OSSL database (in the previous example we used the `nir.neospectra` model).  
 
-The PCA models are available in:  
-- [https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_kssl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_kssl_v1.2.qs).  
-- [https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_ossl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_ossl_v1.2.qs).  
-- [https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs).  
-- [https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_kssl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_kssl_v1.2.qs).  
-- [https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_ossl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_ossl_v1.2.qs).  
+PCA models are available in:  
+-[https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_kssl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_kssl_v1.2.qs).  
+-[https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_ossl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_ossl_v1.2.qs).  
+-[https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs).  
+-[https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_kssl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_kssl_v1.2.qs).  
+-[https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_ossl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_ossl_v1.2.qs).  
 
-Example
+Example:
 ```{r pca, echo=TRUE, eval=FALSE}
 pca.model <- qread_url("https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs")
 
@@ -126,6 +132,7 @@ new.scores <- predict(pca.model, new.spectra)
 ```
 
 If you fit your own models and/or if you are interested in contributing to this project, please contact us and help us make better open soil data for global good!
+
 
 # Other tools and repositories of interest
 
