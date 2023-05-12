@@ -4,7 +4,7 @@ Jose L. Safanelli (<jsafanelli@woodwellclimate.org>), Tomislav Hengl
 (<tom.hengl@opengeohub.org>), Leandro Parente
 (<leandro.parente@opengeohub.org>), and Jonathan Sanderman
 (<jsanderman@woodwellclimate.org>)
-07 May, 2023
+12 May, 2023
 
 
 
@@ -23,15 +23,19 @@ License](http://creativecommons.org/licenses/by-sa/4.0/).
 Part of: <https://github.com/soilspectroscopy>  
 Project: [Soil Spectroscopy for Global
 Good](https://soilspectroscopy.org)  
-Last update: 2023-05-07  
+Last update: 2023-05-12  
 Dataset:
 [OSSL](https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html)
+
+    ## Warning: package 'mlr3extralearners' was built under R version 4.2.3
 
 The directory/folder path:
 
 ``` r
-dir <- "/mnt/soilspec4gg/ossl/ossl_models/mlr3/"
-db.dir <- "/mnt/soilspec4gg/ossl/ossl_import/"
+# dir <- "/mnt/soilspec4gg/ossl/ossl_models/mlr3/"
+dir <- "~/mnt-ossl/ossl_models/"
+# db.dir <- "/mnt/soilspec4gg/ossl/ossl_import/"
+db.dir <- "~/mnt-ossl/ossl_import/"
 ```
 
 ### Overview
@@ -270,24 +274,9 @@ data.list <- list(
       dplyr::filter(!is.na(scan_nir.1500_ref))}
   )
 
-# Different sizes
-lapply(data.list, function(x) dim(x))
+# # Different sizes
+# lapply(data.list, function(x) dim(x))
 ```
-
-    ## $mir_mlr3..eml_kssl_v1.2
-    ## [1] 76813  1745
-    ## 
-    ## $mir_mlr3..eml_ossl_v1.2
-    ## [1] 85684  1745
-    ## 
-    ## $visnir_mlr3..eml_kssl_v1.2
-    ## [1] 19807  1095
-    ## 
-    ## $visnir_mlr3..eml_ossl_v1.2
-    ## [1] 64644  1095
-    ## 
-    ## $nir.neospectra_mlr3..eml_ossl_v1.2
-    ## [1] 1976  645
 
 ### Preprocessing
 
@@ -307,24 +296,9 @@ prep.list <- lapply(data.list, function(x){
       dplyr::select(id.layer_uuid_txt, any_of(soil.properties.names))}, .)
   })
 
-# Checking preprocessing. Names are kept consistently across list objects and table columns
-lapply(data.list, function(x) dim(x))
+# # Checking preprocessing. Names are kept consistently across list objects and table columns
+# lapply(data.list, function(x) dim(x))
 ```
-
-    ## $mir_mlr3..eml_kssl_v1.2
-    ## [1] 76813  1745
-    ## 
-    ## $mir_mlr3..eml_ossl_v1.2
-    ## [1] 85684  1745
-    ## 
-    ## $visnir_mlr3..eml_kssl_v1.2
-    ## [1] 19807  1095
-    ## 
-    ## $visnir_mlr3..eml_ossl_v1.2
-    ## [1] 64644  1095
-    ## 
-    ## $nir.neospectra_mlr3..eml_ossl_v1.2
-    ## [1] 1976  645
 
 ### PCA compression
 
@@ -364,104 +338,21 @@ pca.list <- mclapply(1:length(prep.list), function(i) {
 
 names(pca.list) <- names(prep.list)
 
-# Checking the number of components of each spectra type
-lapply(pca.list, function(x) ncol(x$rotation))
+# # Checking the number of components of each spectra type
+# lapply(pca.list, function(x) ncol(x$rotation))
+# 
+# # Checking how many components explain 95% of the original variance
+# lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.95)[1]})
+# 
+# # Checking how many components explain 99% of the original variance
+# lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.99)[1]})
+# 
+# # Checking how many components explain 99.9%of the original variance
+# lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.999)[1]})
+# 
+# # Checking how many components explain 99.99% of the original variance
+# lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.9999)[1]})
 ```
-
-    ## $mir_mlr3..eml_kssl_v1.2
-    ## [1] 1701
-    ## 
-    ## $mir_mlr3..eml_ossl_v1.2
-    ## [1] 1701
-    ## 
-    ## $visnir_mlr3..eml_kssl_v1.2
-    ## [1] 1051
-    ## 
-    ## $visnir_mlr3..eml_ossl_v1.2
-    ## [1] 1051
-    ## 
-    ## $nir.neospectra_mlr3..eml_ossl_v1.2
-    ## [1] 601
-
-``` r
-# Checking how many components explain 95% of the original variance
-lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.95)[1]})
-```
-
-    ## $mir_mlr3..eml_kssl_v1.2
-    ## [1] 75
-    ## 
-    ## $mir_mlr3..eml_ossl_v1.2
-    ## [1] 90
-    ## 
-    ## $visnir_mlr3..eml_kssl_v1.2
-    ## [1] 30
-    ## 
-    ## $visnir_mlr3..eml_ossl_v1.2
-    ## [1] 32
-    ## 
-    ## $nir.neospectra_mlr3..eml_ossl_v1.2
-    ## [1] 20
-
-``` r
-# Checking how many components explain 99% of the original variance
-lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.99)[1]})
-```
-
-    ## $mir_mlr3..eml_kssl_v1.2
-    ## [1] 241
-    ## 
-    ## $mir_mlr3..eml_ossl_v1.2
-    ## [1] 323
-    ## 
-    ## $visnir_mlr3..eml_kssl_v1.2
-    ## [1] 263
-    ## 
-    ## $visnir_mlr3..eml_ossl_v1.2
-    ## [1] 160
-    ## 
-    ## $nir.neospectra_mlr3..eml_ossl_v1.2
-    ## [1] 45
-
-``` r
-# Checking how many components explain 99.9%of the original variance
-lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.999)[1]})
-```
-
-    ## $mir_mlr3..eml_kssl_v1.2
-    ## [1] 891
-    ## 
-    ## $mir_mlr3..eml_ossl_v1.2
-    ## [1] 973
-    ## 
-    ## $visnir_mlr3..eml_kssl_v1.2
-    ## [1] 850
-    ## 
-    ## $visnir_mlr3..eml_ossl_v1.2
-    ## [1] 785
-    ## 
-    ## $nir.neospectra_mlr3..eml_ossl_v1.2
-    ## [1] 94
-
-``` r
-# Checking how many components explain 99.99% of the original variance
-lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.9999)[1]})
-```
-
-    ## $mir_mlr3..eml_kssl_v1.2
-    ## [1] 1490
-    ## 
-    ## $mir_mlr3..eml_ossl_v1.2
-    ## [1] 1499
-    ## 
-    ## $visnir_mlr3..eml_kssl_v1.2
-    ## [1] 1015
-    ## 
-    ## $visnir_mlr3..eml_ossl_v1.2
-    ## [1] 1010
-    ## 
-    ## $nir.neospectra_mlr3..eml_ossl_v1.2
-    ## [1] 484
 
 Saving as `qs` files:
 
@@ -517,21 +408,41 @@ modeling.combinations <- modeling.combinations %>%
   filter(count > 500) %>%
   filter(!(soil_property == "efferv_usda.a479_class"))
 
+write_csv(modeling.combinations, "../out/fitted_modeling_combinations_v1.2.csv")
+
+# Available soil properties
+modeling.combinations %>%
+  distinct(soil_property) %>%
+  count()
+```
+
+    ## # A tibble: 1 × 1
+    ##       n
+    ##   <int>
+    ## 1    42
+
+``` r
+# Final modeling combinations
+modeling.combinations %>%
+  count(spectra_type, subset)
+```
+
+    ## # A tibble: 5 × 3
+    ##   spectra_type   subset     n
+    ##   <chr>          <chr>  <int>
+    ## 1 mir            kssl      41
+    ## 2 mir            ossl      42
+    ## 3 nir.neospectra ossl      29
+    ## 4 visnir         kssl       6
+    ## 5 visnir         ossl      23
+
+``` r
 # # Filtering already fitted models
 # modeling.combinations <- modeling.combinations %>%
 #   mutate(fitted = file.exists(paste0(dir, export_name, "/model_", model_name, ".qs")))
 # 
 # modeling.combinations <- modeling.combinations  %>%
 #   filter(!fitted)
-
-# Available soil properties
-modeling.combinations %>%
-  distinct(soil_property) %>%
-  count()
-
-# Final modeling combinations
-modeling.combinations %>%
-  count(spectra_type, subset)
 ```
 
 ## Model fitting
@@ -552,17 +463,17 @@ The following framework is used:
 regression (meta-learner) of base learners.  
 - Base learners: Elastic net (`glmnet`), Random Forest (`ranger`),
 XGBoost trees (`xgboost`), and Cubist (`cubist`).  
-- Calibration (`insample`) or cross-validated predictions (folds = 5,
-`cv5`) from base learners are used as input for the the meta-learner. In
-a previous internal experiment, both performed quite similar, but
-`insample` is faster to tune.  
-- Hyperparameter optimization is done with internal resampling (`inner`)
-using 5-fold cross-validation. RMSE is set as the loss function. As this
-task is computing intensive, we autoune using a data subset and define
-the final model with the best HPO and the full data. This task is
-performed with random search of HP space testing up to 20
-configurations. - Final evaluation is performed with external (`outer`)
-10-fold cross (`cv10`) validation of autotuned models.
+- Calibration (`insample`) from base learners are used as input for the
+the meta-learner. - Hyperparameter optimization is done with internal
+resampling (`inner`) using 5-fold cross-validation and a smaller subset
+for speeding up this operation. This task is performed with random
+search of HP space testing up to 20 configurations and RMSE set as the
+loss function. The final model with the best HPO is fitted at the end
+with the full data.  
+- Final evaluation is performed with external (`outer`) 10-fold cross
+(`cv10`) validation of final models.  
+- Cross-validation predictions, accuracy plot and good-of-fitness
+metrics are exported to disk.
 
 ``` r
 ## Parallelization is done inside the the autotuner
@@ -693,7 +604,7 @@ for(i in 1:length(modeling.combinations)) {
   inner_resampling = rsmp("cv", folds = 5)
 
   # Auto tuner
-  at = auto_tuner(tuner = tnr("random_search", batch_size = 10), # 10 X 5 folds = 50 cores
+  at = auto_tuner(tuner = tnr("random_search", batch_size = 3), # batch_size X 5 folds = 50 cores
                   learner = learner_ensemble,
                   resampling = inner_resampling,
                   measure = msr("regr.rmse"),
@@ -701,14 +612,14 @@ for(i in 1:length(modeling.combinations)) {
                   terminator = trm("evals", n_evals = 20),
                   store_models = FALSE)
 
-  # Fit
+  # Fit autotuner
   at$train(task.hpo)
 
   # # Overview
   # at$tuning_result
   # at$tuning_instance
   
-  # Final model
+  # Final model from best HPO
   final.model <- learner_ensemble
   final.model$param_set$values = at$tuning_result$learner_param_vals[[1]]
   final.model$train(task.train)
@@ -716,7 +627,7 @@ for(i in 1:length(modeling.combinations)) {
   # # Overview
   # summary(final.model$model$regr.lm$model)
   
-  # Saving tuned model to disk
+  # Saving trained final model to disk
   qsave(final.model, paste0(dir,
                    iexport_name,
                    "/model_",
@@ -726,61 +637,197 @@ for(i in 1:length(modeling.combinations)) {
 }
 ```
 
-<!-- ## Model evaluation -->
-<!-- We can export the summary accuracy statistics for all soil variables into a single table: -->
-<!-- ```{r, eval=FALSE} -->
-<!-- p.lst = c("RMSE", "R.square", "N.tot", "N.outliers") -->
-<!-- acc.mat = data.frame(matrix(nrow=length(t.vars), ncol=2+length(mn.lst)*4)) -->
-<!-- colnames(acc.mat) = c("variable", "std", sapply(mn.lst, function(i){paste0(i, "_", p.lst)})) -->
-<!-- acc.mat$variable = t.vars -->
-<!-- acc.mat$std = sapply(t.vars, function(i){ if(length(grep("log..", i))>0) { sd(log1p(rm.ossl[,gsub("log..","",i)]), na.rm = TRUE) } else { sd(rm.ossl[,i], na.rm = TRUE) } }) -->
-<!-- for(i in 1:nrow(acc.mat)){ -->
-<!--   for(j in 1:length(mn.lst)){ -->
-<!--     in.rds = paste0(dir, t.vars[i], "/", mn.lst[j], ".rds") -->
-<!--     if(file.exists(in.rds)){ -->
-<!--       t.m = readRDS.gz(in.rds) -->
-<!--       x.s = summary(t.m$learner.model$super.model$learner.model) -->
-<!--       RMSE = signif(sqrt(sum(t.m$learner.model$super.model$learner.model$residuals^2) / t.m$learner.model$super.model$learner.model$df.residual), 3) -->
-<!--       acc.mat[i,paste0(mn.lst[j], "_RMSE")] = RMSE -->
-<!--       acc.mat[i,paste0(mn.lst[j], "_R.square")] = round(x.s$adj.r.squared, 3) -->
-<!--       acc.mat[i,paste0(mn.lst[j], "_N.tot")] = x.s$df[2] -->
-<!--       acc.mat[i,paste0(mn.lst[j], "_N.outliers")] = sum(abs(x.s$residuals) > 3*RMSE) -->
-<!--       gc() -->
-<!--     } -->
-<!--   } -->
-<!-- } -->
-<!-- write.csv(acc.mat, "../out/accuracy_matrix_ossl_models.csv") -->
-<!-- ``` -->
-<!-- We also produce standard accuracy plots based on the 5-fold cross-validation by using: -->
-<!-- ```{r, eval=FALSE} -->
-<!-- ## Accuracy plots ---- -->
-<!-- library(hexbin) -->
-<!-- library(plotKML) -->
-<!-- library(lattice) -->
-<!-- par(family = "sans") -->
-<!-- for(i in 1:nrow(acc.mat)){ -->
-<!--   for(j in 1:length(mn.lst)){ -->
-<!--     in.rds = paste0(dir, t.vars[i], "/", mn.lst[j], ".rds") -->
-<!--     out.file = paste0(dir, t.vars[i], "/ap.", mn.lst[j], ".rds.png") -->
-<!--     if(file.exists(in.rds) & !file.exists(out.file)){ -->
-<!--       t.m = readRDS.gz(in.rds) -->
-<!--       yh = t.m$learner.model$super.model$learner.model$fitted.values -->
-<!--       meas = t.m$learner.model$super.model$learner.model$model[,t.vars[i]] -->
-<!--       t.var.breaks = quantile(meas, c(0.001, 0.01, 0.999), na.rm=TRUE) -->
-<!--       plot_hexbin(varn=t.vars[i], breaks=c(t.var.breaks[1], seq(t.var.breaks[2], t.var.breaks[3], length=25)), meas=ifelse(meas<0, 0, meas), pred=ifelse(yh<0, 0, yh), main=t.vars[i], out.file=out.file, log.plot=FALSE, colorcut=c(0,0.01,0.02,0.03,0.06,0.12,0.20,0.35,1.0)) -->
-<!--       #gc() -->
-<!--     } -->
-<!--   } -->
-<!-- } -->
-<!-- ``` -->
-<!-- Example of an accuracy plot: -->
-<!-- ```{r ac-soc1, echo=FALSE, fig.cap="Accuracy plot for `log..oc_usda.calc_wpct/mir_mlr..eml_kssl_na_v1.rds`.", out.width="60%"} -->
-<!-- knitr::include_graphics("./models/log..oc_usda.calc_wpct/ap.mir_mlr..eml_kssl_na_v1.rds.png") -->
-<!-- ``` -->
-<!-- ```{r, eval=FALSE} -->
-<!-- #save.image.pigz(file=paste0(dir, "ossl.models.RData"), n.cores=80) -->
-<!-- #rmarkdown::render("R-mlr/README.Rmd") -->
-<!-- ``` -->
+## Model evaluation
+
+We can export the summary accuracy statistics and standard plot
+visualizations for all modeling combinations using 10-fold cross
+validation.
+
+``` r
+fitted.modeling.combinations <- read_csv("../out/fitted_modeling_combinations_v1.2.csv")
+
+## Evaluation pipeline
+lgr::get_logger("mlr3")$set_threshold("warn")
+
+i=1
+for(i in 1:nrow(fitted.modeling.combinations)) {
+
+  # Parameters
+  isoil_property = fitted.modeling.combinations[[i,"soil_property"]]
+  imodel_name = fitted.modeling.combinations[[i,"model_name"]]
+  iexport_name = fitted.modeling.combinations[[i,"export_name"]]
+  ispectra_type = fitted.modeling.combinations[[i,"spectra_type"]]
+  isubset = fitted.modeling.combinations[[i,"subset"]]
+  igeo = fitted.modeling.combinations[[i,"geo"]]
+
+  cat(paste0("Run ", i, "/", nrow(fitted.modeling.combinations), " at ", lubridate::now(), "\n"))
+
+  # Task
+  sel.data <- qread(paste0(dir,
+                           iexport_name,
+                           "/task_",
+                           imodel_name,
+                           ".qs"))
+
+  # Create regression task
+  task <- as_task_regr(sel.data, id = "train",
+                       target = isoil_property,
+                       type = "regression")
+
+  # Defining id column
+  task$set_col_roles("id.layer_uuid_txt", roles = "name")
+
+  # For block CV. If 'id.tile' not present in the data.frame, default to random CV
+  if("id.tile" %in% colnames(sel.data)) {
+    task$set_col_roles("id.tile", roles = "group")
+  }
+
+  # Autotuned model
+  model <- qread(paste0(dir,
+                        iexport_name,
+                        "/model_",
+                        imodel_name,
+                        ".qs"))
+
+  # Outer 10-CV evaluation
+  tuned_learner <- as_learner(model$graph_model)
+
+  future::plan("multisession")
+
+  set.seed(1993)
+  rr = mlr3::resample(task = task,
+                      learner = tuned_learner,
+                      resampling = rsmp("cv", folds = 10))
+
+  cv.results <- lapply(1:length(rr$predictions("test")), function(i){
+    as.data.table(rr$predictions("test")[[i]]) %>%
+      mutate(fold = i)})
+
+  cv.results <- Reduce(rbind, cv.results)
+
+  cv.export <- left_join(task$row_names, cv.results, by = c("row_id" = "row_ids")) %>%
+    rename(id.layer_uuid_txt = row_name) %>%
+    select(-row_id)
+
+  tryCatch(
+    expr = {
+      qsave(cv.export, paste0(dir,
+                              iexport_name,
+                              "/cvpred_",
+                              imodel_name,
+                              ".qs"))
+    },
+    error = function(e){
+      write_csv(cv.export, paste0(dir,
+                                  iexport_name,
+                                  "/cvpred_",
+                                  imodel_name,
+                                  ".csv"))
+    }
+  )
+
+  # Metrics
+  performance.metrics <- cv.results %>%
+    summarise(n = n(),
+              rmse = rmse_vec(truth = truth, estimate = response),
+              bias = msd_vec(truth = truth, estimate = response),
+              rsq = rsq_vec(truth = truth, estimate = response),
+              ccc = ccc_vec(truth = truth, estimate = response, bias = T),
+              rpiq = rpiq_vec(truth = truth, estimate = response))
+
+  perfomance.annotation <- paste0("Lin's CCC = ", round(performance.metrics[[1,"ccc"]], 3),
+                                  "\nRMSE = ", round(performance.metrics[[1,"rmse"]], 3))
+
+  performance.metrics <- performance.metrics %>%
+    mutate(soil_property = isoil_property,
+           model_name = imodel_name,
+           .before = 1)
+
+  write_csv(performance.metrics, paste0(dir,
+                                        iexport_name,
+                                        "/perfmetrics_",
+                                        imodel_name,
+                                        ".csv"))
+
+  # Plot
+  if(grepl("log..", iexport_name)) {
+
+    p.hex <- ggplot(cv.results, aes(x = truth, y = response)) +
+      geom_hex(bins = 30, alpha = 0.75) +
+      geom_abline(intercept = 0, slope = 1) +
+      geom_text(aes(x = -Inf, y = Inf, hjust = -0.1, vjust = 1.2),
+                label = perfomance.annotation) +
+      scale_fill_viridis_c(trans = "log10") +
+      labs(x = "log(observed)", y = "log(predicted)", fill = bquote(log[10](count)),
+           title = iexport_name) +
+      theme_bw(base_size = 10) +
+      theme(legend.position = "bottom",
+            plot.title = element_text(hjust = 0.5),
+            plot.subtitle = element_text(hjust = 0.5),
+            legend.key.size = unit(0.35, "cm"))
+
+    r.max <- max(layer_scales(p.hex)$x$range$range)
+    r.min <- min(layer_scales(p.hex)$x$range$range)
+
+    s.max <-max(layer_scales(p.hex)$y$range$range)
+    s.min <-min(layer_scales(p.hex)$y$range$range)
+
+    t.max <-round(max(r.max,s.max),1)
+    t.min <-round(min(r.min,s.min),1)
+
+    p.hex <- p.hex + coord_equal(xlim=c(t.min,t.max),ylim=c(t.min,t.max))
+
+    ggsave(paste0(dir,
+                  iexport_name,
+                  "/valplot_",
+                  imodel_name,
+                  ".png"),
+           p.hex, dpi = 200, width = 5, height = 5, units = "in", scale = 1)
+
+  } else {
+
+    p.hex <- ggplot(cv.results, aes(x = truth, y = response)) +
+      geom_hex(bins = 30, alpha = 0.75) +
+      geom_abline(intercept = 0, slope = 1) +
+      geom_text(aes(x = -Inf, y = Inf, hjust = -0.1, vjust = 1.2),
+                label = perfomance.annotation) +
+      scale_fill_viridis_c(trans = "log10") +
+      labs(x = "observed", y = "predicted", fill = bquote(log[10](count)),
+           title = iexport_name) +
+      theme_bw(base_size = 10) +
+      theme(legend.position = "bottom",
+            plot.title = element_text(hjust = 0.5),
+            plot.subtitle = element_text(hjust = 0.5),
+            legend.key.size = unit(0.35, "cm"))
+
+    r.max <- max(layer_scales(p.hex)$x$range$range)
+    r.min <- min(layer_scales(p.hex)$x$range$range)
+
+    s.max <-max(layer_scales(p.hex)$y$range$range)
+    s.min <-min(layer_scales(p.hex)$y$range$range)
+
+    t.max <-round(max(r.max,s.max),1)
+    t.min <-round(min(r.min,s.min),1)
+
+    p.hex <- p.hex + coord_equal(xlim=c(t.min,t.max),ylim=c(t.min,t.max))
+
+    ggsave(paste0(dir,
+                  iexport_name,
+                  "/valplot_",
+                  imodel_name,
+                  ".png"),
+           p.hex, dpi = 200, width = 5, height = 5, units = "in", scale = 1)
+
+  }
+
+  cat(paste0("Run ", i, "/", nrow(fitted.modeling.combinations), "\n\n"))
+
+}
+```
+
+Example of an accuracy plot:
+
+<img src="../out/plots/log..c.tot_usda.a622_w.pct..mir_mlr3..eml_ossl_na_v1.2.png" alt="Accuracy plot for log..c.tot_usda.a622_w.pct using mir_mlr3..eml_ossl_na_v1.2 model" width="60%" />
 
 ## References
 

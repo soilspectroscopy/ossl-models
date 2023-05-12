@@ -119,7 +119,7 @@ knitr::kable(soil.properties)
 Note: some soil properties are natural-log transformed to help models fitting.
 
 Final modeling combinations:
-```{r modeling_combinations, include=TRUE, message=FALSE, eval=TRUE}
+```{r modeling_combinations, include=TRUE, message=FALSE, eval=FALSE}
 modeling.combinations <- soil.properties %>%
   crossing(modeling.combinations)
 
@@ -137,7 +137,7 @@ nir.neospectra.spectral.range <- paste0("scan_nir.", seq(1350, 2550, by = 2), "_
 
 ## Checking folders
 
-```{r export_dirs, include=TRUE, message=FALSE, eval=TRUE}
+```{r export_dirs, include=TRUE, message=FALSE, eval=FALSE}
 target.dirs <- paste0(dir, soil.properties$export_name)
 
 # Folders already created?
@@ -150,7 +150,7 @@ invisible(sapply(target.dirs, function(x) {
 
 The regression-matrices were produced in the [OSSL-imports repository](https://github.com/soilspectroscopy/ossl-imports).
 
-```{r data_import, include=TRUE, message=FALSE, eval=TRUE}
+```{r data_import, include=TRUE, message=FALSE, eval=FALSE}
 ## Reading OSSL level 1
 rm.ossl <- qread(paste0(db.dir, "ossl_all_L1_v1.2.qs"))
 
@@ -215,15 +215,15 @@ data.list <- list(
       dplyr::filter(!is.na(scan_nir.1500_ref))}
   )
 
-# Different sizes
-lapply(data.list, function(x) dim(x))
+# # Different sizes
+# lapply(data.list, function(x) dim(x))
 ```
 
 ### Preprocessing
 
 To remove baseline offset, additive/multiplicative scattering effects, and multicollinearity of spectra from multiple sources, [SNV](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#scatter-and-baseline-corrections) preprocessing is used before PCA compression and model calibration:
 
-```{r preprocessing, include=TRUE, message=FALSE, eval=TRUE}
+```{r preprocessing, include=TRUE, message=FALSE, eval=FALSE}
 prep.list <- lapply(data.list, function(x){
   x %>%
     dplyr::select(-id.layer_uuid_txt, -any_of(soil.properties.names)) %>%
@@ -234,8 +234,8 @@ prep.list <- lapply(data.list, function(x){
       dplyr::select(id.layer_uuid_txt, any_of(soil.properties.names))}, .)
   })
 
-# Checking preprocessing. Names are kept consistently across list objects and table columns
-lapply(data.list, function(x) dim(x))
+# # Checking preprocessing. Names are kept consistently across list objects and table columns
+# lapply(data.list, function(x) dim(x))
 ```
 
 ### PCA compression
@@ -253,7 +253,7 @@ We can omit the `x` in the objects to save to disk, later reassigning the class 
 
 Fit PCA models in parallel:
 
-```{r pca_compression, include=TRUE, message=FALSE, eval=TRUE}
+```{r pca_compression, include=TRUE, message=FALSE, eval=FALSE}
 pca.list <- mclapply(1:length(prep.list), function(i) {
   
   x <- prep.list[[i]] %>%
@@ -266,25 +266,25 @@ pca.list <- mclapply(1:length(prep.list), function(i) {
 
 names(pca.list) <- names(prep.list)
 
-# Checking the number of components of each spectra type
-lapply(pca.list, function(x) ncol(x$rotation))
-
-# Checking how many components explain 95% of the original variance
-lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.95)[1]})
-
-# Checking how many components explain 99% of the original variance
-lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.99)[1]})
-
-# Checking how many components explain 99.9%of the original variance
-lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.999)[1]})
-
-# Checking how many components explain 99.99% of the original variance
-lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.9999)[1]})
+# # Checking the number of components of each spectra type
+# lapply(pca.list, function(x) ncol(x$rotation))
+# 
+# # Checking how many components explain 95% of the original variance
+# lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.95)[1]})
+# 
+# # Checking how many components explain 99% of the original variance
+# lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.99)[1]})
+# 
+# # Checking how many components explain 99.9%of the original variance
+# lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.999)[1]})
+# 
+# # Checking how many components explain 99.99% of the original variance
+# lapply(pca.list, function(x) {which(cumsum(x$sdev/sum(x$sdev)) > 0.9999)[1]})
 ```
 
 Saving as `qs` files:
 
-```{r pca_export, include=TRUE, message=FALSE, eval=TRUE}
+```{r pca_export, include=TRUE, message=FALSE, eval=FALSE}
 ## Saving simplified pca models only for prediction purposes (m = modified):
 # Omitting 5th object of prcomp, i.e x table (scores)
 for(i in 1:length(pca.list)){
@@ -353,7 +353,6 @@ modeling.combinations %>%
 # 
 # modeling.combinations <- modeling.combinations  %>%
 #   filter(!fitted)
-
 ```
 
 ## Model fitting
@@ -722,7 +721,7 @@ for(i in 1:nrow(fitted.modeling.combinations)) {
 Example of an accuracy plot:
 
 ```{r ac-toc, echo=FALSE, fig.cap="Accuracy plot for log..c.tot_usda.a622_w.pct using mir_mlr3..eml_ossl_na_v1.2 model", out.width="60%"}
-knitr::include_graphics("./out/plots/log..c.tot_usda.a622_w.pct..mir_mlr3..eml_ossl_na_v1.2.png")
+knitr::include_graphics("../out/plots/log..c.tot_usda.a622_w.pct..mir_mlr3..eml_ossl_na_v1.2.png")
 ```
 
 ## References
