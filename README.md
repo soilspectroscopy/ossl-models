@@ -5,10 +5,10 @@
 
 [<img src="./img/soilspec4gg-logo_fc.png" alt="SoilSpec4GG logo" width="250"/>](https://soilspectroscopy.org/)
 
-This is repository for all model fitting development for the [Soil
-Spectroscopy for Global Good](https://soilspectroscopy.org) project and
-based on the Open Soil Spectral Library
-[(OSSL)](https://soilspectroscopy.github.io/ossl-manual/).
+This is the repository for all model calibration development for the
+[Soil Spectroscopy for Global Good](https://soilspectroscopy.org)
+project and based on the [Open Soil Spectral Library
+(OSSL)](https://soilspectroscopy.github.io/ossl-manual/) database.
 
 We have used the [MLR3 framework](https://mlr3book.mlr-org.com/) for
 fitting machine learning ensemble models.
@@ -17,12 +17,12 @@ The `README` of folder [`R-mlr`](R-mlr/README.md) explains the steps
 used to calibrate the models used in the OSSL.
 
 In summary, we have provided 5 different model types depending on the
-availability of samples in the OSSL database, without the use of
-geocovariates (`na` code).
+availability of samples in the database, without the use of
+geocovariates (`na` code) as predictors.
 
 The model types are composed of two different subsets, i.e. using the
 KSSL soil spectral library alone (`kssl` code) or the full OSSL database
-(`ossl` code), in combinations with three spectral ranges: VisNIR
+(`ossl` code), in combination with three spectral types: VisNIR
 (`visnir` code), NIR from the Neospectra instrument (`nir.neospectra`
 code), and MIR (`mir` code).
 
@@ -37,7 +37,7 @@ code), and MIR (`mir` code).
 The ensemble model (coding name `mlr3..eml`) is composed of a linear
 regression (meta-learner, `regr.lm`) of base learners.
 
-Base learners employed were: Elastic net (`glmnet`), Random Forest
+Base learners were fitted using Elastic net (`glmnet`), Random Forest
 (`ranger`), XGBoost trees (`xgboost`), and Cubist (`cubist`).
 
 MLR3 allows the base learners to feed the meta-learner with
@@ -54,7 +54,7 @@ at the end with the full train data.
 The search space was composed of crossed combinations, i.e. each model
 is not individually tuned:
 
-For predictors, we have use the first 120 PCs of the compressed spectra,
+As predictors, we have use the first 120 PCs of the compressed spectra,
 a threshold that considers the tradeoff between spectral representation
 and compression magnitude.
 
@@ -106,14 +106,15 @@ The following soil properties have models fitted:
 | zn.ext_usda.a1073_mg.kg        | Zinc, Extractable, Mehlich3                         | log1p          |
 
 Final evaluation was performed with external (`outer`) 10-fold cross
-validation of the final models using root mean square error (`rmse`),
+validation of the tuned models using root mean square error (`rmse`),
 mean error (`bias`), R squared (`rsq`), Lin’s concordance correlation
 coefficient (`ccc`), and ratio of performance to the interquartile range
 (`rpiq`).
 
 Validation plots are available in the [`out/plots`](out/plots) folder.
 
-Final fitted models along with their performance can be found in
+Final fitted models description along with their performance can be
+found in
 [out/fitted_models_performance_v1.2.csv](out/fitted_models_performance_v1.2.csv)
 
 # Using OSSL models in your computer
@@ -154,7 +155,7 @@ predictions <- trained.model$predict(task) %>% data.table::as.data.table()
 predictions <- dplyr::left_join(task$row_names, predictions, by = c("row_id" = "row_ids"))
 ```
 
-> NOTE: For using the trained model with new predictions, the PC scores
+> NOTE: For using the trained model with new spectra, the PC scores
 > should be predicted from the [Standard Normal Variate (SNV)
 > preprocessed](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#scatter-and-baseline-corrections)
 > spectra following the [same specifications and
@@ -186,9 +187,9 @@ data for global good!
 
 # Other tools and repositories of interest
 
-For more advanced uses of the soil spectral libraries **we advise to
-contact the original data producers** especially to get help with using,
-extending, and improving the original SSL data.
+For more advanced uses of the soil spectral libraries, **we advise to
+contacting the original data producers** especially to get help with
+using, extending, and improving the original SSL data.
 
 - OSSL Documentation: <https://soilspectroscopy.github.io/ossl-manual/>;
 - OSSL Explorer: <https://explorer.soilspectroscopy.org>;
