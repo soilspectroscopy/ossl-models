@@ -1,75 +1,48 @@
 
-## Reading compressed RDS
-saveRDS.gz <- function(object,file,threads=parallel::detectCores()) {
-  con <- pipe(paste0("pigz -p",threads," > ",file),"wb")
-  saveRDS(object, file = con)
-  close(con)
-}
+## Packages
+library("tidyverse")
+library("qs")
 
-## Reading compressed RDS
-readRDS.gz <- function(file,threads=parallel::detectCores()) {
-  con <- pipe(paste0("pigz -d -c -p",threads," ",file))
-  object <- readRDS(file = con)
-  close(con)
-  return(object)
-}
+# https://github.com/pierreroudier/asdreader
+library("asdreader")
 
-## MongoDB
-library(mongolite)
-library(jsonify)
+# https://github.com/spectral-cockpit/opusreader2
+# install.packages("opusreader2", repos = c(
+#   spectralcockpit = 'https://spectral-cockpit.r-universe.dev',
+#   CRAN = 'https://cloud.r-project.org'))
+library("opusreader2")
 
-soilspec4gg.db = list(
-  host = 'api.soilspectroscopy.org',
-  name = 'soilspec4gg',
-  user = 'soilspec4gg',
-  pw = 'soilspec4gg'
-)
 
-soilspec4gg.db$url <- paste0(
-  'mongodb://', soilspec4gg.db$user, ':',
-  soilspec4gg.db$pw, '@',
-  soilspec4gg.db$host, '/',
-  soilspec4gg.db$name, '?ssl=true'
-)
+## Samples
+opus.1 <- read_opus_single(dsn = "sample-data/235157XS01.0")
+plot(as.numeric(opus.1$ab$data), type = 'l')
 
-soilspec4gg.init <- function() {
-  print('Creating the access for mongodb collections.')
-  soilspec4gg.db$collections <<- list(
-    soilsite = mongo(collection = 'soilsite', url = soilspec4gg.db$url, verbose = TRUE),
-    soillab_L0 = mongo(collection = 'soillab_L0', url = soilspec4gg.db$url, verbose = TRUE),
-    soillab_L1 = mongo(collection = 'soillab_L1', url = soilspec4gg.db$url, verbose = TRUE),
-    mir = mongo(collection = 'mir', url = soilspec4gg.db$url, verbose = TRUE),
-    visnir = mongo(collection = 'visnir', url = soilspec4gg.db$url, verbose = TRUE),
-    ossl_L0 = mongo(collection = 'ossl_L0', url = soilspec4gg.db$url, verbose = TRUE),
-    ossl_L1 = mongo(collection = 'ossl_L1', url = soilspec4gg.db$url, verbose = TRUE),
-    neospectra_soilsite = mongo(collection = 'neospectra_soilsite', url = soilspec4gg.db$url, verbose = TRUE),
-    neospectra_soillab = mongo(collection = 'neospectra_soillab', url = soilspec4gg.db$url, verbose = TRUE),
-    neospectra_nir = mongo(collection = 'neospectra_nir', url = soilspec4gg.db$url, verbose = TRUE),
-    neospectra_mir = mongo(collection = 'neospectra_mir', url = soilspec4gg.db$url, verbose = TRUE)
-  )
-}
+opus.2 <- read_opus_single(dsn = "sample-data/icr056141.0")
+plot(as.numeric(opus.2$ab$data), type = 'l')
 
-## Prediction function
-predict.ossl <- function(target,
+asd.1 <- get_spectra("sample-data/101453MD01.asd")
+asd.1
+plot(as.numeric(asd.1), type = 'l')
+
+asd.2 <- get_spectra("sample-data/235157MD01.asd")
+asd.2
+dim(asd.2)
+class(asd.2)
+plot(as.numeric(asd.2), type = 'l')
+
+## csv samples
+mir <- read_csv("sample-data/sample_mir_data.csv", show_col_types = F)
+visnir <- read_csv("sample-data/sample_visnir_data.csv", show_col_types = F)
+nir <- read_csv("sample-data/sample_neospectra_data.csv", show_col_types = F)
+
+## Predict
+predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
                          spectra = NULL,
                          spectra.type = "mir",
                          subset.type = "ossl",
                          geo.type = "na",
                          ncomps = 120,
-                         models.dir = "",
-
-                         mir.raw,
-                         visnir.raw,
-                         lon,
-                         lat,
-                         hzn_depth=10,
-                         ossl.model,
-                         ossl.pca.mir,
-                         ossl.pca.visnir,
-                         sd=TRUE,
-                         cog.dir="/data/WORLDCLIM/",
-                         ylim=NULL,
-                         dataset.code_ascii_c="KSSL.SSL"){
+                         models.dir = "~/mnt-ossl/ossl_models/"){
 
   ## Reference table
   reference <- read_csv("")
