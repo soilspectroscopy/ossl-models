@@ -365,9 +365,10 @@ The use of compressed PCs is presented in @chang2001near, although the authors u
 The following framework is used:  
 - Ensemble machine learning (`mlr3..eml`) composed of a linear regression (meta-learner) of base learners.  
 - Base learners: Elastic net (`glmnet`), Random Forest (`ranger`), XGBoost trees (`xgboost`), and Cubist (`cubist`).  
-- Calibration (`insample`) or cross-validated predictions (folds = 5, `cv5`) from base learners are used as input for the the meta-learner. In a previous internal experiment, both performed quite similar, but `insample` is faster to tune.  
-- Hyperparameter optimization is done with internal resampling (`inner`) using 5-fold cross-validation. RMSE is set as the loss function. As this task is computing intensive, we autoune using a data subset and define the final model with the best HPO and the full data. This task is performed with random search of HP space testing up to 20 configurations.
-- Final evaluation is performed with external (`outer`) 10-fold cross (`cv10`) validation of autotuned models.  
+- Calibration (`insample`) from base learners are used as input for the the meta-learner.
+- Hyperparameter optimization is done with internal resampling (`inner`) using 5-fold cross-validation and a smaller subset for speeding up this operation. This task is performed with random search of HP space testing up to 20 configurations and RMSE set as the loss function. The final model with the best HPO is fitted at the end with the full data.  
+- Final evaluation is performed with external (`outer`) 10-fold cross (`cv10`) validation of final models.  
+- Cross-validation predictions, accuracy plot and good-of-fitness metrics are exported to disk.
 
 ```{r train, include=TRUE, message=FALSE, eval=FALSE, results='hide'}
 ## Parallelization is done inside the the autotuner
@@ -535,13 +536,13 @@ for(i in 1:length(modeling.combinations)) {
 
 We can export the summary accuracy statistics and standard plot visualizations for all modeling combinations using 10-fold cross validation.
 
-```{r accuracy, include=TRUE, message=FALSE, eval=TRUE}
+```{r accuracy, include=TRUE, message=FALSE, eval=FALSE, results='hide'}
 fitted.modeling.combinations <- read_csv("../out/fitted_modeling_combinations_v1.2.csv")
 
 ## Evaluation pipeline
-performance.list <- list()
+lgr::get_logger("mlr3")$set_threshold("warn")
 
-i=99
+i=1
 for(i in 1:nrow(fitted.modeling.combinations)) {
 
   # Parameters
@@ -551,6 +552,8 @@ for(i in 1:nrow(fitted.modeling.combinations)) {
   ispectra_type = fitted.modeling.combinations[[i,"spectra_type"]]
   isubset = fitted.modeling.combinations[[i,"subset"]]
   igeo = fitted.modeling.combinations[[i,"geo"]]
+
+  cat(paste0("Run ", i, "/", nrow(fitted.modeling.combinations), " at ", lubridate::now(), "\n"))
 
   # Task
   sel.data <- qread(paste0(dir,
@@ -587,12 +590,34 @@ for(i in 1:nrow(fitted.modeling.combinations)) {
   set.seed(1993)
   rr = mlr3::resample(task = task,
                       learner = tuned_learner,
-                      resampling = rsmp("cv", folds = 5))
+                      resampling = rsmp("cv", folds = 10))
 
-  cv.results <- lapply(rr$predictions("test"), function(x) as.data.table(x))
+  cv.results <- lapply(1:length(rr$predictions("test")), function(i){
+    as.data.table(rr$predictions("test")[[i]]) %>%
+      mutate(fold = i)})
+
   cv.results <- Reduce(rbind, cv.results)
 
-  future:::ClusterRegistry("stop")
+  cv.export <- left_join(task$row_names, cv.results, by = c("row_id" = "row_ids")) %>%
+    rename(id.layer_uuid_txt = row_name) %>%
+    select(-row_id)
+
+  tryCatch(
+    expr = {
+      qsave(cv.export, paste0(dir,
+                              iexport_name,
+                              "/cvpred_",
+                              imodel_name,
+                              ".qs"))
+    },
+    error = function(e){
+      write_csv(cv.export, paste0(dir,
+                                  iexport_name,
+                                  "/cvpred_",
+                                  imodel_name,
+                                  ".csv"))
+    }
+  )
 
   # Metrics
   performance.metrics <- cv.results %>%
@@ -603,61 +628,101 @@ for(i in 1:nrow(fitted.modeling.combinations)) {
               ccc = ccc_vec(truth = truth, estimate = response, bias = T),
               rpiq = rpiq_vec(truth = truth, estimate = response))
 
-  performance.list[[i]] <- performance.metrics
-
   perfomance.annotation <- paste0("Lin's CCC = ", round(performance.metrics[[1,"ccc"]], 3),
                                   "\nRMSE = ", round(performance.metrics[[1,"rmse"]], 3))
 
+  performance.metrics <- performance.metrics %>%
+    mutate(soil_property = isoil_property,
+           model_name = imodel_name,
+           .before = 1)
+
+  write_csv(performance.metrics, paste0(dir,
+                                        iexport_name,
+                                        "/perfmetrics_",
+                                        imodel_name,
+                                        ".csv"))
 
   # Plot
-  p.hex <- ggplot(cv.results, aes(x = truth, y = response)) +
-    geom_hex(bins = 30, alpha = 0.75) +
-    geom_abline(intercept = 0, slope = 1) +
-    geom_text(aes(x = -Inf, y = Inf, hjust = -0.1, vjust = 1.2),
-              label = perfomance.annotation) +
-    scale_fill_viridis_c(trans = "log10") +
-    labs(x = "log(observed)", y = "log(predicted)", fill = bquote(log[10](count)),
-         title = iexport_name) +
-    theme_bw(base_size = 10) +
-    theme(legend.position = "bottom",
-          plot.title = element_text(hjust = 0.5),
-          plot.subtitle = element_text(hjust = 0.5),
-          legend.key.size = unit(0.35, "cm"))
+  if(grepl("log..", iexport_name)) {
 
-  r.max <- max(layer_scales(p.hex)$x$range$range)
-  r.min <- min(layer_scales(p.hex)$x$range$range)
+    p.hex <- ggplot(cv.results, aes(x = truth, y = response)) +
+      geom_hex(bins = 30, alpha = 0.75) +
+      geom_abline(intercept = 0, slope = 1) +
+      geom_text(aes(x = -Inf, y = Inf, hjust = -0.1, vjust = 1.2),
+                label = perfomance.annotation) +
+      scale_fill_viridis_c(trans = "log10") +
+      labs(x = "log(observed)", y = "log(predicted)", fill = bquote(log[10](count)),
+           title = iexport_name) +
+      theme_bw(base_size = 10) +
+      theme(legend.position = "bottom",
+            plot.title = element_text(hjust = 0.5),
+            plot.subtitle = element_text(hjust = 0.5),
+            legend.key.size = unit(0.35, "cm"))
 
-  s.max <-max(layer_scales(p.hex)$y$range$range)
-  s.min <-min(layer_scales(p.hex)$y$range$range)
+    r.max <- max(layer_scales(p.hex)$x$range$range)
+    r.min <- min(layer_scales(p.hex)$x$range$range)
 
-  t.max <-round(max(r.max,s.max),1)
-  t.min <-round(min(r.min,s.min),1)
+    s.max <-max(layer_scales(p.hex)$y$range$range)
+    s.min <-min(layer_scales(p.hex)$y$range$range)
 
-  p.hex <- p.hex + coord_equal(xlim=c(t.min,t.max),ylim=c(t.min,t.max))
+    t.max <-round(max(r.max,s.max),1)
+    t.min <-round(min(r.min,s.min),1)
 
-  # ggsave(paste0(mnt.dir,
-  #               "evaluation/",
-  #               paste("plot",
-  #                     imodel_type,
-  #                     ibase_predictions,
-  #                     isoil_property,
-  #                     ispectra,
-  #                     igeocovariates,
-  #                     ipca_compression,
-  #                     sep = "_"),
-  #               ".png"),
-  #        p.hex, width = 6, height = 5, units = "in", scale = 1)
+    p.hex <- p.hex + coord_equal(xlim=c(t.min,t.max),ylim=c(t.min,t.max))
 
-  # cat(paste0("Run ", i, "/", nrow(modeling.combinations), "\n"))
+    ggsave(paste0(dir,
+                  iexport_name,
+                  "/valplot_",
+                  imodel_name,
+                  ".png"),
+           p.hex, dpi = 200, width = 5, height = 5, units = "in", scale = 1)
+
+  } else {
+
+    p.hex <- ggplot(cv.results, aes(x = truth, y = response)) +
+      geom_hex(bins = 30, alpha = 0.75) +
+      geom_abline(intercept = 0, slope = 1) +
+      geom_text(aes(x = -Inf, y = Inf, hjust = -0.1, vjust = 1.2),
+                label = perfomance.annotation) +
+      scale_fill_viridis_c(trans = "log10") +
+      labs(x = "observed", y = "predicted", fill = bquote(log[10](count)),
+           title = iexport_name) +
+      theme_bw(base_size = 10) +
+      theme(legend.position = "bottom",
+            plot.title = element_text(hjust = 0.5),
+            plot.subtitle = element_text(hjust = 0.5),
+            legend.key.size = unit(0.35, "cm"))
+
+    r.max <- max(layer_scales(p.hex)$x$range$range)
+    r.min <- min(layer_scales(p.hex)$x$range$range)
+
+    s.max <-max(layer_scales(p.hex)$y$range$range)
+    s.min <-min(layer_scales(p.hex)$y$range$range)
+
+    t.max <-round(max(r.max,s.max),1)
+    t.min <-round(min(r.min,s.min),1)
+
+    p.hex <- p.hex + coord_equal(xlim=c(t.min,t.max),ylim=c(t.min,t.max))
+
+    ggsave(paste0(dir,
+                  iexport_name,
+                  "/valplot_",
+                  imodel_name,
+                  ".png"),
+           p.hex, dpi = 200, width = 5, height = 5, units = "in", scale = 1)
+
+  }
+
+  cat(paste0("Run ", i, "/", nrow(fitted.modeling.combinations), "\n\n"))
 
 }
 
 ```
 
-<!-- Example of an accuracy plot: -->
+Example of an accuracy plot:
 
-<!-- ```{r ac-soc1, echo=FALSE, fig.cap="Accuracy plot for log..oc_usda.calc_wpct/mir_mlr..eml_kssl_na_v1.rds`.", out.width="60%"} -->
-<!-- knitr::include_graphics("./models/log..oc_usda.calc_wpct/ap.mir_mlr..eml_kssl_na_v1.rds.png") -->
-<!-- ``` -->
+```{r ac-toc, echo=FALSE, fig.cap="Accuracy plot for log..c.tot_usda.a622_w.pct using mir_mlr3..eml_ossl_na_v1.2 model", out.width="60%"}
+knitr::include_graphics("./out/plots/log..c.tot_usda.a622_w.pct..mir_mlr3..eml_ossl_na_v1.2.png")
+```
 
 ## References
