@@ -1,0 +1,137 @@
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.5759693.svg)](https://doi.org/10.5281/zenodo.5759693)
+
+# Fitting OSSL models
+
+[<img src="./img/soilspec4gg-logo_fc.png" alt="SoilSpec4GG logo" width="250"/>](https://soilspectroscopy.org/)
+
+This is repository for all model fitting development for the [Soil Spectroscopy for Global
+Good](https://soilspectroscopy.org) project and based on the Open Soil Spectral Library [(OSSL)](https://soilspectroscopy.github.io/ossl-manual/).
+
+The `README` of folder [`R-mlr`](R-mlr/README.md) explains the steps used to calibrate the models used in the OSSL.
+
+In summary, we have provided 5 different model types depending on the availability of samples in the OSSL database, without the use of geocovariates (`na` code).
+
+The model types are composed of two different subsets, i.e. using the KSSL soil spectral library alone (`kssl` code) or the full OSSL database (`ossl` code), in combinations with three spectral ranges: VisNIR (`visnir` code), NIR from the Neospectra instrument (`nir.neospectra` code), and MIR (`mir` code).
+
+We have used the [MLR3 framework](https://mlr3book.mlr-org.com/) for fitting machine learning ensemble models.
+
+```{r model_types, echo=FALSE}
+readr::read_csv("out/modeling_combinations_v1.2.csv", show_col_types = FALSE) |>
+  dplyr::distinct(spectra_type, subset, geo, model_name) |>
+  knitr::kable()
+```
+
+The ensemble model (coding name `mlr3..eml`) is composed of a linear regression (meta-learner, `regr.lm`) of base learners.
+
+Base learners employed were: Elastic net (`glmnet`), Random Forest (`ranger`), XGBoost trees (`xgboost`), and Cubist (`cubist`).
+
+MLR3 allows the base learners to feed the meta-learner with cross-validated (`cv`) or plain calibration predictions (`insample`), but we used `insample` to speed up processing.
+
+Hyperparameter optimization was done with internal resampling (`inner`) using 5-fold cross-validation and a smaller subset for speeding up this operation. This task was performed with random search of the hyperparameter space testing up to 20 configurations to find the lowest RMSE. The final model with the best optimal hyperparameters was fitted at the end with the full train data.
+
+The search space was composed of crossed combinations, i.e. each model is not individually tuned:
+
+```{r hpo, echo=FALSE, eval=FALSE}
+# Default values
+learner_glmnet = lrn("regr.glmnet", predict_type = "response")
+
+learner_ranger = lrn("regr.ranger", predict_type = "response",
+                     replace = TRUE, num.threads = 1, verbose = FALSE)
+
+learner_xgboost = lrn("regr.xgboost", predict_type = "response",
+                      booster = "gbtree", nthread = 1,
+                      subsample = 0.67)
+
+learner_cubist = lrn("regr.cubist", predict_type = "response",
+                     neighbors = 0, unbiased = FALSE, seed = 1993)
+
+# Search space for HPO
+search_space_ensemble = ps(
+  regr.glmnet.alpha = p_dbl(0, 1),
+  regr.glmnet.lambda = p_dbl(0.001, 0.1),
+  regr.ranger.num.trees = p_int(20, 100),
+  regr.ranger.min.node.size = p_int(5, 20),
+  regr.xgboost.nrounds = p_int(20, 100),
+  regr.xgboost.eta = p_dbl(0.3, 0.5),
+  regr.xgboost.max_depth = p_int(5, 20),
+  regr.cubist.committees = p_int(5, 10)
+)
+```
+
+For predictors, we have use the first 120 PCs of the compressed spectra, a threshold that considers the tradeoff between spectral representation and compression magnitude.
+
+The following soil properties have models fitted:
+```{r soil_properties, echo=FALSE}
+readr::read_csv("out/fitted_modeling_combinations_v1.2.csv", show_col_types = FALSE) |>
+  dplyr::distinct(soil_property, description, export_name) |>
+  dplyr::rename(unit_transform = export_name) |>
+  dplyr::mutate(unit_transform = ifelse(grepl("log..", unit_transform), "log1p", "original")) |>
+  knitr::kable()
+```
+
+Final evaluation was performed with external (`outer`) 10-fold cross validation of the final models using root mean square error (`rmse`), mean error (`bias`),  
+
+Validation plots are available in the [`out/plots`](out/plots) folder.
+
+Final fitted models along with their performance can be found in
+[out/fitted_models_performance_v1.2.csv](out/fitted_models_performance_v1.2.csv)
+
+# Using OSSL models in your computer
+
+To load the complete analysis-ready models, train data, cross-validated predictions, validation performance metrics and validation plot in R, please use the public urls described in [out/fitted_models_access.csv](out/fitted_models_access.csv)
+
+`qs` is a serialized and compressed file format that is faster than native R `rds`. You need to have [qs package](https://github.com/traversc/qs) version >= 0.25.5 to load files direct from the URLs.
+
+Example:
+```{r prediction, echo=TRUE, eval=FALSE}
+library("tidyverse")
+library("mlr3verse")
+library("qs")
+
+files.table <- readr::read_csv("out/fitted_models_access.csv", show_col_types = F)
+
+files.table %>%
+  dplyr::filter(grepl("clay", soil_property)) %>%
+  dplyr::filter(grepl("nir.neospectra", model_name)) %>%
+  dplyr::select(file_url)
+
+trained.model <- qs::qread_url("https://storage.googleapis.com/soilspec4gg-public/models/clay.tot_usda.a334_w.pct/model_nir.neospectra_mlr3..eml_ossl_na_v1.2.qs")
+
+train.data <- qs::qread_url("https://storage.googleapis.com/soilspec4gg-public/models/clay.tot_usda.a334_w.pct/task_nir.neospectra_mlr3..eml_ossl_na_v1.2.qs")
+
+task <- mlr3::as_task_regr(train.data, id = "train", target = "clay.tot_usda.a334_w.pct", type = "regression")
+task$set_col_roles("id.layer_uuid_txt", roles = "name")
+
+predictions <- trained.model$predict(task) %>% data.table::as.data.table()
+
+predictions <- dplyr::left_join(task$row_names, predictions, by = c("row_id" = "row_ids"))
+```
+
+> NOTE: For using the trained model with new predictions, the PC scores should be predicted from the [Standard Normal Variate (SNV) preprocessed](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#scatter-and-baseline-corrections) spectra following the [same specifications and nomenclature](https://soilspectroscopy.github.io/ossl-manual/neospectra-database.html#database-description) of the OSSL database (in the previous example we used the `nir.neospectra` model).
+
+The PCA models are available in:  
+- [https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_kssl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_kssl_v1.2.qs).  
+- [https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_ossl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_ossl_v1.2.qs).  
+- [https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs).  
+- [https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_kssl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_kssl_v1.2.qs).  
+- [https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_ossl_v1.2.qs](https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_ossl_v1.2.qs).  
+
+Example
+```{r pca, echo=TRUE, eval=FALSE}
+pca.model <- qread_url("https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs")
+
+class(pca.model) <- "prcomp"
+
+new.scores <- predict(pca.model, new.spectra)
+```
+
+If you fit your own models and/or if you are interested in contributing to this project, please contact us and help us make better open soil data for global good!
+
+# Other tools and repositories of interest
+
+For more advanced uses of the soil spectral libraries **we advise to contact the original data producers** especially to get help with using, extending, and improving the original SSL data.
+
+- OSSL Documentation: <https://soilspectroscopy.github.io/ossl-manual/>;
+- OSSL Explorer: <https://explorer.soilspectroscopy.org>;
+- OSSL Engine: <https://engine.soilspectroscopy.org>;
+- OSSL datasets import repository: <https://github.com/soilspectroscopy/ossl-imports>;
