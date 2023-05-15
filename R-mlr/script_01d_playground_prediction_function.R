@@ -11,7 +11,7 @@ library("asdreader")
 #   spectralcockpit = 'https://spectral-cockpit.r-universe.dev',
 #   CRAN = 'https://cloud.r-project.org'))
 library("opusreader2")
-
+library("matrixStats")
 
 ## Samples
 opus.1 <- read_opus_single(dsn = "sample-data/235157XS01.0")
@@ -50,10 +50,6 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
                          geo.type = "na",
                          ncomps = 120,
                          models.dir = "~/mnt-ossl/ossl_models/"){
-
-  ## Reference table
-  reference <- read_csv("https://github.com/soilspectroscopy/ossl-models/raw/main/out/front_end_table.csv",
-                        show_col_types = F)
 
   ## Formatting and preprocessing
   mir.spectral.range <- paste0("scan_mir.", seq(600, 4000, by = 2), "_abs")
@@ -315,91 +311,77 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
 
   }
 
-  ## Loading PCA model and compressing
+  ## Loading PCA model for compression
+  spectra.type = "nir.neospectra"
+  subset.type = "ossl"
+  geo.type = "na"
+  ncomps = 120
+  models.dir = "~/mnt-ossl/ossl_models/"
+
+  pca.model <- qs::qread(paste0(models.dir,
+                            "pca.ossl/mpca_",
+                            spectra.type,
+                            "_mlr3..eml_",
+                            subset.type,
+                            "_v1.2.qs"))
+
+  class(pca.model) <- "prcomp"
+
+  data.scores <- dplyr::bind_cols(data.prep[,1], predict(pca.model, data.prep)) %>%
+    dplyr::select(1, all_of(paste0("PC", seq(1, ncomps, 1))))
 
   ## Loading prediction model
-  if(missing(ossl.model)){
-    model.url = paste0("http://s3.us-east-1.wasabisys.com/soilspectroscopy/ossl_models/", t.var, "/", spc.type, "_mlr..eml_", subset.type, "_", geo.type, "_v1.rds")
-    ossl.model = readRDS(url(model.rds, "rb"))
-  }
+  prediction.model <- qs::qread(paste0(models.dir,
+                                   target,
+                                   "/model_",
+                                   spectra.type,
+                                   "_mlr3..eml_",
+                                   subset.type,
+                                   "_",
+                                   geo.type,
+                                   "_v1.2.qs"))
 
-  ## Loading PCA model and compressing
-  if(spc.type == "mir" | spc.type == "visnir.mir"){
-    wn = as.numeric(gsub("X", "", names(mir.raw)))
-    spc = as.matrix(mir.raw)
-    #colnames(spc) = paste(wn)
-    spc = as.data.frame(prospectr::resample(spc, wn, seq(600, 4000, by=2), interpol = "spline"))
-    spc = lapply(spc, function(j){ round(ifelse(j<0, NA, ifelse(j>3, 3, j))*1000) })
-    spc = as.data.frame(do.call(cbind, spc))
-    names(spc) = paste0("scan_mir.", seq(600, 4000, by=2), "_abs")
-    ## convert to 1st der:
-    spc = prospectr::gapDer(spc, m=1, w=5, s=1, delta.wav=2)
-    class(ossl.pca.mir) = "prcomp"
-    X1.pc = as.data.frame(predict(ossl.pca.mir, newdata=as.data.frame(spc)))[,1:n.spc]
-    colnames(X1.pc) = paste0("mir.PC", 1:n.spc)
-  } else {
-    X1.pc = NA
-  }
-  if(spc.type == "visnir" | spc.type == "visnir.mir"){
-    wn = as.numeric(gsub("X", "", names(visnir.raw)))
-    spc = as.matrix(visnir.raw)
-    #colnames(spc) = paste(wn)
-    spc = as.data.frame(prospectr::resample(spc, wn, seq(350, 2500, by=2), interpol = "spline"))
-    spc = lapply(spc, function(j){ round(ifelse(j<0, NA, ifelse(j>1, 1, j))*100, 1) })
-    spc = as.data.frame(do.call(cbind, spc))
-    names(spc) = paste0("scan_visnir.", seq(350, 2500, by=2), "_pcnt")
-    ## convert to SNV
-    spc = prospectr::standardNormalVariate(spc)
-    class(ossl.pca.visnir) = "prcomp"
-    X2.pc = as.data.frame(predict(ossl.pca.visnir, newdata=as.data.frame(spc)))[,1:n.spc]
-    colnames(X2.pc) = paste0("visnir.PC", 1:n.spc)
-  } else {
-    X2.pc = NA
-  }
-  ## obtain GeoTIFF values
-  if(geo.type=="ll"){
-    pnts = SpatialPoints(data.frame(lon, lat), proj4string = CRS("EPSG:4326"))
-    cog.lst = paste0(cog.dir, ossl.model$features[grep("clm_", ossl.model$features)], ".tif")
-    ov.tmp = extract.cog(pnts, cog.lst)
-  } else {
-    ov.tmp = NA
-  }
+  ## Preparing data
+  task <- as.data.table(data.scores)
 
-  ## Bind all covariates together
-  X = do.call(cbind, list(X1.pc, X2.pc, ov.tmp, data.frame(hzn_depth=hzn_depth)))
-  X = X[,which(unlist(lapply(X, function(x) !all(is.na(x)))))]
-  X$dataset.code_ascii_c = factor(rep(dataset.code_ascii_c, nrow(X)), levels = c("NEON.SSL", "KSSL.SSL", "CAF.SSL", "AFSIS1.SSL", "AFSIS2.SSL", "ICRAF.ISRIC", "LUCAS.SSL"))
-  X <- fastDummies::dummy_cols(X, select_columns = "dataset.code_ascii_c")
+  ## Prediction
+  data.prediction <- as.data.table(prediction.model$predict_newdata(task))
 
-  ## predict
-  ossl.model$features[which(!ossl.model$features %in% names(X))]
-  pred = predict(ossl.model, newdata=X[,ossl.model$features])
+  data.prediction <- dplyr::bind_cols(task[,1], {
+    data.prediction %>%
+      dplyr::select(response) %>%
+      rename(!!target := response)}) %>%
+    as_tibble()
 
-  ## uncertainty
-  if(sd==TRUE){
-    out.c <- as.matrix(as.data.frame(mlr::getStackedBaseLearnerPredictions(ossl.model, newdata=X[,ossl.model$features])))
-    cf = eml.cf(ossl.model)
-    model.error <- sqrt(matrixStats::rowSds(out.c, na.rm=TRUE)^2 * cf)
-  }
+  ## Uncertainty (CI 95%) based on the standard error of prediction
+  ## from the meta-learner linear model (intercept and 4 base learners, df = 4)
+  prediction.model$predict_type = "se"
 
-  ## Return result as a data.frame:
-  out = data.frame(pred.mean=pred$data$response, pred.error=model.error)
+  crit <- qt(p = 0.05/2, df = 4, lower.tail = FALSE)
 
-  ## back-transform
-  if(length(grep("log..", t.var))>0){
-    out$tpred.mean = expm1(out$pred.mean)
-    if(!is.null(ylim)) {
-      out$tpred.mean = ifelse(out$tpred.mean< ylim[1], ylim[1], ifelse(out$tpred.mean > ylim[2], ylim[2], out$tpred.mean))
+  confidence.predictions <- as.data.table(prediction.model$predict_newdata(task)) %>%
+    dplyr::select(se) %>%
+    dplyr::rename(std_error = se) %>%
+    dplyr::mutate(critical_value = crit)
+
+  out <- dplyr::bind_cols(data.prediction, confidence.predictions) %>%
+    dplyr::mutate(lower_CI95 = !!as.name(target)-(std_error*critical_value),
+                  upperCI_CI95 = !!as.name(target)+(std_error*critical_value)) %>%
+    dplyr::select(-critical_value)
+
+  ## Back-transforming
+  if(grepl("log..", target)){
+    out <- out %>%
+      dplyr::mutate(!!target := expm1(!!as.name(target)),
+                    std_error = expm1(std_error),
+                    lower_CI95 = expm1(lower_CI95),
+                    upperCI_CI95 = expm1(upperCI_CI95))
     }
-    out$lower.1std = expm1(out$pred.mean - out$pred.error)
-    out$upper.1std = expm1(out$pred.mean + out$pred.error)
-  } else {
-    out$lower.1std = out$pred.mean - out$pred.error
-    out$upper.1std = out$pred.mean + out$pred.error
-  }
-  if(!is.null(ylim)) {
-    out$lower.1std = ifelse(out$lower.1std < ylim[1], ylim[1], ifelse(out$lower.1std > ylim[2], ylim[2], out$lower.1std))
-    out$upper.1std = ifelse(out$upper.1std < ylim[1], ylim[1], ifelse(out$upper.1std > ylim[2], ylim[2], out$upper.1std))
-  }
-  return(list(pred=out, x=X, model=ossl.model$learner.model$super.model$learner.model$model, cf=cf))
+
+  ## Spectral outlier screening
+
+
+  ## Final results
+  return(out)
+
 }
