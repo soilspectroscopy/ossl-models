@@ -33,36 +33,9 @@ Base learners were fitted using Elastic net (`glmnet`), Random Forest (`ranger`)
 
 MLR3 allows the base learners to feed the meta-learner with cross-validated (`cv`) or plain calibration predictions (`insample`), but we used `insample` to speed up processing.
 
-Hyperparameter optimization was done with internal resampling (`inner`) using 5-fold cross-validation and a smaller subset for speeding up this operation. This task was performed with random search of the hyperparameter space testing up to 20 configurations to find the lowest RMSE. The final model with the best optimal hyperparameters was fitted at the end with the full train data.
+Hyperparameter optimization was done with internal resampling (`inner`) using 5-fold cross-validation and a smaller subset for speeding up this operation. This task was performed with a random search of the hyperparameter space testing up to 20 configurations to find the lowest RMSE. The final model with the best optimal hyperparameters was fitted at the end with the full train data.
 
-The search space was composed of crossed combinations, i.e. each model is not individually tuned:
-
-```{r hpo, echo=TRUE, eval=FALSE}
-# Default values
-learner_glmnet = lrn("regr.glmnet", predict_type = "response")
-
-learner_ranger = lrn("regr.ranger", predict_type = "response",
-                     replace = TRUE, num.threads = 1, verbose = FALSE)
-
-learner_xgboost = lrn("regr.xgboost", predict_type = "response",
-                      booster = "gbtree", nthread = 1,
-                      subsample = 0.67)
-
-learner_cubist = lrn("regr.cubist", predict_type = "response",
-                     neighbors = 0, unbiased = FALSE, seed = 1993)
-
-# Search space for HPO
-search_space_ensemble = ps(
-  regr.glmnet.alpha = p_dbl(0, 1),
-  regr.glmnet.lambda = p_dbl(0.001, 0.1),
-  regr.ranger.num.trees = p_int(20, 100),
-  regr.ranger.min.node.size = p_int(5, 20),
-  regr.xgboost.nrounds = p_int(20, 100),
-  regr.xgboost.eta = p_dbl(0.3, 0.5),
-  regr.xgboost.max_depth = p_int(5, 20),
-  regr.cubist.committees = p_int(5, 10)
-)
-```
+The search space was composed of crossed combinations, i.e. each model is not individually tuned. Check [`R-mlr/README.md`](R-mlr/README.md) for more details.
 
 As predictors, we have use the first 120 PCs of the compressed spectra, a threshold that considers the tradeoff between spectral representation and compression magnitude.
 
@@ -70,8 +43,9 @@ The following soil properties have models fitted:
 ```{r soil_properties, echo=FALSE}
 readr::read_csv("out/fitted_modeling_combinations_v1.2.csv", show_col_types = FALSE) |>
   dplyr::distinct(soil_property, description, export_name) |>
-  dplyr::rename(unit_transform = export_name) |>
+  dplyr::mutate(unit_transform = export_name) |>
   dplyr::mutate(unit_transform = ifelse(grepl("log..", unit_transform), "log1p", "original")) |>
+  dplyr::select(soil_property, description, unit_transform, export_name) |>
   knitr::kable()
 ```
 
@@ -79,43 +53,63 @@ Final evaluation was performed with external (`outer`) 10-fold cross validation 
 
 Validation plots are available in the [`out/plots`](out/plots) folder.
 
-Final fitted models description along with their performance can be found in
+The final fitted models description along with their performance can be found in
 [out/fitted_models_performance_v1.2.csv](out/fitted_models_performance_v1.2.csv)
 
-# Using OSSL models in your computer
+# Using OSSL models on your computer
 
-To load the complete analysis-ready models, train data, cross-validated predictions, validation performance metrics and validation plot in R, please use the public urls described in [out/fitted_models_access.csv](out/fitted_models_access.csv)
+To load the complete analysis-ready models, train data, cross-validated predictions, validation performance metrics, and validation plot in R, please use the public URLs described in [out/fitted_models_access.csv](out/fitted_models_access.csv)
 
 `qs` is a serialized and compressed file format that is faster than native R `rds`. You need to have [qs package](https://github.com/traversc/qs) version >= 0.25.5 to load files direct from the URLs.
 
-Example:
-```{r prediction, echo=TRUE, eval=FALSE}
-library("tidyverse")
-library("mlr3verse")
-library("qs")
+> NOTE: For using the trained models with new spectra, the PC scores should be predicted from the [Standard Normal Variate (SNV) preprocessed](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#scatter-and-baseline-corrections) spectra following the [same specifications and nomenclature](https://soilspectroscopy.github.io/ossl-manual/neospectra-database.html#database-description) of the OSSL database (in the previous example we used the `nir.neospectra` model).  
 
-files.table <- readr::read_csv("out/fitted_models_access.csv", show_col_types = F)
+We provided a prediction in this repository both [examples of datasets](sample-data) and a [prediction function](R-mlr/OSSL_functions.R) that incorporates all of these operations.
 
-files.table %>%
-  dplyr::filter(grepl("clay", soil_property)) %>%
-  dplyr::filter(grepl("nir.neospectra", model_name)) %>%
-  dplyr::select(file_url)
+Please, check the example datasets for formatting your dataset to the minimum level required for the prediction function. You can provide either `csv` files or directly `asd` or opus (`.0`) for VisNIR and MIR scans, respectively.
 
-trained.model <- qs::qread_url("https://storage.googleapis.com/soilspec4gg-public/models/clay.tot_usda.a334_w.pct/model_nir.neospectra_mlr3..eml_ossl_na_v1.2.qs")
+With it, the user can get table results for the soil property of interest (with confidence interval) and a flag (spectral_outlier) which screens a **potential spectral misrepresentation**.
 
-train.data <- qs::qread_url("https://storage.googleapis.com/soilspec4gg-public/models/clay.tot_usda.a334_w.pct/task_nir.neospectra_mlr3..eml_ossl_na_v1.2.qs")
+The prediction functions requires the [tidyverse](https://www.tidyverse.org/), [mlr3](https://mlr3book.mlr-org.com/intro.html), [qs](https://github.com/traversc/qs), [asdreader](https://github.com/pierreroudier/asdreader), [opusreader2](https://github.com/spectral-cockpit/opusreader2), and [matrixStats](https://cran.rstudio.com/web/packages/matrixStats/index.html) packages.
 
-task <- mlr3::as_task_regr(train.data, id = "train", target = "clay.tot_usda.a334_w.pct", type = "regression")
-task$set_col_roles("id.layer_uuid_txt", roles = "name")
+Parameters:  
 
-predictions <- trained.model$predict(task) %>% data.table::as.data.table()
+- `target`: the soil property of interest. Log-transformed properties must have `log..` appended at the beginning of the name as indicated in the `export_name` column.  
+- `spectra.file`: the path for the spectral measurements, either a `csv` table (following the sample-data specifications), `asd`, or opus (`.0`) file.  
+- `spectra.type`: the spectral range of interest. Either `visnir`, `nir.neospectra`, or `mir`.  
+- `subset.type`: the subset of interest, either the whole `ossl` or the `kssl` alone.  
+- `geo.type`: only available for `na`.  
+- `models.dir`: the path for the `ossl_models` folder. Should follow the same structure and naming code as represented in [out/fitted_models_access.csv](out/fitted_models_access.csv).
 
-predictions <- dplyr::left_join(task$row_names, predictions, by = c("row_id" = "row_ids"))
+> Please note that the soil properties indication follows the export name. In addition, check [out/fitted_models_performance_v1.2.csv](out/fitted_models_performance_v1.2.csv) for the complete list of models of each soil property as some spectra types are not completely available.
+
+```{r prediction, echo=TRUE, eval=TRUE, message=FALSE}
+source("R-mlr/OSSL_functions.R")
+
+list.files("sample-data")
+
+clay.visnir.ossl <- predict.ossl(target = "clay.tot_usda.a334_w.pct",
+                                 spectra.file = "sample-data/101453MD01.asd",
+                                 spectra.type = "visnir",
+                                 subset.type = "ossl",
+                                 geo.type = "na",
+                                 models.dir = "~/mnt-ossl/ossl_models/")
+
+clay.visnir.ossl |>
+  knitr::kable()
+
+oc.mir.kssl <- predict.ossl(target = "log..oc_usda.c729_w.pct",
+                            spectra.file = "sample-data/sample_mir_data.csv",
+                            spectra.type = "mir",
+                            subset.type = "kssl",
+                            geo.type = "na",
+                            models.dir = "~/mnt-ossl/ossl_models/")
+
+oc.mir.kssl |>
+  knitr::kable()
 ```
 
-> NOTE: For using the trained model with new spectra, the PC scores should be predicted from the [Standard Normal Variate (SNV) preprocessed](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#scatter-and-baseline-corrections) spectra following the [same specifications and nomenclature](https://soilspectroscopy.github.io/ossl-manual/neospectra-database.html#database-description) of the OSSL database (in the previous example we used the `nir.neospectra` model).  
-
-PCA models are available in:
+PCA models are available in `ossl_models/pca.ossl` folder:
 
 - <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_kssl_v1.2.qs>.  
 - <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_ossl_v1.2.qs>.  
@@ -123,17 +117,7 @@ PCA models are available in:
 - <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_kssl_v1.2.qs>.  
 - <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_ossl_v1.2.qs>.  
 
-Example:
-```{r pca, echo=TRUE, eval=FALSE}
-pca.model <- qread_url("https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs")
-
-class(pca.model) <- "prcomp"
-
-new.scores <- predict(pca.model, new.spectra)
-```
-
 If you fit your own models and/or if you are interested in contributing to this project, please contact us and help us make better open soil data for global good!
-
 
 # Other tools and repositories of interest
 

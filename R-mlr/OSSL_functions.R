@@ -15,24 +15,25 @@ readRDS.gz <- function(file,threads=parallel::detectCores()) {
 }
 
 ## MongoDB
-library(mongolite)
-library(jsonify)
-
-soilspec4gg.db = list(
-  host = 'api.soilspectroscopy.org',
-  name = 'soilspec4gg',
-  user = 'soilspec4gg',
-  pw = 'soilspec4gg'
-)
-
-soilspec4gg.db$url <- paste0(
-  'mongodb://', soilspec4gg.db$user, ':',
-  soilspec4gg.db$pw, '@',
-  soilspec4gg.db$host, '/',
-  soilspec4gg.db$name, '?ssl=true'
-)
-
 soilspec4gg.init <- function() {
+
+  library("mongolite")
+  library("jsonify")
+
+  soilspec4gg.db = list(
+    host = 'api.soilspectroscopy.org',
+    name = 'soilspec4gg',
+    user = 'soilspec4gg',
+    pw = 'soilspec4gg'
+  )
+
+  soilspec4gg.db$url <- paste0(
+    'mongodb://', soilspec4gg.db$user, ':',
+    soilspec4gg.db$pw, '@',
+    soilspec4gg.db$host, '/',
+    soilspec4gg.db$name, '?ssl=true'
+  )
+
   print('Creating the access for mongodb collections.')
   soilspec4gg.db$collections <<- list(
     soilsite = mongo(collection = 'soilsite', url = soilspec4gg.db$url, verbose = TRUE),
@@ -342,11 +343,6 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
   }
 
   ## Loading PCA model for compression
-  spectra.type = "nir.neospectra"
-  subset.type = "ossl"
-  geo.type = "na"
-  ncomps = 120
-  models.dir = "~/mnt-ossl/ossl_models/"
 
   pca.model <- qs::qread(paste0(models.dir,
                                 "pca.ossl/mpca_",
@@ -371,9 +367,10 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
                                        geo.type,
                                        "_v1.2.qs"))
 
-  ## Prediction
+  ## Preparing data
   task <- as.data.table(data.scores)
 
+  ## Prediction
   data.prediction <- as.data.table(prediction.model$predict_newdata(task))
 
   data.prediction <- dplyr::bind_cols(task[,1], {
@@ -395,7 +392,7 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
 
   out <- dplyr::bind_cols(data.prediction, confidence.predictions) %>%
     dplyr::mutate(lower_CI95 = !!as.name(target)-(std_error*critical_value),
-                  upperCI_CI95 = !!as.name(target)+(std_error*critical_value)) %>%
+                  upper_CI95 = !!as.name(target)+(std_error*critical_value)) %>%
     dplyr::select(-critical_value)
 
   ## Back-transforming
@@ -404,7 +401,7 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
       dplyr::mutate(!!target := expm1(!!as.name(target)),
                     std_error = expm1(std_error),
                     lower_CI95 = expm1(lower_CI95),
-                    upperCI_CI95 = expm1(upperCI_CI95))
+                    upper_CI95 = expm1(upper_CI95))
   }
 
   ## Spectral outlier screening
