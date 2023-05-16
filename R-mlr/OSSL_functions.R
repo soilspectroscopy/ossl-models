@@ -1,5 +1,5 @@
 
-## Reading compressed RDS
+## Saving compressed RDS
 saveRDS.gz <- function(object,file,threads=parallel::detectCores()) {
   con <- pipe(paste0("pigz -p",threads," > ",file),"wb")
   saveRDS(object, file = con)
@@ -51,19 +51,6 @@ soilspec4gg.init <- function() {
 
 ## Prediction function
 
-library("tidyverse")
-library("qs")
-
-# https://github.com/pierreroudier/asdreader
-library("asdreader")
-
-# https://github.com/spectral-cockpit/opusreader2
-# install.packages("opusreader2", repos = c(
-#   spectralcockpit = 'https://spectral-cockpit.r-universe.dev',
-#   CRAN = 'https://cloud.r-project.org'))
-library("opusreader2")
-library("matrixStats")
-
 predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
                          # spectra.file = "sample-data/235157XS01.0",
                          # spectra.file = "sample-data/icr056141.0",
@@ -77,13 +64,27 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
                          spectra.type = "nir.neospectra",
                          subset.type = "ossl",
                          geo.type = "na",
-                         ncomps = 120,
                          models.dir = "~/mnt-ossl/ossl_models/"){
+
+  library("tidyverse")
+  library("mlr3")
+  library("qs")
+
+  # https://github.com/pierreroudier/asdreader
+  library("asdreader")
+
+  # https://github.com/spectral-cockpit/opusreader2
+  # install.packages("opusreader2", repos = c(
+  #   spectralcockpit = 'https://spectral-cockpit.r-universe.dev',
+  #   CRAN = 'https://cloud.r-project.org'))
+  library("opusreader2")
+  library("matrixStats")
 
   ## Formatting and preprocessing
   mir.spectral.range <- paste0("scan_mir.", seq(600, 4000, by = 2), "_abs")
   visnir.spectral.range <- paste0("scan_visnir.", seq(400, 2500, by = 2), "_ref")
   nir.neospectra.spectral.range <- paste0("scan_nir.", seq(1350, 2550, by = 2), "_ref")
+  ncomps = 120
 
   ## Check if input scans pass some minimum checks, load and preprocess
   if(spectra.type == "mir"){
@@ -407,9 +408,52 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
   }
 
   ## Spectral outlier screening
-  # To be done
+  ## Values from "out/trustworthiness_q_critical_values.csv"
+  ## Check for updates
+  q.critical <- tibble(model_name = c("mir_mlr3..eml_kssl_v1.2", "mir_mlr3..eml_ossl_v1.2",
+                                      "nir.neospectra_mlr3..eml_ossl_v1.2",
+                                      "visnir_mlr3..eml_kssl_v1.2", "visnir_mlr3..eml_ossl_v1.2"),
+                       q_critical = c(0.0245, 0.0452, 0.00000274, 0.00129, 0.000812))
+
+  # Full and employed PC models (120 comps)
+  pca.model.full <- pca.model
+  class(pca.model.full) <- "prcomp"
+
+  pca.model.employed <- pca.model
+  class(pca.model.employed) <- "prcomp"
+  pca.model.employed$sdev <- pca.model.employed$sdev[1:ncomps]
+  pca.model.employed$rotation <- pca.model.employed$rotation[,1:ncomps]
+
+  # Scores
+  pca.scores.full <- dplyr::bind_cols(data.prep[,1], predict(pca.model.full, data.prep))
+  pca.scores.employed <- dplyr::bind_cols(data.prep[,1], predict(pca.model.employed, data.prep))
+
+  # Back-transformed spectra
+  spectra.bt.full <- as.matrix(pca.scores.full[,-1]) %*% t(pca.model.full$rotation)
+  spectra.bt.full <- t((t(spectra.bt.full) * pca.model.full$scale) + pca.model.full$center)
+  spectra.bt.full <- dplyr::bind_cols(pca.scores.full[,1], spectra.bt.full)
+
+  spectra.bt.employed <- as.matrix(pca.scores.employed[,-1]) %*% t(pca.model.employed$rotation)
+  spectra.bt.employed <- t((t(spectra.bt.employed) * pca.model.employed$scale) + pca.model.employed$center)
+  spectra.bt.employed <- dplyr::bind_cols(pca.scores.employed[,1], spectra.bt.employed)
+
+  # Q stats - sum of squared differences between full and employed PCs back-transformed spectra
+  q.stats <- apply((spectra.bt.employed[,-1]-spectra.bt.full[,-1])^2, MARGIN = 1, sum)
+
+  q.critical <- q.critical %>%
+    dplyr::filter(grepl(spectra.type, model_name)) %>%
+    dplyr::filter(grepl(subset.type, model_name)) %>%
+    dplyr::pull(q_critical)
+
+  # Flagging spectral outlier
+  q.stats <- tibble::tibble(q_stats = q.stats,
+                            q_critical = q.critical) %>%
+    dplyr::mutate(spectral_outlier = ifelse(q_stats >= q_critical, TRUE, FALSE)) %>%
+    dplyr::select(spectral_outlier)
 
   ## Final results
+  out <- bind_cols(out, q.stats)
+
   return(out)
 
 }
