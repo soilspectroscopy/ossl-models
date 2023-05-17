@@ -449,7 +449,8 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
     dplyr::select(spectral_outlier)
 
   ## Final results
-  out <- bind_cols(out, q.stats)
+  out <- bind_cols(out, q.stats) %>%
+    dplyr::rename(!!gsub("log..", "", target) := target)
 
   return(out)
 
