@@ -59,52 +59,8 @@ As predictors, we have use the first 120 PCs of the compressed spectra,
 a threshold that considers the tradeoff between spectral representation
 and compression magnitude.
 
-The following soil properties have models fitted:
-
-| soil_property                  | description                                         | unit_transform | export_name                         |
-|:-------------------------------|:----------------------------------------------------|:---------------|:------------------------------------|
-| acidity_usda.a795_cmolc.kg     | Acidity, BaCl2-TEA Extractable, pH 8.2              | log1p          | log..acidity_usda.a795_cmolc.kg     |
-| aggstb_usda.a1_w.pct           | Aggregate Stability                                 | log1p          | log..aggstb_usda.a1_w.pct           |
-| al.dith_usda.a65_w.pct         | Aluminum, Crystalline, Total Pedogenic Iron         | log1p          | log..al.dith_usda.a65_w.pct         |
-| al.ext_usda.a1056_mg.kg        | Aluminum, Extractable, Mehlich3                     | log1p          | log..al.ext_usda.a1056_mg.kg        |
-| al.ext_usda.a69_cmolc.kg       | Aluminum, Extractable, KCl                          | log1p          | log..al.ext_usda.a69_cmolc.kg       |
-| al.ox_usda.a59_w.pct           | Aluminum, Amorphous, Total Non-Crystalline Iron     | log1p          | log..al.ox_usda.a59_w.pct           |
-| awc.33.1500kPa_usda.c80_w.frac | Available Water Content, Difference 33-1500 kPa     | log1p          | log..awc.33.1500kPa_usda.c80_w.frac |
-| b.ext_mel3_mg.kg               | Boron, Extractable, Mehlich3                        | log1p          | log..b.ext_mel3_mg.kg               |
-| bd_usda.a4_g.cm3               | Bulk Density, \<2mm fraction, Clod                  | log1p          | log..bd_usda.a4_g.cm3               |
-| c.tot_usda.a622_w.pct          | Carbon, Total NCS                                   | log1p          | log..c.tot_usda.a622_w.pct          |
-| ca.ext_usda.a1059_mg.kg        | Calcium, Extractable, Mehlich3                      | log1p          | log..ca.ext_usda.a1059_mg.kg        |
-| ca.ext_usda.a722_cmolc.kg      | Calcium, Extractable, NH4OAc                        | log1p          | log..ca.ext_usda.a722_cmolc.kg      |
-| caco3_usda.a54_w.pct           | Carbonate, \<2mm Fraction                           | log1p          | log..caco3_usda.a54_w.pct           |
-| cec_usda.a723_cmolc.kg         | CEC, pH 7.0, NH4OAc, 2M KCl displacement            | log1p          | log..cec_usda.a723_cmolc.kg         |
-| cf_usda.c236_w.pct             | Coarse Fragments, Greater 2mm                       | log1p          | log..cf_usda.c236_w.pct             |
-| clay.tot_usda.a334_w.pct       | Clay                                                | original       | clay.tot_usda.a334_w.pct            |
-| cu.ext_usda.a1063_mg.kg        | Copper, Extractable, Mehlich3                       | log1p          | log..cu.ext_usda.a1063_mg.kg        |
-| ec_usda.a364_ds.m              | Electrical Conductivity, (w/w)                      | log1p          | log..ec_usda.a364_ds.m              |
-| fe.dith_usda.a66_w.pct         | Iron, Crystalline, Total Pedogenic Iron             | log1p          | log..fe.dith_usda.a66_w.pct         |
-| fe.ext_usda.a1064_mg.kg        | Iron, Extractable, Mehlich3                         | log1p          | log..fe.ext_usda.a1064_mg.kg        |
-| fe.ox_usda.a60_w.pct           | Iron, Amorphous, Total Non-Crystalline Iron         | log1p          | log..fe.ox_usda.a60_w.pct           |
-| k.ext_usda.a1065_mg.kg         | Potassium, Extractable, Mehlich3                    | log1p          | log..k.ext_usda.a1065_mg.kg         |
-| k.ext_usda.a725_cmolc.kg       | Potassium, Extractable, NH4OAc, 2M KCl displacement | log1p          | log..k.ext_usda.a725_cmolc.kg       |
-| mg.ext_usda.a1066_mg.kg        | Magnesium, Extractable, Mehlich3                    | log1p          | log..mg.ext_usda.a1066_mg.kg        |
-| mg.ext_usda.a724_cmolc.kg      | Magnesium, Extractable, NH4OAc, 2M KCl displacement | log1p          | log..mg.ext_usda.a724_cmolc.kg      |
-| mn.ext_usda.a1067_mg.kg        | Manganese, Extractable, Mehlich3                    | log1p          | log..mn.ext_usda.a1067_mg.kg        |
-| mn.ext_usda.a70_mg.kg          | Manganese, Extractable, KCl                         | log1p          | log..mn.ext_usda.a70_mg.kg          |
-| n.tot_usda.a623_w.pct          | Nitrogen, Total NCS                                 | log1p          | log..n.tot_usda.a623_w.pct          |
-| na.ext_usda.a1068_mg.kg        | Sodium, Extractable, Mehlich3                       | log1p          | log..na.ext_usda.a1068_mg.kg        |
-| na.ext_usda.a726_cmolc.kg      | Sodium, Extractable, NH4OAc, 2M KCl displacement    | log1p          | log..na.ext_usda.a726_cmolc.kg      |
-| oc_usda.c729_w.pct             | Organic Carbon, Total C without CaCO3, S prep       | log1p          | log..oc_usda.c729_w.pct             |
-| p.ext_usda.a1070_mg.kg         | Phosphorus, Extractable, Mehlich3                   | log1p          | log..p.ext_usda.a1070_mg.kg         |
-| p.ext_usda.a270_mg.kg          | Phosphorus, Extractable, Bray1                      | log1p          | log..p.ext_usda.a270_mg.kg          |
-| p.ext_usda.a274_mg.kg          | Phosphorus, Extractable, Olsen                      | log1p          | log..p.ext_usda.a274_mg.kg          |
-| ph.cacl2_usda.a481_index       | pH, 1:2 Soil-CaCl2 Suspension                       | original       | ph.cacl2_usda.a481_index            |
-| ph.h2o_usda.a268_index         | pH, 1:1 Soil-Water Suspension                       | original       | ph.h2o_usda.a268_index              |
-| s.tot_usda.a624_w.pct          | Sulfur, Total NCS                                   | log1p          | log..s.tot_usda.a624_w.pct          |
-| sand.tot_usda.c60_w.pct        | Sand, Total, S prep                                 | original       | sand.tot_usda.c60_w.pct             |
-| silt.tot_usda.c62_w.pct        | Silt, Total, S prep                                 | original       | silt.tot_usda.c62_w.pct             |
-| wr.1500kPa_usda.a417_w.pct     | Water Retention, 15 Bar (1500 kPa)                  | log1p          | log..wr.1500kPa_usda.a417_w.pct     |
-| wr.33kPa_usda.a415_w.pct       | Water Retention, 1/3 Bar (33 kPa)                   | log1p          | log..wr.33kPa_usda.a415_w.pct       |
-| zn.ext_usda.a1073_mg.kg        | Zinc, Extractable, Mehlich3                         | log1p          | log..zn.ext_usda.a1073_mg.kg        |
+Soil properties with available models can be found in
+[fitted_modeling_combinations_v1.2.csv](out/fitted_modeling_combinations_v1.2.csv).
 
 Final evaluation was performed with external (`outer`) 10-fold cross
 validation of the tuned models using root mean square error (`rmse`),
@@ -112,18 +68,18 @@ mean error (`bias`), R squared (`rsq`), Lin’s concordance correlation
 coefficient (`ccc`), and ratio of performance to the interquartile range
 (`rpiq`).
 
-Validation plots are available in the [`out/plots`](out/plots) folder.
-
 The final fitted models description along with their performance can be
 found in
-[out/fitted_models_performance_v1.2.csv](out/fitted_models_performance_v1.2.csv)
+[fitted_models_performance_v1.2.csv](out/fitted_models_performance_v1.2.csv)
+
+Validation plots are available in the [`out/plots`](out/plots) folder.
 
 # Using OSSL models on your computer
 
 To load the complete analysis-ready models, train data, cross-validated
 predictions, validation performance metrics, and validation plot in R,
 please use the public URLs described in
-[out/fitted_models_access.csv](out/fitted_models_access.csv)
+[fitted_models_access.csv](out/fitted_models_access.csv)
 
 `qs` is a serialized and compressed file format that is faster than
 native R `rds`. You need to have [qs
@@ -135,24 +91,24 @@ files direct from the URLs.
 > preprocessed](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#scatter-and-baseline-corrections)
 > spectra following the [same specifications and
 > nomenclature](https://soilspectroscopy.github.io/ossl-manual/neospectra-database.html#database-description)
-> of the OSSL database (in the previous example we used the
-> `nir.neospectra` model).
+> of the OSSL database.
 
-We provided a prediction in this repository both [examples of
-datasets](sample-data) and a [prediction
-function](R-mlr/OSSL_functions.R) that incorporates all of these
-operations.
+We provided in this repository both [examples of datasets](sample-data)
+and a [prediction function](R-mlr/OSSL_functions.R) that incorporates
+all of above operations.
 
-Please, check the example datasets for formatting your dataset to the
+Please, check the example datasets for formatting your spectra to the
 minimum level required for the prediction function. You can provide
 either `csv` files or directly `asd` or opus (`.0`) for VisNIR and MIR
 scans, respectively.
 
 With it, the user can get table results for the soil property of
-interest (with confidence interval) and a flag (spectral_outlier) which
-screens a **potential spectral misrepresentation**.
+interest (with uncertainty) and a flag column for a **potential spectral
+misrepresentation** of the OSSL models to your measurements. The
+uncertainty was derived from the standard error of the predictions
+obtained from the linear model (meta-learner) of the ensemble models.
 
-The prediction functions requires the
+The prediction function requires the
 [tidyverse](https://www.tidyverse.org/),
 [mlr3](https://mlr3book.mlr-org.com/intro.html),
 [qs](https://github.com/traversc/qs),
@@ -176,11 +132,15 @@ Parameters:
 - `geo.type`: only available for `na`.  
 - `models.dir`: the path for the `ossl_models` folder. Should follow the
   same structure and naming code as represented in
-  [out/fitted_models_access.csv](out/fitted_models_access.csv).
+  [fitted_models_access.csv](out/fitted_models_access.csv).
+
+All files that represent the **ossl_models** directory tree for local
+run or online access are described in
+[ossl_models_directory_tree.csv](out/ossl_models_directory_tree.csv).
 
 > Please note that the soil properties indication follows the export
 > name. In addition, check
-> [out/fitted_models_performance_v1.2.csv](out/fitted_models_performance_v1.2.csv)
+> [fitted_models_performance_v1.2.csv](out/fitted_models_performance_v1.2.csv)
 > for the complete list of models of each soil property as some spectra
 > types are not completely available.
 
@@ -245,14 +205,6 @@ oc.mir.kssl |>
 |        18 |              34.0265527 | 0.0008844 | 33.9406932 | 34.1126233 | FALSE            |
 |        19 |               0.0926400 | 0.0008598 |  0.0900358 |  0.0952504 | FALSE            |
 |        20 |               0.1802776 | 0.0007664 |  0.1777696 |  0.1827909 | FALSE            |
-
-PCA models are available in `ossl_models/pca.ossl` folder:
-
-- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_kssl_v1.2.qs>.  
-- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_mir_mlr3..eml_ossl_v1.2.qs>.  
-- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_nir.neospectra_mlr3..eml_ossl_v1.2.qs>.  
-- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_kssl_v1.2.qs>.  
-- <https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/mpca_visnir_mlr3..eml_ossl_v1.2.qs>.
 
 If you fit your own models and/or if you are interested in contributing
 to this project, please contact us and help us make better open soil
