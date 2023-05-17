@@ -29,19 +29,19 @@ readr::read_csv("out/modeling_combinations_v1.2.csv", show_col_types = FALSE) |>
 
 The ensemble model (coding name `mlr3..eml`) is composed of a linear regression (meta-learner, `regr.lm`) of base learners.
 
-Base learners were fitted using Elastic net (`glmnet`), Random Forest (`ranger`), XGBoost trees (`xgboost`), and Cubist (`cubist`).
+Base learners are fitted using Elastic net (`glmnet`), Random Forest (`ranger`), XGBoost trees (`xgboost`), and Cubist (`cubist`).
 
 MLR3 allows the base learners to feed the meta-learner with cross-validated (`cv`) or plain calibration predictions (`insample`), but we used `insample` to speed up processing.
 
 Hyperparameter optimization was done with internal resampling (`inner`) using 5-fold cross-validation and a smaller subset for speeding up this operation. This task was performed with a random search of the hyperparameter space testing up to 20 configurations to find the lowest RMSE. The final model with the best optimal hyperparameters was fitted at the end with the full train data.
 
-The search space was composed of crossed combinations, i.e. each model is not individually tuned. Check [`R-mlr/README.md`](R-mlr/README.md) for more details.
+The search space is composed of crossed combinations, i.e. each model is not individually tuned. Check [`R-mlr/README.md`](R-mlr/README.md) for more details.
 
-As predictors, we have use the first 120 PCs of the compressed spectra, a threshold that considers the tradeoff between spectral representation and compression magnitude.
+As predictors, we have used the first 120 PCs of the compressed spectra, a threshold that considers the trade-off between spectral representation and compression magnitude.
 
 Soil properties with available models can be found in [fitted_modeling_combinations_v1.2.csv](out/fitted_modeling_combinations_v1.2.csv).
 
-Final evaluation was performed with external (`outer`) 10-fold cross validation of the tuned models using root mean square error (`rmse`), mean error (`bias`), R squared (`rsq`), Lin's concordance correlation coefficient (`ccc`), and ratio of performance to the interquartile range (`rpiq`).
+Final evaluation was performed with external (`outer`) 10-fold cross validation of the tuned models using root mean square error (`rmse`), mean error (`bias`), R squared (`rsq`), Lin's concordance correlation coefficient (`ccc`), and the ratio of performance to the interquartile range (`rpiq`).
 
 The final fitted models description along with their performance can be found in
 [fitted_models_performance_v1.2.csv](out/fitted_models_performance_v1.2.csv)
@@ -58,9 +58,9 @@ To load the complete analysis-ready models, train data, cross-validated predicti
 
 We provided in this repository both [examples of datasets](sample-data) and a [prediction function](R-mlr/OSSL_functions.R) that incorporates all of above operations.
 
-Please, check the example datasets for formatting your spectra to the minimum level required for the prediction function. You can provide either `csv` files or directly `asd` or opus (`.0`) for VisNIR and MIR scans, respectively.
+Please, check the example datasets for formatting your spectra to the minimum required level of the prediction function. You can provide either `csv` files or directly `asd` or opus (`.0`) for VisNIR and MIR scans, respectively.
 
-With it, the user can get table results for the soil property of interest (with uncertainty) and a flag column for a **potential spectral misrepresentation** of the OSSL models to your measurements. The uncertainty was derived from the standard error of the predictions obtained from the linear model (meta-learner) of the ensemble models.
+The results table has the prediction value (already back-transformed if log was used) for the soil property of interest, uncertainty band, and a flag column for **potential spectral underrepresentation** of the OSSL models, which is calculated based on the principal components and Q statistics. The uncertainty is derived from the standard error of the predictions obtained from the linear model (meta-learner) of the ensemble models.
 
 The prediction function requires the [tidyverse](https://www.tidyverse.org/), [mlr3](https://mlr3book.mlr-org.com/intro.html), [qs](https://github.com/traversc/qs), [asdreader](https://github.com/pierreroudier/asdreader), [opusreader2](https://github.com/spectral-cockpit/opusreader2), and [matrixStats](https://cran.rstudio.com/web/packages/matrixStats/index.html) packages.
 

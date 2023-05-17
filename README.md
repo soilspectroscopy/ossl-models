@@ -37,7 +37,7 @@ code), and MIR (`mir` code).
 The ensemble model (coding name `mlr3..eml`) is composed of a linear
 regression (meta-learner, `regr.lm`) of base learners.
 
-Base learners were fitted using Elastic net (`glmnet`), Random Forest
+Base learners are fitted using Elastic net (`glmnet`), Random Forest
 (`ranger`), XGBoost trees (`xgboost`), and Cubist (`cubist`).
 
 MLR3 allows the base learners to feed the meta-learner with
@@ -51,12 +51,12 @@ hyperparameter space testing up to 20 configurations to find the lowest
 RMSE. The final model with the best optimal hyperparameters was fitted
 at the end with the full train data.
 
-The search space was composed of crossed combinations, i.e. each model
-is not individually tuned. Check [`R-mlr/README.md`](R-mlr/README.md)
-for more details.
+The search space is composed of crossed combinations, i.e. each model is
+not individually tuned. Check [`R-mlr/README.md`](R-mlr/README.md) for
+more details.
 
-As predictors, we have use the first 120 PCs of the compressed spectra,
-a threshold that considers the tradeoff between spectral representation
+As predictors, we have used the first 120 PCs of the compressed spectra,
+a threshold that considers the trade-off between spectral representation
 and compression magnitude.
 
 Soil properties with available models can be found in
@@ -65,8 +65,8 @@ Soil properties with available models can be found in
 Final evaluation was performed with external (`outer`) 10-fold cross
 validation of the tuned models using root mean square error (`rmse`),
 mean error (`bias`), R squared (`rsq`), Lin’s concordance correlation
-coefficient (`ccc`), and ratio of performance to the interquartile range
-(`rpiq`).
+coefficient (`ccc`), and the ratio of performance to the interquartile
+range (`rpiq`).
 
 The final fitted models description along with their performance can be
 found in
@@ -98,15 +98,17 @@ and a [prediction function](R-mlr/OSSL_functions.R) that incorporates
 all of above operations.
 
 Please, check the example datasets for formatting your spectra to the
-minimum level required for the prediction function. You can provide
+minimum required level of the prediction function. You can provide
 either `csv` files or directly `asd` or opus (`.0`) for VisNIR and MIR
 scans, respectively.
 
-With it, the user can get table results for the soil property of
-interest (with uncertainty) and a flag column for a **potential spectral
-misrepresentation** of the OSSL models to your measurements. The
-uncertainty was derived from the standard error of the predictions
-obtained from the linear model (meta-learner) of the ensemble models.
+The results table has the prediction value (already back-transformed if
+log was used) for the soil property of interest, uncertainty band, and a
+flag column for **potential spectral underrepresentation** of the OSSL
+models, which is calculated based on the principal components and Q
+statistics. The uncertainty is derived from the standard error of the
+predictions obtained from the linear model (meta-learner) of the
+ensemble models.
 
 The prediction function requires the
 [tidyverse](https://www.tidyverse.org/),
@@ -182,7 +184,7 @@ clay.visnir.ossl |>
   knitr::kable()
 ```
 
-| sample_id | clay.tot_usda.a334_w.pct | std_error | lower_CI95 | upper_CI95 | spectral_outlier |
+| sample_id | clay.tot_usda.a334_w.pct | std_error | lower_CI95 | upper_CI95 | underrepresented |
 |----------:|-------------------------:|----------:|-----------:|-----------:|:-----------------|
 |         1 |                 29.18769 | 0.0017156 |   29.18293 |   29.19245 | FALSE            |
 
@@ -198,7 +200,7 @@ oc.mir.kssl |>
   knitr::kable()
 ```
 
-| sample_id | oc_usda.c729_w.pct | std_error | lower_CI95 | upper_CI95 | spectral_outlier |
+| sample_id | oc_usda.c729_w.pct | std_error | lower_CI95 | upper_CI95 | underrepresented |
 |----------:|-------------------:|----------:|-----------:|-----------:|:-----------------|
 |         1 |          0.1005917 | 0.0007044 |  0.0984421 |  0.1027455 | FALSE            |
 |         2 |          0.1653977 | 0.0007029 |  0.1631263 |  0.1676737 | FALSE            |

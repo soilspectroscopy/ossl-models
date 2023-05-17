@@ -415,8 +415,8 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
   # Flagging spectral outlier
   q.stats <- tibble::tibble(q_stats = q.stats,
                             q_critical = q.critical) %>%
-    dplyr::mutate(spectral_outlier = ifelse(q_stats >= q_critical, TRUE, FALSE)) %>%
-    dplyr::select(spectral_outlier)
+    dplyr::mutate(underrepresented = ifelse(q_stats >= q_critical, TRUE, FALSE)) %>%
+    dplyr::select(underrepresented)
 
   ## Final results
   out <- bind_cols(out, q.stats) %>%
