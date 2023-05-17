@@ -59,13 +59,9 @@ db.dir <- "~/mnt-ossl/ossl_import/"
 
 ### Overview
 
-This tutorial explains the steps required to fit Global Soil Spectral Calibration Models for the purpose of the [Soil Spectroscopy for Global Good project](https://soilspectroscopy.org).
+This tutorial explains the steps required to fit Global Soil Spectral Calibration Models for the purpose of the [Soil Spectroscopy for Global Good project](https://soilspectroscopy.org) using the [MLR3 framework](https://mlr3book.mlr-org.com/).
 
-We use Ensemble Machine Learning with meta-learner/stacking where the meta-learner is fitted using 5-fold cross-validation with model optimization [@hengl2019predictive].
-
-Modeling framework is based on the [mlr package](https://mlr.mlr-org.com/) [@bischl2016mlr], which is currently not developed further. Migration to the newer modeling framework [mlr3](https://mlr3book.mlr-org.com/) is pending.
-
-The following code is implemented in a high-performance computing environment with many steps fully parallelized and enough RAM (> 450GB). Running this code on a standard computer without subsetting data is not recommended.
+The following code is implemented in a high-performance computing environment with many steps fully parallelized with enough RAM (> 64GB). Running this code on a standard computer without subsetting data is not recommended.
 
 For each soil property of interest, the possible model combinations are:
 

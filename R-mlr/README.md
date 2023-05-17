@@ -4,7 +4,7 @@ Jose L. Safanelli (<jsafanelli@woodwellclimate.org>), Tomislav Hengl
 (<tom.hengl@opengeohub.org>), Leandro Parente
 (<leandro.parente@opengeohub.org>), and Jonathan Sanderman
 (<jsanderman@woodwellclimate.org>)
-12 May, 2023
+17 May, 2023
 
 
 
@@ -23,11 +23,9 @@ License](http://creativecommons.org/licenses/by-sa/4.0/).
 Part of: <https://github.com/soilspectroscopy>  
 Project: [Soil Spectroscopy for Global
 Good](https://soilspectroscopy.org)  
-Last update: 2023-05-12  
+Last update: 2023-05-17  
 Dataset:
 [OSSL](https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html)
-
-    ## Warning: package 'mlr3extralearners' was built under R version 4.2.3
 
 The directory/folder path:
 
@@ -42,21 +40,12 @@ db.dir <- "~/mnt-ossl/ossl_import/"
 
 This tutorial explains the steps required to fit Global Soil Spectral
 Calibration Models for the purpose of the [Soil Spectroscopy for Global
-Good project](https://soilspectroscopy.org).
-
-We use Ensemble Machine Learning with meta-learner/stacking where the
-meta-learner is fitted using 5-fold cross-validation with model
-optimization ([Hengl & MacMillan, 2019](#ref-hengl2019predictive)).
-
-Modeling framework is based on the [mlr
-package](https://mlr.mlr-org.com/) ([Bischl et al.,
-2016](#ref-bischl2016mlr)), which is currently not developed further.
-Migration to the newer modeling framework
-[mlr3](https://mlr3book.mlr-org.com/) is pending.
+Good project](https://soilspectroscopy.org) using the [MLR3
+framework](https://mlr3book.mlr-org.com/).
 
 The following code is implemented in a high-performance computing
-environment with many steps fully parallelized and enough RAM (\>
-450GB). Running this code on a standard computer without subsetting data
+environment with many steps fully parallelized with enough RAM (\>
+64GB). Running this code on a standard computer without subsetting data
 is not recommended.
 
 For each soil property of interest, the possible model combinations are:
@@ -827,22 +816,20 @@ for(i in 1:nrow(fitted.modeling.combinations)) {
 
 Example of an accuracy plot:
 
+<div class="figure">
+
 <img src="../out/plots/log..c.tot_usda.a622_w.pct..mir_mlr3..eml_ossl_na_v1.2.png" alt="Accuracy plot for log..c.tot_usda.a622_w.pct using mir_mlr3..eml_ossl_na_v1.2 model" width="60%" />
+<p class="caption">
+Accuracy plot for log..c.tot_usda.a622_w.pct using
+mir_mlr3..eml_ossl_na_v1.2 model
+</p>
+
+</div>
 
 ## References
 
 <div id="refs" class="references csl-bib-body hanging-indent"
 line-spacing="2">
-
-<div id="ref-bischl2016mlr" class="csl-entry">
-
-Bischl, B., Lang, M., Kotthoff, L., Schiffner, J., Richter, J.,
-Studerus, E., … Jones, Z. M. (2016). <span class="nocase">mlr: Machine
-Learning in R</span>. *The Journal of Machine Learning Research*,
-*17*(1), 5938–5942. Retrieved from
-<https://www.jmlr.org/papers/volume17/15-066/15-066.pdf>
-
-</div>
 
 <div id="ref-chang2001near" class="csl-entry">
 
@@ -851,14 +838,6 @@ Near-infrared reflectance spectroscopy–principal components regression
 analyses of soil properties. *Soil Science Society of America Journal*,
 *65*(2), 480.
 doi:[10.2136/sssaj2001.652480x](https://doi.org/10.2136/sssaj2001.652480x)
-
-</div>
-
-<div id="ref-hengl2019predictive" class="csl-entry">
-
-Hengl, T., & MacMillan, R. A. (2019). *<span class="nocase">Predictive
-Soil Mapping with R</span>* (p. 370). Wageningen, the Netherlands: Lulu.
-Retrieved from <https://soilmapper.org>
 
 </div>
 
