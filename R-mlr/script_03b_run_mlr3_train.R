@@ -48,7 +48,7 @@ modeling.combinations <- modeling.combinations  %>%
 lgr::get_logger("mlr3")$set_threshold("warn")
 
 i=1
-for(i in 1:length(modeling.combinations)) {
+for(i in 1:nrow(modeling.combinations)) {
 
   isoil_property = modeling.combinations[[i,"soil_property"]]
   imodel_name = modeling.combinations[[i,"model_name"]]

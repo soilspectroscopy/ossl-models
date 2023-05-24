@@ -4,7 +4,7 @@ Jose L. Safanelli (<jsafanelli@woodwellclimate.org>), Tomislav Hengl
 (<tom.hengl@opengeohub.org>), Leandro Parente
 (<leandro.parente@opengeohub.org>), and Jonathan Sanderman
 (<jsanderman@woodwellclimate.org>)
-17 May, 2023
+24 May, 2023
 
 
 
@@ -23,7 +23,7 @@ License](http://creativecommons.org/licenses/by-sa/4.0/).
 Part of: <https://github.com/soilspectroscopy>  
 Project: [Soil Spectroscopy for Global
 Good](https://soilspectroscopy.org)  
-Last update: 2023-05-17  
+Last update: 2023-05-24  
 Dataset:
 [OSSL](https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html)
 
@@ -470,7 +470,7 @@ lgr::get_logger("mlr3")$set_threshold("warn")
 future::plan("multisession")
   
 i=1
-for(i in 1:length(modeling.combinations)) {
+for(i in 1:nrow(modeling.combinations)) {
 
   isoil_property = modeling.combinations[[i,"soil_property"]]
   imodel_name = modeling.combinations[[i,"model_name"]]
