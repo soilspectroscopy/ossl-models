@@ -1,11 +1,16 @@
 
 # Packages
 packages <- c("tidyverse", "tidymodels",
-              "lubridate", "qs", "pls",
+              "lubridate", "qs", "mdatools",
               "future", "furrr")
 
 lapply(packages, library, character.only = TRUE)
 
+library("conflicted")
+conflicts_prefer(dplyr::filter)
+conflicts_prefer(dplyr::select)
+conflicts_prefer(recipes::prep)
+conflicts_prefer(mdatools::pls)
 # Dirs
 dir <- "~/mnt-ossl/ossl_models/"
 db.dir <- "~/mnt-ossl/ossl_import/"
@@ -52,12 +57,12 @@ modeling.combinations <- modeling.combinations %>%
 
 modeling.combinations
 
-# Filtering already fitted models
-modeling.combinations <- modeling.combinations %>%
-  mutate(fitted = file.exists(paste0(dir, export_name, "/model_", model_name, ".qs")))
-
-modeling.combinations <- modeling.combinations  %>%
-  filter(!fitted)
+# # Filtering already fitted models
+# modeling.combinations <- modeling.combinations %>%
+#   mutate(fitted = file.exists(paste0(dir, export_name, "/model_", model_name, ".qs")))
+#
+# modeling.combinations <- modeling.combinations  %>%
+#   filter(!fitted)
 
 ## Running model tuning and fitting
 
@@ -111,14 +116,14 @@ for(i in 1:nrow(modeling.combinations)) {
   }
 
   preprocessed <- data %>%
-    dplyr::select(-all_of(c(column.ids, isoil_property))) %>%
+    select(-all_of(c(column.ids, isoil_property))) %>%
     as.matrix() %>%
     # Standard Normal Variate
     prospectr::standardNormalVariate(X = .) %>%
-    dplyr::as_tibble() %>%
+    as_tibble() %>%
     # Rebinding sample id
-    dplyr::bind_cols({data %>%
-        dplyr::select(all_of(c(column.ids, isoil_property)))}, .)
+    bind_cols({data %>%
+        select(all_of(c(column.ids, isoil_property)))}, .)
 
   cat(paste0("Imported data at ", now(), "\n"))
 
@@ -128,9 +133,6 @@ for(i in 1:nrow(modeling.combinations)) {
     filter(!is.na(!!as.name(isoil_property))) %>%
     vfold_cv(v = 10, repeats = 1) %>%
     unite(idfull, starts_with("id"), sep = "_")
-
-  rm(data)
-  gc()
 
   # Recipe model
 
@@ -163,7 +165,7 @@ for(i in 1:nrow(modeling.combinations)) {
 
   model.prediction.folds <- function(maxcomps = 30, split, id){
 
-    # maxcomps = 50
+    # maxcomps = 30
     # split = modeling.folds[["splits"]][[1]]
     # id=1
 
@@ -175,11 +177,8 @@ for(i in 1:nrow(modeling.combinations)) {
 
     training.predictors <- juice(recipe.model(training.set), composition = "matrix", all_predictors())
 
-    pls.training.data <- data.frame(target = I(training.outcome),
-                                    spectra = I(training.predictors))
-
-    pls.model <- plsr(target ~ spectra, data = pls.training.data, ncomp = maxcomps,
-                      scale = T, center = T)
+    pls.model <- mdatools::pls(x = training.predictors, y = training.outcome, ncomp = maxcomps,
+                               scale = T, center = T, cv = NULL)
 
     # Evaluation
 
@@ -193,9 +192,9 @@ for(i in 1:nrow(modeling.combinations)) {
                                new_data = testing.set,
                                composition = "matrix", all_predictors())
 
-    pls.testing.format <- data.frame(spectra = I(testing.predictors))
+    predictions <- predict(pls.model, x = testing.predictors)
 
-    predict(pls.model, newdata = pls.testing.format) %>%
+    predictions$y.pred %>%
       as.data.frame() %>%
       as_tibble() %>%
       rename_with(~paste0("pred", seq(1, maxcomps, by=1), "comp"), everything()) %>%
@@ -203,7 +202,7 @@ for(i in 1:nrow(modeling.combinations)) {
 
   }
 
-  # future::plan("multisession", workers = 10, gc = TRUE)
+  # future::plan("multisession", workers = 3, gc = FALSE)
 
   # cv.results <- future_map2_dfr(.x = modeling.folds$splits,
   #                               .y = modeling.folds$idfull,
@@ -217,21 +216,21 @@ for(i in 1:nrow(modeling.combinations)) {
   # future:::ClusterRegistry("stop")
 
   # Exporting results
+  export.file <- paste0(dir,
+                        iexport_name,
+                        "/cvpred_",
+                        imodel_name,
+                        ".qs")
+
+  export.file.alt <- gsub("\\.qs", "\\.csv", export.file)
+
+  if(file.exists(export.file)){file.remove(export.file)}
+  if(file.exists(export.file.alt)){file.remove(export.file.alt)}
+
   tryCatch(
-    expr = {
-      qsave(cv.results, paste0(dir,
-                              iexport_name,
-                              "/cvpred_",
-                              imodel_name,
-                              ".qs"))
-    },
-    error = function(e){
-      write_csv(cv.results, paste0(dir,
-                                  iexport_name,
-                                  "/cvpred_",
-                                  imodel_name,
-                                  ".csv"))
-    })
+    expr = {qsave(cv.results, export.file)},
+    error = function(e){write_csv(cv.results, export.file.alt)}
+    )
 
   cat(paste0("Exported CV results at ", now(), "\n"))
 
@@ -258,17 +257,21 @@ for(i in 1:nrow(modeling.combinations)) {
            model_name = imodel_name,
            .before = 1)
 
-  write_csv(performance.metrics, paste0(dir,
-                                        iexport_name,
-                                        "/perfmetrics_",
-                                        imodel_name,
-                                        ".csv"))
+  export.metrics <- paste0(dir,
+                           iexport_name,
+                           "/perfmetrics_",
+                           imodel_name,
+                           ".csv")
+
+  if(file.exists(export.metrics)){file.remove(export.metrics)}
+
+  write_csv(performance.metrics, export.metrics)
 
   best.hps <- performance.metrics %>%
     filter(row_number() == 1) %>%
     pull(components)
 
-  # Plot
+  # Plots
 
   if(grepl("log..", iexport_name)) {
 
@@ -300,11 +303,15 @@ for(i in 1:nrow(modeling.combinations)) {
 
     p.hex <- p.hex + coord_equal(xlim=c(t.min,t.max),ylim=c(t.min,t.max))
 
-    ggsave(paste0(dir,
-                  iexport_name,
-                  "/valplot_",
-                  imodel_name,
-                  ".png"),
+    export.plot <- paste0(dir,
+                         iexport_name,
+                         "/valplot_",
+                         imodel_name,
+                         ".png")
+
+    if(file.exists(export.plot)){file.remove(export.plot)}
+
+    ggsave(export.plot,
            p.hex, dpi = 200, width = 5, height = 5, units = "in", scale = 1)
 
   } else {
@@ -337,11 +344,15 @@ for(i in 1:nrow(modeling.combinations)) {
 
     p.hex <- p.hex + coord_equal(xlim=c(t.min,t.max),ylim=c(t.min,t.max))
 
-    ggsave(paste0(dir,
-                  iexport_name,
-                  "/valplot_",
-                  imodel_name,
-                  ".png"),
+    export.plot <- paste0(dir,
+                          iexport_name,
+                          "/valplot_",
+                          imodel_name,
+                          ".png")
+
+    if(file.exists(export.plot)){file.remove(export.plot)}
+
+    ggsave(export.plot,
            p.hex, dpi = 200, width = 5, height = 5, units = "in", scale = 1)
 
   }
@@ -354,33 +365,25 @@ for(i in 1:nrow(modeling.combinations)) {
 
   training.predictors <- juice(recipe.model(preprocessed), composition = "matrix", all_predictors())
 
-  pls.training.data <- data.frame(target = I(training.outcome),
-                                  spectra = I(training.predictors))
-
   final.n.comps <- as.numeric(gsub("pred|comp", "", best.hps))
 
-  pls.model <- plsr(target ~ spectra, data = pls.training.data, ncomp = final.n.comps,
-                    scale = T, center = T)
+  pls.model <- mdatools::pls(x = training.predictors, y = training.outcome, ncomp = final.n.comps,
+                             scale = T, center = T, cv = NULL)
 
-  # Reducing size to export
-  pls.model <- pls.model[c("Xmeans", "Ymeans", "ncomp", "center", "scale", "coefficients", "terms")]
-  class(pls.model) <- "mvr"
+  # # Reducing size to export
+  # pls.model <- pls.model[c("Xmeans", "Ymeans", "ncomp", "center", "scale", "coefficients", "terms")]
+  # class(pls.model) <- "mvr"
+
+  export.model <- paste0(dir, iexport_name, "/model_", imodel_name, ".qs")
+  export.model.alt <- gsub("\\.qs", "\\.rds", export.model)
+
+  if(file.exists(export.model)){file.remove(export.model)}
+  if(file.exists(export.model.alt)){file.remove(export.model.alt)}
 
   tryCatch(
-    expr = {
-      qsave(pls.model, paste0(dir,
-                              iexport_name,
-                              "/model_",
-                              imodel_name,
-                              ".qs"))
-    },
-    error = function(e){
-      saveRDS(pls.model, paste0(dir,
-                              iexport_name,
-                              "/model_",
-                              imodel_name,
-                              ".rds"))
-    })
+    expr = {qsave(pls.model, export.model)},
+    error = function(e){saveRDS(pls.model, export.model.alt)}
+    )
 
   # Cleaning iteration and freeing memory
 
