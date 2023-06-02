@@ -174,7 +174,7 @@ for(i in 1:nrow(modeling.combinations)) {
       dataset %>%
         recipe() %>%
         update_role(everything()) %>%
-        update_role(all_of(column.ids), new_role = "id") %>%
+        update_role(all_of(c(column.ids, "predicted")), new_role = "id") %>%
         update_role(all_of("residual"), new_role = "outcome") %>%
         prep(strings_as_factors = FALSE)
     }
@@ -185,7 +185,7 @@ for(i in 1:nrow(modeling.combinations)) {
       dataset %>%
         recipe() %>%
         update_role(everything()) %>%
-        update_role(all_of(column.ids), new_role = "id") %>%
+        update_role(all_of(c(column.ids, "predicted")), new_role = "id") %>%
         update_role(all_of("residual"), new_role = "outcome") %>%
         step_log(all_outcomes(), offset = 1, id = "log") %>%
         prep(strings_as_factors = FALSE)
@@ -222,7 +222,7 @@ for(i in 1:nrow(modeling.combinations)) {
     mutate(alpha_scores = residual/pred_residual)
 
   export.error <- paste0(dir, iexport_name, "/error_pred_", imodel_name, ".qs")
-  export.error.alt <- gsub("\\.qs", "\\.rds", export.model)
+  export.error.alt <- gsub("\\.qs", "\\.rds", export.error)
 
   if(file.exists(export.error)){file.remove(export.error)}
   if(file.exists(export.error.alt)){file.remove(export.error.alt)}
@@ -235,7 +235,7 @@ for(i in 1:nrow(modeling.combinations)) {
   # Cleaning iteration and freeing memory
 
   keep.objects <- c("dir", "db.dir",
-                    "modeling.combinations", "n.cores")
+                    "modeling.combinations")
 
   remove.objects <- ls()[-grep(paste(keep.objects, collapse = "|"), ls())]
   rm(list = remove.objects)
