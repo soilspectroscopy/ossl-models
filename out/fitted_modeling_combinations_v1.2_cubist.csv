@@ -1,0 +1,9 @@
+soil_property,description,export_name,model_name,spectra_type,subset,geo,count
+clay.tot_usda.a334_w.pct,Clay,clay.tot_usda.a334_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,50007
+clay.tot_usda.a334_w.pct,Clay,clay.tot_usda.a334_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,57268
+k.ext_usda.a725_cmolc.kg,"Potassium, Extractable, NH4OAc, 2M KCl displacement",log..k.ext_usda.a725_cmolc.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,53230
+k.ext_usda.a725_cmolc.kg,"Potassium, Extractable, NH4OAc, 2M KCl displacement",log..k.ext_usda.a725_cmolc.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,57674
+oc_usda.c729_w.pct,"Organic Carbon, Total C without CaCO3, S prep",log..oc_usda.c729_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,75929
+oc_usda.c729_w.pct,"Organic Carbon, Total C without CaCO3, S prep",log..oc_usda.c729_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,82573
+ph.h2o_usda.a268_index,"pH, 1:1 Soil-Water Suspension",ph.h2o_usda.a268_index,mir_cubist_kssl_na_v1.2,mir,kssl,na,52867
+ph.h2o_usda.a268_index,"pH, 1:1 Soil-Water Suspension",ph.h2o_usda.a268_index,mir_cubist_ossl_na_v1.2,mir,ossl,na,59997
