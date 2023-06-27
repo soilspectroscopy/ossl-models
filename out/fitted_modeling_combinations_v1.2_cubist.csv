@@ -1,9 +1,142 @@
 soil_property,description,export_name,model_name,spectra_type,subset,geo,count
+acidity_usda.a795_cmolc.kg,"Acidity, BaCl2-TEA Extractable, pH 8.2",log..acidity_usda.a795_cmolc.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,28550
+acidity_usda.a795_cmolc.kg,"Acidity, BaCl2-TEA Extractable, pH 8.2",log..acidity_usda.a795_cmolc.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,30061
+acidity_usda.a795_cmolc.kg,"Acidity, BaCl2-TEA Extractable, pH 8.2",log..acidity_usda.a795_cmolc.kg,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1576
+acidity_usda.a795_cmolc.kg,"Acidity, BaCl2-TEA Extractable, pH 8.2",log..acidity_usda.a795_cmolc.kg,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,1511
+aggstb_usda.a1_w.pct,Aggregate Stability,log..aggstb_usda.a1_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,3218
+aggstb_usda.a1_w.pct,Aggregate Stability,log..aggstb_usda.a1_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,3218
+al.dith_usda.a65_w.pct,"Aluminum, Crystalline, Total Pedogenic Iron",log..al.dith_usda.a65_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,31135
+al.dith_usda.a65_w.pct,"Aluminum, Crystalline, Total Pedogenic Iron",log..al.dith_usda.a65_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,31135
+al.dith_usda.a65_w.pct,"Aluminum, Crystalline, Total Pedogenic Iron",log..al.dith_usda.a65_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1773
+al.ext_usda.a1056_mg.kg,"Aluminum, Extractable, Mehlich3",log..al.ext_usda.a1056_mg.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,1534
+al.ext_usda.a1056_mg.kg,"Aluminum, Extractable, Mehlich3",log..al.ext_usda.a1056_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,3773
+al.ext_usda.a69_cmolc.kg,"Aluminum, Extractable, KCl",log..al.ext_usda.a69_cmolc.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,14169
+al.ext_usda.a69_cmolc.kg,"Aluminum, Extractable, KCl",log..al.ext_usda.a69_cmolc.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,15710
+al.ext_usda.a69_cmolc.kg,"Aluminum, Extractable, KCl",log..al.ext_usda.a69_cmolc.kg,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,716
+al.ext_usda.a69_cmolc.kg,"Aluminum, Extractable, KCl",log..al.ext_usda.a69_cmolc.kg,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,1541
+al.ox_usda.a59_w.pct,"Aluminum, Amorphous, Total Non-Crystalline Iron",log..al.ox_usda.a59_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,28260
+al.ox_usda.a59_w.pct,"Aluminum, Amorphous, Total Non-Crystalline Iron",log..al.ox_usda.a59_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,28260
+al.ox_usda.a59_w.pct,"Aluminum, Amorphous, Total Non-Crystalline Iron",log..al.ox_usda.a59_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1354
+awc.33.1500kPa_usda.c80_w.frac,"Available Water Content, Difference 33-1500 kPa",log..awc.33.1500kPa_usda.c80_w.frac,mir_cubist_kssl_na_v1.2,mir,kssl,na,16175
+awc.33.1500kPa_usda.c80_w.frac,"Available Water Content, Difference 33-1500 kPa",log..awc.33.1500kPa_usda.c80_w.frac,mir_cubist_ossl_na_v1.2,mir,ossl,na,16175
+awc.33.1500kPa_usda.c80_w.frac,"Available Water Content, Difference 33-1500 kPa",log..awc.33.1500kPa_usda.c80_w.frac,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,931
+b.ext_mel3_mg.kg,"Boron, Extractable, Mehlich3",log..b.ext_mel3_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,2093
+bd_usda.a4_g.cm3,"Bulk Density, <2mm fraction, Clod",log..bd_usda.a4_g.cm3,mir_cubist_kssl_na_v1.2,mir,kssl,na,40136
+bd_usda.a4_g.cm3,"Bulk Density, <2mm fraction, Clod",log..bd_usda.a4_g.cm3,mir_cubist_ossl_na_v1.2,mir,ossl,na,41484
+bd_usda.a4_g.cm3,"Bulk Density, <2mm fraction, Clod",log..bd_usda.a4_g.cm3,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1085
+bd_usda.a4_g.cm3,"Bulk Density, <2mm fraction, Clod",log..bd_usda.a4_g.cm3,visnir_cubist_kssl_na_v1.2,visnir,kssl,na,19752
+bd_usda.a4_g.cm3,"Bulk Density, <2mm fraction, Clod",log..bd_usda.a4_g.cm3,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,20751
+c.tot_usda.a622_w.pct,"Carbon, Total NCS",log..c.tot_usda.a622_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,76595
+c.tot_usda.a622_w.pct,"Carbon, Total NCS",log..c.tot_usda.a622_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,80698
+c.tot_usda.a622_w.pct,"Carbon, Total NCS",log..c.tot_usda.a622_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1976
+c.tot_usda.a622_w.pct,"Carbon, Total NCS",log..c.tot_usda.a622_w.pct,visnir_cubist_kssl_na_v1.2,visnir,kssl,na,19807
+c.tot_usda.a622_w.pct,"Carbon, Total NCS",log..c.tot_usda.a622_w.pct,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,19807
+ca.ext_usda.a1059_mg.kg,"Calcium, Extractable, Mehlich3",log..ca.ext_usda.a1059_mg.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,1534
+ca.ext_usda.a1059_mg.kg,"Calcium, Extractable, Mehlich3",log..ca.ext_usda.a1059_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,3773
+ca.ext_usda.a722_cmolc.kg,"Calcium, Extractable, NH4OAc",log..ca.ext_usda.a722_cmolc.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,53232
+ca.ext_usda.a722_cmolc.kg,"Calcium, Extractable, NH4OAc",log..ca.ext_usda.a722_cmolc.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,57085
+ca.ext_usda.a722_cmolc.kg,"Calcium, Extractable, NH4OAc",log..ca.ext_usda.a722_cmolc.kg,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1976
+ca.ext_usda.a722_cmolc.kg,"Calcium, Extractable, NH4OAc",log..ca.ext_usda.a722_cmolc.kg,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,3723
+caco3_usda.a54_w.pct,"Carbonate, <2mm Fraction",log..caco3_usda.a54_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,27476
+caco3_usda.a54_w.pct,"Carbonate, <2mm Fraction",log..caco3_usda.a54_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,29225
+caco3_usda.a54_w.pct,"Carbonate, <2mm Fraction",log..caco3_usda.a54_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,665
+caco3_usda.a54_w.pct,"Carbonate, <2mm Fraction",log..caco3_usda.a54_w.pct,visnir_cubist_kssl_na_v1.2,visnir,kssl,na,9213
+caco3_usda.a54_w.pct,"Carbonate, <2mm Fraction",log..caco3_usda.a54_w.pct,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,51094
+cec_usda.a723_cmolc.kg,"CEC, pH 7.0, NH4OAc, 2M KCl displacement",log..cec_usda.a723_cmolc.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,53227
+cec_usda.a723_cmolc.kg,"CEC, pH 7.0, NH4OAc, 2M KCl displacement",log..cec_usda.a723_cmolc.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,57651
+cec_usda.a723_cmolc.kg,"CEC, pH 7.0, NH4OAc, 2M KCl displacement",log..cec_usda.a723_cmolc.kg,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1976
+cec_usda.a723_cmolc.kg,"CEC, pH 7.0, NH4OAc, 2M KCl displacement",log..cec_usda.a723_cmolc.kg,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,22687
+cf_usda.c236_w.pct,"Coarse Fragments, Greater 2mm",log..cf_usda.c236_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,55881
+cf_usda.c236_w.pct,"Coarse Fragments, Greater 2mm",log..cf_usda.c236_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,56470
+cf_usda.c236_w.pct,"Coarse Fragments, Greater 2mm",log..cf_usda.c236_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1969
+cf_usda.c236_w.pct,"Coarse Fragments, Greater 2mm",log..cf_usda.c236_w.pct,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,23237
 clay.tot_usda.a334_w.pct,Clay,clay.tot_usda.a334_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,50007
 clay.tot_usda.a334_w.pct,Clay,clay.tot_usda.a334_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,57268
+clay.tot_usda.a334_w.pct,Clay,clay.tot_usda.a334_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1976
+clay.tot_usda.a334_w.pct,Clay,clay.tot_usda.a334_w.pct,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,27145
+cu.ext_usda.a1063_mg.kg,"Copper, Extractable, Mehlich3",log..cu.ext_usda.a1063_mg.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,1534
+cu.ext_usda.a1063_mg.kg,"Copper, Extractable, Mehlich3",log..cu.ext_usda.a1063_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,3772
+ec_usda.a364_ds.m,"Electrical Conductivity, (w/w)",log..ec_usda.a364_ds.m,mir_cubist_kssl_na_v1.2,mir,kssl,na,31886
+ec_usda.a364_ds.m,"Electrical Conductivity, (w/w)",log..ec_usda.a364_ds.m,mir_cubist_ossl_na_v1.2,mir,ossl,na,34040
+ec_usda.a364_ds.m,"Electrical Conductivity, (w/w)",log..ec_usda.a364_ds.m,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,942
+ec_usda.a364_ds.m,"Electrical Conductivity, (w/w)",log..ec_usda.a364_ds.m,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,21833
+fe.dith_usda.a66_w.pct,"Iron, Crystalline, Total Pedogenic Iron",log..fe.dith_usda.a66_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,31138
+fe.dith_usda.a66_w.pct,"Iron, Crystalline, Total Pedogenic Iron",log..fe.dith_usda.a66_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,31138
+fe.dith_usda.a66_w.pct,"Iron, Crystalline, Total Pedogenic Iron",log..fe.dith_usda.a66_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1773
+fe.ext_usda.a1064_mg.kg,"Iron, Extractable, Mehlich3",log..fe.ext_usda.a1064_mg.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,1534
+fe.ext_usda.a1064_mg.kg,"Iron, Extractable, Mehlich3",log..fe.ext_usda.a1064_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,3773
+fe.ox_usda.a60_w.pct,"Iron, Amorphous, Total Non-Crystalline Iron",log..fe.ox_usda.a60_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,28259
+fe.ox_usda.a60_w.pct,"Iron, Amorphous, Total Non-Crystalline Iron",log..fe.ox_usda.a60_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,28259
+fe.ox_usda.a60_w.pct,"Iron, Amorphous, Total Non-Crystalline Iron",log..fe.ox_usda.a60_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1354
+k.ext_usda.a1065_mg.kg,"Potassium, Extractable, Mehlich3",log..k.ext_usda.a1065_mg.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,1534
+k.ext_usda.a1065_mg.kg,"Potassium, Extractable, Mehlich3",log..k.ext_usda.a1065_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,3772
 k.ext_usda.a725_cmolc.kg,"Potassium, Extractable, NH4OAc, 2M KCl displacement",log..k.ext_usda.a725_cmolc.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,53230
 k.ext_usda.a725_cmolc.kg,"Potassium, Extractable, NH4OAc, 2M KCl displacement",log..k.ext_usda.a725_cmolc.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,57674
+k.ext_usda.a725_cmolc.kg,"Potassium, Extractable, NH4OAc, 2M KCl displacement",log..k.ext_usda.a725_cmolc.kg,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1976
+k.ext_usda.a725_cmolc.kg,"Potassium, Extractable, NH4OAc, 2M KCl displacement",log..k.ext_usda.a725_cmolc.kg,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,44489
+mg.ext_usda.a1066_mg.kg,"Magnesium, Extractable, Mehlich3",log..mg.ext_usda.a1066_mg.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,1534
+mg.ext_usda.a1066_mg.kg,"Magnesium, Extractable, Mehlich3",log..mg.ext_usda.a1066_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,3773
+mg.ext_usda.a724_cmolc.kg,"Magnesium, Extractable, NH4OAc, 2M KCl displacement",log..mg.ext_usda.a724_cmolc.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,53232
+mg.ext_usda.a724_cmolc.kg,"Magnesium, Extractable, NH4OAc, 2M KCl displacement",log..mg.ext_usda.a724_cmolc.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,57093
+mg.ext_usda.a724_cmolc.kg,"Magnesium, Extractable, NH4OAc, 2M KCl displacement",log..mg.ext_usda.a724_cmolc.kg,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1976
+mg.ext_usda.a724_cmolc.kg,"Magnesium, Extractable, NH4OAc, 2M KCl displacement",log..mg.ext_usda.a724_cmolc.kg,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,3731
+mn.ext_usda.a1067_mg.kg,"Manganese, Extractable, Mehlich3",log..mn.ext_usda.a1067_mg.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,1534
+mn.ext_usda.a1067_mg.kg,"Manganese, Extractable, Mehlich3",log..mn.ext_usda.a1067_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,3772
+mn.ext_usda.a70_mg.kg,"Manganese, Extractable, KCl",log..mn.ext_usda.a70_mg.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,14166
+mn.ext_usda.a70_mg.kg,"Manganese, Extractable, KCl",log..mn.ext_usda.a70_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,14166
+mn.ext_usda.a70_mg.kg,"Manganese, Extractable, KCl",log..mn.ext_usda.a70_mg.kg,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,716
+n.tot_usda.a623_w.pct,"Nitrogen, Total NCS",log..n.tot_usda.a623_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,76594
+n.tot_usda.a623_w.pct,"Nitrogen, Total NCS",log..n.tot_usda.a623_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,81282
+n.tot_usda.a623_w.pct,"Nitrogen, Total NCS",log..n.tot_usda.a623_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1976
+n.tot_usda.a623_w.pct,"Nitrogen, Total NCS",log..n.tot_usda.a623_w.pct,visnir_cubist_kssl_na_v1.2,visnir,kssl,na,19806
+n.tot_usda.a623_w.pct,"Nitrogen, Total NCS",log..n.tot_usda.a623_w.pct,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,60570
+na.ext_usda.a1068_mg.kg,"Sodium, Extractable, Mehlich3",log..na.ext_usda.a1068_mg.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,1534
+na.ext_usda.a1068_mg.kg,"Sodium, Extractable, Mehlich3",log..na.ext_usda.a1068_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,3616
+na.ext_usda.a726_cmolc.kg,"Sodium, Extractable, NH4OAc, 2M KCl displacement",log..na.ext_usda.a726_cmolc.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,53230
+na.ext_usda.a726_cmolc.kg,"Sodium, Extractable, NH4OAc, 2M KCl displacement",log..na.ext_usda.a726_cmolc.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,57075
+na.ext_usda.a726_cmolc.kg,"Sodium, Extractable, NH4OAc, 2M KCl displacement",log..na.ext_usda.a726_cmolc.kg,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1976
+na.ext_usda.a726_cmolc.kg,"Sodium, Extractable, NH4OAc, 2M KCl displacement",log..na.ext_usda.a726_cmolc.kg,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,3715
 oc_usda.c729_w.pct,"Organic Carbon, Total C without CaCO3, S prep",log..oc_usda.c729_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,75929
 oc_usda.c729_w.pct,"Organic Carbon, Total C without CaCO3, S prep",log..oc_usda.c729_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,82573
+oc_usda.c729_w.pct,"Organic Carbon, Total C without CaCO3, S prep",log..oc_usda.c729_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1974
+oc_usda.c729_w.pct,"Organic Carbon, Total C without CaCO3, S prep",log..oc_usda.c729_w.pct,visnir_cubist_kssl_na_v1.2,visnir,kssl,na,19747
+oc_usda.c729_w.pct,"Organic Carbon, Total C without CaCO3, S prep",log..oc_usda.c729_w.pct,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,64211
+p.ext_usda.a1070_mg.kg,"Phosphorus, Extractable, Mehlich3",log..p.ext_usda.a1070_mg.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,25602
+p.ext_usda.a1070_mg.kg,"Phosphorus, Extractable, Mehlich3",log..p.ext_usda.a1070_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,27690
+p.ext_usda.a1070_mg.kg,"Phosphorus, Extractable, Mehlich3",log..p.ext_usda.a1070_mg.kg,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,754
+p.ext_usda.a270_mg.kg,"Phosphorus, Extractable, Bray1",log..p.ext_usda.a270_mg.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,7146
+p.ext_usda.a270_mg.kg,"Phosphorus, Extractable, Bray1",log..p.ext_usda.a270_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,7282
+p.ext_usda.a274_mg.kg,"Phosphorus, Extractable, Olsen",log..p.ext_usda.a274_mg.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,15359
+p.ext_usda.a274_mg.kg,"Phosphorus, Extractable, Olsen",log..p.ext_usda.a274_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,16084
+p.ext_usda.a274_mg.kg,"Phosphorus, Extractable, Olsen",log..p.ext_usda.a274_mg.kg,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,40764
+ph.cacl2_usda.a481_index,"pH, 1:2 Soil-CaCl2 Suspension",ph.cacl2_usda.a481_index,mir_cubist_kssl_na_v1.2,mir,kssl,na,52946
+ph.cacl2_usda.a481_index,"pH, 1:2 Soil-CaCl2 Suspension",ph.cacl2_usda.a481_index,mir_cubist_ossl_na_v1.2,mir,ossl,na,53819
+ph.cacl2_usda.a481_index,"pH, 1:2 Soil-CaCl2 Suspension",ph.cacl2_usda.a481_index,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1976
+ph.cacl2_usda.a481_index,"pH, 1:2 Soil-CaCl2 Suspension",ph.cacl2_usda.a481_index,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,40848
 ph.h2o_usda.a268_index,"pH, 1:1 Soil-Water Suspension",ph.h2o_usda.a268_index,mir_cubist_kssl_na_v1.2,mir,kssl,na,52867
 ph.h2o_usda.a268_index,"pH, 1:1 Soil-Water Suspension",ph.h2o_usda.a268_index,mir_cubist_ossl_na_v1.2,mir,ossl,na,59997
+ph.h2o_usda.a268_index,"pH, 1:1 Soil-Water Suspension",ph.h2o_usda.a268_index,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1976
+ph.h2o_usda.a268_index,"pH, 1:1 Soil-Water Suspension",ph.h2o_usda.a268_index,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,44590
+s.tot_usda.a624_w.pct,"Sulfur, Total NCS",log..s.tot_usda.a624_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,76592
+s.tot_usda.a624_w.pct,"Sulfur, Total NCS",log..s.tot_usda.a624_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,76592
+s.tot_usda.a624_w.pct,"Sulfur, Total NCS",log..s.tot_usda.a624_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1976
+s.tot_usda.a624_w.pct,"Sulfur, Total NCS",log..s.tot_usda.a624_w.pct,visnir_cubist_kssl_na_v1.2,visnir,kssl,na,19807
+s.tot_usda.a624_w.pct,"Sulfur, Total NCS",log..s.tot_usda.a624_w.pct,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,19807
+sand.tot_usda.c60_w.pct,"Sand, Total, S prep",sand.tot_usda.c60_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,50012
+sand.tot_usda.c60_w.pct,"Sand, Total, S prep",sand.tot_usda.c60_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,57162
+sand.tot_usda.c60_w.pct,"Sand, Total, S prep",sand.tot_usda.c60_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1976
+sand.tot_usda.c60_w.pct,"Sand, Total, S prep",sand.tot_usda.c60_w.pct,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,27086
+silt.tot_usda.c62_w.pct,"Silt, Total, S prep",silt.tot_usda.c62_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,50013
+silt.tot_usda.c62_w.pct,"Silt, Total, S prep",silt.tot_usda.c62_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,57215
+silt.tot_usda.c62_w.pct,"Silt, Total, S prep",silt.tot_usda.c62_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1976
+silt.tot_usda.c62_w.pct,"Silt, Total, S prep",silt.tot_usda.c62_w.pct,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,27139
+wr.1500kPa_usda.a417_w.pct,"Water Retention, 15 Bar (1500 kPa)",log..wr.1500kPa_usda.a417_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,40284
+wr.1500kPa_usda.a417_w.pct,"Water Retention, 15 Bar (1500 kPa)",log..wr.1500kPa_usda.a417_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,41345
+wr.1500kPa_usda.a417_w.pct,"Water Retention, 15 Bar (1500 kPa)",log..wr.1500kPa_usda.a417_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1951
+wr.1500kPa_usda.a417_w.pct,"Water Retention, 15 Bar (1500 kPa)",log..wr.1500kPa_usda.a417_w.pct,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,971
+wr.33kPa_usda.a415_w.pct,"Water Retention, 1/3 Bar (33 kPa)",log..wr.33kPa_usda.a415_w.pct,mir_cubist_kssl_na_v1.2,mir,kssl,na,18536
+wr.33kPa_usda.a415_w.pct,"Water Retention, 1/3 Bar (33 kPa)",log..wr.33kPa_usda.a415_w.pct,mir_cubist_ossl_na_v1.2,mir,ossl,na,19459
+wr.33kPa_usda.a415_w.pct,"Water Retention, 1/3 Bar (33 kPa)",log..wr.33kPa_usda.a415_w.pct,nir.neospectra_cubist_ossl_na_v1.2,nir.neospectra,ossl,na,1032
+wr.33kPa_usda.a415_w.pct,"Water Retention, 1/3 Bar (33 kPa)",log..wr.33kPa_usda.a415_w.pct,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,923
+zn.ext_usda.a1073_mg.kg,"Zinc, Extractable, Mehlich3",log..zn.ext_usda.a1073_mg.kg,mir_cubist_kssl_na_v1.2,mir,kssl,na,1534
+zn.ext_usda.a1073_mg.kg,"Zinc, Extractable, Mehlich3",log..zn.ext_usda.a1073_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,3760

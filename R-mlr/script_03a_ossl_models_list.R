@@ -3,6 +3,48 @@
 library("tidyverse")
 library("qs")
 
+# MIR, VisNIR and NIR from Neospectra
+spectra.type <- c("mir", "visnir", "nir.neospectra")
+
+# Using KSSL only or the whole OSSL
+subset <- c("kssl", "ossl")
+
+# Adding (ll) or not adding (na) geocovariates to models
+geocovariates <- c("na")
+
+# Basic structure
+modeling.combinations <- tibble(spectra_type = spectra.type) %>%
+  crossing(subset = subset) %>%
+  crossing(geo = geocovariates)
+
+# Target models
+modeling.combinations <- modeling.combinations %>%
+  dplyr::filter(!(grepl("neospectra", spectra_type) & subset == "kssl")) %>%
+  dplyr::filter(!(geo == "ll"))
+
+# Model name
+# modeling.combinations <- modeling.combinations %>%
+#   mutate(model_name = paste0(spectra_type, "_mlr3..eml_", subset, "_", geo, "_v1.2"), .before = 1)
+
+modeling.combinations <- modeling.combinations %>%
+  mutate(model_name = paste0(spectra_type, "_cubist_", subset, "_", geo, "_v1.2"), .before = 1)
+
+soil.properties <- read_csv("./out/ossl_models_soil_properties.csv")
+
+soil.properties <- soil.properties %>%
+  filter(include == TRUE) %>%
+  mutate(export_name = ifelse(log == TRUE, paste0("log..", soil_property), soil_property)) %>%
+  select(-include, -log)
+
+soil.properties.names <- soil.properties %>%
+  pull(soil_property)
+
+# Final modeling combinations
+modeling.combinations <- soil.properties %>%
+  crossing(modeling.combinations)
+
+write_csv(modeling.combinations, "./out/modeling_combinations_v1.2.csv")
+
 # Modeling combinations
 modeling.combinations <- read_csv("./out/modeling_combinations_v1.2.csv")
 count.table <- read_csv("./out/tab_dataset_count.csv")

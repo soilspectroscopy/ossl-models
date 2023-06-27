@@ -37,16 +37,14 @@ modeling.combinations <- modeling.combinations %>%
   filter(count > 500) %>%
   filter(!(soil_property == "efferv_usda.a479_class"))
 
-# Filtering test models
-modeling.combinations <- modeling.combinations %>%
-  filter(soil_property %in% c("oc_usda.c729_w.pct",
-                              "clay.tot_usda.a334_w.pct",
-                              "ph.h2o_usda.a268_index",
-                              "k.ext_usda.a725_cmolc.kg")) %>%
-  filter(spectra_type == "mir") %>%
-  mutate(model_name = paste0(spectra_type, "_cubist_", subset, "_", geo, "_v1.2"), .before = 1)
-
 # write_csv(modeling.combinations, "out/fitted_modeling_combinations_v1.2_cubist.csv")
+
+# Filtering already fitted models
+modeling.combinations <- modeling.combinations %>%
+  mutate(fitted = file.exists(paste0(dir, export_name, "/model_", model_name, ".qs")))
+
+modeling.combinations <- modeling.combinations  %>%
+  filter(!fitted)
 
 # target.dirs <- paste0(dir, unique(modeling.combinations$export_name))
 #

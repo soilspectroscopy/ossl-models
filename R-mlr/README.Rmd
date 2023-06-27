@@ -91,7 +91,8 @@ modeling.combinations <- modeling.combinations %>%
 
 # Model name
 modeling.combinations <- modeling.combinations %>%
-  mutate(model_name = paste0(spectra_type, "_mlr3..eml_", subset, "_", geo, "_v1.2"), .before = 1)
+  mutate(model_name = paste0(spectra_type, "_cubist_",
+                             subset, "_", geo, "_v1.2"), .before = 1)
 
 modeling.combinations %>%
   knitr::kable()

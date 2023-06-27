@@ -10,7 +10,7 @@ dir <- "~/mnt-ossl/ossl_models/"
 db.dir <- "~/mnt-ossl/ossl_import/"
 
 ## Fitted models
-fitted.modeling.combinations <- read_csv("../out/fitted_modeling_combinations_v1.2_cubist.csv",
+fitted.modeling.combinations <- read_csv("../out/fitted_modeling_combinations_v1.2.csv",
                                          show_col_types = FALSE)
 
 ## Evaluation pipeline
