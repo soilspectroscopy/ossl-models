@@ -72,6 +72,8 @@ modeling.combinations <- modeling.combinations %>%
   filter(count > 500) %>%
   filter(!(soil_property == "efferv_usda.a479_class"))
 
+write_csv(modeling.combinations, "out/fitted_modeling_combinations_v1.2.csv")
+
 # Available soil properties
 modeling.combinations %>%
   distinct(soil_property) %>%

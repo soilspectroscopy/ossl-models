@@ -37,8 +37,6 @@ modeling.combinations <- modeling.combinations %>%
   filter(count > 500) %>%
   filter(!(soil_property == "efferv_usda.a479_class"))
 
-# write_csv(modeling.combinations, "out/fitted_modeling_combinations_v1.2_cubist.csv")
-
 # Filtering already fitted models
 modeling.combinations <- modeling.combinations %>%
   mutate(fitted = file.exists(paste0(dir, export_name, "/model_", model_name, ".qs")))
