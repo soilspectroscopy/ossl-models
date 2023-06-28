@@ -358,7 +358,7 @@ The following framework is used:
 - Base learner: Cubist (`cubist`).
 - Hyperparameter optimization is done with internal resampling (`inner`) using 5-fold cross-validation and a smaller subset for speeding up this operation. This task is performed with a grid search of HP space testing up to 5 configurations within the predifined range, and the is RMSE set as the loss function. A final model is fitted at the end with the full data and the best HPO.  
 - Performance evaluation is performed with an external (`outer`) 10-fold cross-validation (`cv10`) of the final models.  
-- Cross-validation predictions, accuracy plot, and good-of-fitness metrics are exported to disk.
+- Cross-validation predictions, accuracy plot, and good-of-fitness metrics are exported to disk.  
 - Uncertainty model via conformal prediction: the cross-validated predictions are used to estimate absolute residuals (error), which are fed to a new model using the same fine-tuned structure of the response model. The observed and predicted errors are used to estimate conformity scores given a confidence level (68% ~ 1 std dev, 90%, 95% etc.).
 
 ```{r train, include=TRUE, message=FALSE, eval=FALSE, results='hide'}
@@ -681,6 +681,7 @@ for(i in 1:nrow(fitted.modeling.combinations)) {
 ```
 
 Example of an accuracy plot:
+
 ```{r ac-toc, echo=FALSE, out.width="60%"}
 knitr::include_graphics("../out/plots/log..c.tot_usda.a622_w.pct..mir_cubist_ossl_na_v1.2.png")
 ```

@@ -473,12 +473,12 @@ model is fitted at the end with the full data and the best HPO.
 - Performance evaluation is performed with an external (`outer`) 10-fold
 cross-validation (`cv10`) of the final models.  
 - Cross-validation predictions, accuracy plot, and good-of-fitness
-metrics are exported to disk. - Uncertainty model via conformal
-prediction: the cross-validated predictions are used to estimate
-absolute residuals (error), which are fed to a new model using the same
-fine-tuned structure of the response model. The observed and predicted
-errors are used to estimate conformity scores given a confidence level
-(68% \~ 1 std dev, 90%, 95% etc.).
+metrics are exported to disk.  
+- Uncertainty model via conformal prediction: the cross-validated
+predictions are used to estimate absolute residuals (error), which are
+fed to a new model using the same fine-tuned structure of the response
+model. The observed and predicted errors are used to estimate conformity
+scores given a confidence level (68% \~ 1 std dev, 90%, 95% etc.).
 
 ``` r
 ## Parallelization is done inside the the autotuner
@@ -802,6 +802,7 @@ for(i in 1:nrow(fitted.modeling.combinations)) {
 ```
 
 Example of an accuracy plot:
+
 <img src="../out/plots/log..c.tot_usda.a622_w.pct..mir_cubist_ossl_na_v1.2.png" width="60%" />
 
 ## Uncertainty model
