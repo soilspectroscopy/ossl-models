@@ -11,14 +11,17 @@ project and based on the [Open Soil Spectral Library
 (OSSL)](https://soilspectroscopy.github.io/ossl-manual/) database.
 
 We have used the [MLR3 framework](https://mlr3book.mlr-org.com/) for
-fitting machine learning ensemble models.
+fitting machine learning models, specifically with the [Cubist
+algorithm](https://cran.r-project.org/web/packages/Cubist/vignettes/cubist.html).
 
 The `README` of folder [`R-mlr`](R-mlr/README.md) explains the steps
-used to calibrate the models used in the OSSL.
+used to calibrate the models, while this page provides an overview of
+the modeling and results.
 
 In summary, we have provided 5 different model types depending on the
 availability of samples in the database, without the use of
-geocovariates (`na` code) as predictors.
+geocovariates (`na` code), i.e., site information or environmental
+layers are not used, only the spectra data.
 
 The model types are composed of two different subsets, i.e. using the
 KSSL soil spectral library alone (`kssl` code) or the full OSSL database
@@ -26,38 +29,46 @@ KSSL soil spectral library alone (`kssl` code) or the full OSSL database
 (`visnir` code), NIR from the Neospectra instrument (`nir.neospectra`
 code), and MIR (`mir` code).
 
-| spectra_type   | subset | geo | model_name                            |
-|:---------------|:-------|:----|:--------------------------------------|
-| mir            | kssl   | na  | mir_mlr3..eml_kssl_na_v1.2            |
-| mir            | ossl   | na  | mir_mlr3..eml_ossl_na_v1.2            |
-| nir.neospectra | ossl   | na  | nir.neospectra_mlr3..eml_ossl_na_v1.2 |
-| visnir         | kssl   | na  | visnir_mlr3..eml_kssl_na_v1.2         |
-| visnir         | ossl   | na  | visnir_mlr3..eml_ossl_na_v1.2         |
+After running some internal evaluations, we recommend using the KSSL
+models only when i) there is not any model available using the full OSSL
+database for a given combination of soil property and spectral region of
+interest; ii) the spectra to be predicted has the same instrument
+manufacturer/model as the spectrometers used to build the KSSL VisNIR
+and MIR libraries; iii) the KSSL library is representative for the new
+spectra, based both on spectral similarity and range of soil properties
+of interest of the target samples. **Otherwise, use the models with
+`ossl` acronym**.
 
-The ensemble model (coding name `mlr3..eml`) is composed of a linear
-regression (meta-learner, `regr.lm`) of base learners.
+| spectra_type   | subset | geo | model_name                         |
+|:---------------|:-------|:----|:-----------------------------------|
+| mir            | kssl   | na  | mir_cubist_kssl_na_v1.2            |
+| mir            | ossl   | na  | mir_cubist_ossl_na_v1.2            |
+| nir.neospectra | ossl   | na  | nir.neospectra_cubist_ossl_na_v1.2 |
+| visnir         | kssl   | na  | visnir_cubist_kssl_na_v1.2         |
+| visnir         | ossl   | na  | visnir_cubist_ossl_na_v1.2         |
 
-Base learners are fitted using Elastic net (`glmnet`), Random Forest
-(`ranger`), XGBoost trees (`xgboost`), and Cubist (`cubist`).
-
-MLR3 allows the base learners to feed the meta-learner with
-cross-validated (`cv`) or plain calibration predictions (`insample`),
-but we used `insample` to speed up processing.
+The machine learning algorithm Cubist (coding name `cubist`) takes
+advantage of a decision-tree splitting method but fits linear regression
+models at each terminal leaf. It also uses a boosting mechanism
+(sequential trees adjusted by weights) that allows the growth of a
+forest by tuning the number of committees. We haven’t used the
+correction of final predictions by the nearest neighbors’ influence due
+to the lack of this feature in the MLR3 framework.
 
 Hyperparameter optimization was done with internal resampling (`inner`)
 using 5-fold cross-validation and a smaller subset for speeding up this
-operation. This task was performed with a random search of the
-hyperparameter space testing up to 20 configurations to find the lowest
+operation. This task was performed with a grid search of the
+hyperparameter space testing up to 5 configurations to find the lowest
 RMSE. The final model with the best optimal hyperparameters was fitted
 at the end with the full train data.
 
-The search space is composed of crossed combinations, i.e. each model is
-not individually tuned. Check [`R-mlr/README.md`](R-mlr/README.md) for
-more details.
-
 As predictors, we have used the first 120 PCs of the compressed spectra,
 a threshold that considers the trade-off between spectral representation
-and compression magnitude.
+and compression magnitude. The remaining farther components were used
+for the trustworthiness test, i.e., if a sample is underrepresented in
+respect of the feature space from the calibration set because of their
+unique features presented in those farther components, then a flag is
+raised and indicated in the results.
 
 Soil properties with available models can be found in
 [fitted_modeling_combinations_v1.2.csv](out/fitted_modeling_combinations_v1.2.csv).
@@ -68,7 +79,22 @@ mean error (`bias`), R squared (`rsq`), Lin’s concordance correlation
 coefficient (`ccc`), and the ratio of performance to the interquartile
 range (`rpiq`).
 
-The final fitted models description along with their performance can be
+The cross-validated predictions were used to estimate the unbiased error
+(absolute residual), which were further employed to calibrate
+uncertainty models via [conformal prediction
+intervals](https://en.wikipedia.org/wiki/Conformal_prediction). The
+error model is calibrated using the same fine-tuned structure of the
+respective response model. Conformity scores are estimated for a defined
+confidence level, which was defined to 68% to approximate one standard
+deviation.
+
+Some soil properties were natural-log transformed (with offset = 1, that
+is why we use `log1p` function) to improve the prediction performance of
+highly skewed distributed soil properties. They were back-transformed
+only at the end after running all modeling steps, including performance
+estimation and the definition of the uncertainty intervals.
+
+The final fitted models along with their performance metrics can be
 found in
 [fitted_models_performance_v1.2.csv](out/fitted_models_performance_v1.2.csv)
 
@@ -103,12 +129,10 @@ either `csv` files or directly `asd` or opus (`.0`) for VisNIR and MIR
 scans, respectively.
 
 The results table has the prediction value (already back-transformed if
-log was used) for the soil property of interest, uncertainty band, and a
-flag column for **potential spectral underrepresentation** of the OSSL
-models, which is calculated based on the principal components and Q
-statistics. The uncertainty is derived from the standard error of the
-predictions obtained from the linear model (meta-learner) of the
-ensemble models.
+log transformation was used) for the soil property of interest, standard
+deviation and uncertainty band, and a flag column for **potential
+underrepresented** samples given the OSSL calibration data, which is
+calculated based on principal components and Q statistics.
 
 The prediction function requires the
 [tidyverse](https://www.tidyverse.org/),
@@ -144,7 +168,9 @@ run or online access are described in
 > name. In addition, check
 > [fitted_models_performance_v1.2.csv](out/fitted_models_performance_v1.2.csv)
 > for the complete list of models of each soil property as some spectra
-> types are not completely available.
+> types are not completely available. More importantly, for natural-log
+> soil properties, the upper and lower bands were estimated before the
+> back-transformation.
 
 ``` r
 source("R-mlr/OSSL_functions.R")
@@ -164,29 +190,14 @@ clay.visnir.ossl <- predict.ossl(target = "clay.tot_usda.a334_w.pct",
                                  subset.type = "ossl",
                                  geo.type = "na",
                                  models.dir = "~/mnt-ossl/ossl_models/")
-```
 
-    ## Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.
-    ## ℹ Please use `all_of()` or `any_of()` instead.
-    ##   # Was:
-    ##   data %>% select(target)
-    ## 
-    ##   # Now:
-    ##   data %>% select(all_of(target))
-    ## 
-    ## See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
-    ## This warning is displayed once every 8 hours.
-    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-    ## generated.
-
-``` r
 clay.visnir.ossl |>
   knitr::kable()
 ```
 
-| sample_id | clay.tot_usda.a334_w.pct | std_error | lower_CI95 | upper_CI95 | underrepresented |
-|----------:|-------------------------:|----------:|-----------:|-----------:|:-----------------|
-|         1 |                 29.18769 | 0.0017156 |   29.18293 |   29.19245 | FALSE            |
+| sample_id | clay.tot_usda.a334_w.pct |  std_dev |    lower |    upper | underrepresented |
+|----------:|-------------------------:|---------:|---------:|---------:|:-----------------|
+|         1 |                 33.35406 | 9.900726 | 23.45334 | 43.25479 | FALSE            |
 
 ``` r
 oc.mir.kssl <- predict.ossl(target = "log..oc_usda.c729_w.pct",
@@ -200,28 +211,28 @@ oc.mir.kssl |>
   knitr::kable()
 ```
 
-| sample_id | oc_usda.c729_w.pct | std_error | lower_CI95 | upper_CI95 | underrepresented |
+| sample_id | oc_usda.c729_w.pct |   std_dev |      lower |      upper | underrepresented |
 |----------:|-------------------:|----------:|-----------:|-----------:|:-----------------|
-|         1 |          0.1005917 | 0.0007044 |  0.0984421 |  0.1027455 | FALSE            |
-|         2 |          0.1653977 | 0.0007029 |  0.1631263 |  0.1676737 | FALSE            |
-|         3 |          0.5200828 | 0.0005102 |  0.5179318 |  0.5222369 | FALSE            |
-|         4 |          1.3324552 | 0.0005617 |  1.3288214 |  1.3360947 | TRUE             |
-|         5 |          0.2194784 | 0.0008252 |  0.2166886 |  0.2222746 | FALSE            |
-|         6 |          0.8639680 | 0.0005760 |  0.8609902 |  0.8669505 | TRUE             |
-|         7 |          1.3676510 | 0.0005056 |  1.3643307 |  1.3709760 | FALSE            |
-|         8 |          0.5309905 | 0.0008374 |  0.5274366 |  0.5345526 | FALSE            |
-|         9 |          2.0153683 | 0.0003929 |  2.0120813 |  2.0186589 | FALSE            |
-|        10 |          1.3325443 | 0.0006622 |  1.3282613 |  1.3368351 | FALSE            |
-|        11 |          0.4262675 | 0.0007427 |  0.4233308 |  0.4292104 | FALSE            |
-|        12 |         14.5348483 | 0.0007157 | 14.5040220 | 14.5657360 | TRUE             |
-|        13 |          1.3003476 | 0.0005039 |  1.2971324 |  1.3035674 | FALSE            |
-|        14 |         23.6976542 | 0.0017670 | 23.5768878 | 23.8190140 | TRUE             |
-|        15 |          4.7397521 | 0.0017102 |  4.7125853 |  4.7670482 | TRUE             |
-|        16 |          0.6108798 | 0.0009207 |  0.6067693 |  0.6150009 | FALSE            |
-|        17 |          0.4825308 | 0.0004385 |  0.4807274 |  0.4843363 | FALSE            |
-|        18 |         34.0265527 | 0.0008844 | 33.9406932 | 34.1126233 | FALSE            |
-|        19 |          0.0926400 | 0.0008598 |  0.0900358 |  0.0952504 | FALSE            |
-|        20 |          0.1802776 | 0.0007664 |  0.1777696 |  0.1827909 | FALSE            |
+|         1 |          0.0232091 | 0.0387254 | -0.0149378 |  0.0628333 | FALSE            |
+|         2 |          0.0438117 | 0.0774065 | -0.0311812 |  0.1246095 | FALSE            |
+|         3 |          0.4533481 | 0.0906541 |  0.3325472 |  0.5851001 | FALSE            |
+|         4 |          1.0724492 | 0.0625031 |  0.9505346 |  1.2019838 | TRUE             |
+|         5 |          0.0490533 | 0.0355205 |  0.0130686 |  0.0863161 | FALSE            |
+|         6 |          0.8021375 | 0.0527328 |  0.7118660 |  0.8971693 | TRUE             |
+|         7 |          1.2250589 | 0.0807371 |  1.0588345 |  1.4047039 | FALSE            |
+|         8 |          0.3362929 | 0.1103006 |  0.2035415 |  0.4836867 | FALSE            |
+|         9 |          1.9155340 | 0.0538360 |  1.7665917 |  2.0724947 | FALSE            |
+|        10 |          1.3158559 | 0.0914151 |  1.1218836 |  1.5275601 | FALSE            |
+|        11 |          0.4234255 | 0.0786920 |  0.3195847 |  0.5354376 | FALSE            |
+|        12 |         13.3578608 | 0.2007397 | 10.9575133 | 16.2400532 | TRUE             |
+|        13 |          1.4059354 | 0.1456846 |  1.0999981 |  1.7564430 | FALSE            |
+|        14 |         33.1607521 | 0.0746672 | 30.7872847 | 35.7114397 | TRUE             |
+|        15 |          6.1175378 | 0.1536174 |  5.1697557 |  7.2109157 | TRUE             |
+|        16 |          0.5058015 | 0.0990479 |  0.3700963 |  0.6549481 | FALSE            |
+|        17 |          0.3885227 | 0.0553760 |  0.3156664 |  0.4654135 | FALSE            |
+|        18 |         34.2093266 | 0.0610237 | 32.1842980 | 36.3579298 | FALSE            |
+|        19 |          0.2090189 | 0.0927047 |  0.1064461 |  0.3211006 | FALSE            |
+|        20 |          0.2358387 | 0.0734969 |  0.1512271 |  0.3266690 | FALSE            |
 
 If you fit your own models and/or if you are interested in contributing
 to this project, please contact us and help us make better open soil
