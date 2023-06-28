@@ -347,7 +347,7 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
   pca.model <- qs::qread(paste0(models.dir,
                                 "pca.ossl/mpca_",
                                 spectra.type,
-                                "_mlr3..eml_",
+                                "_cubist_",
                                 subset.type,
                                 "_v1.2.qs"))
 
@@ -356,60 +356,84 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
   data.scores <- dplyr::bind_cols(data.prep[,1], predict(pca.model, data.prep)) %>%
     dplyr::select(1, all_of(paste0("PC", seq(1, ncomps, 1))))
 
-  ## Loading prediction model
-  prediction.model <- qs::qread(paste0(models.dir,
+  ## Loading response model
+  model.response <- qs::qread(paste0(models.dir,
                                        target,
                                        "/model_",
                                        spectra.type,
-                                       "_mlr3..eml_",
+                                       "_cubist_",
                                        subset.type,
                                        "_",
                                        geo.type,
                                        "_v1.2.qs"))
 
+  ## Loading error model
+  model.error <- qs::qread(paste0(models.dir,
+                                  target,
+                                  "/error_model_",
+                                  spectra.type,
+                                  "_cubist_",
+                                  subset.type,
+                                  "_",
+                                  geo.type,
+                                  "_v1.2.qs"))
+
   ## Preparing data
   task <- as.data.table(data.scores)
 
   ## Prediction
-  data.prediction <- as.data.table(prediction.model$predict_newdata(task))
+  prediction.response <- as.data.table(model.response$predict_newdata(task))
+  prediction.error <- as.data.table(model.error$predict_newdata(task))
 
-  data.prediction <- dplyr::bind_cols(task[,1], {
-    data.prediction %>%
-      dplyr::select(response) %>%
-      rename(!!target := response)}) %>%
+  data.prediction <- dplyr::bind_cols(task[,1],
+                                      {prediction.response %>%
+                                          dplyr::select(response) %>%
+                                          rename(!!target := response)},
+                                      {prediction.error %>%
+                                          dplyr::select(response) %>%
+                                          rename(error = response)}) %>%
     as_tibble()
 
-  ## Uncertainty (CI 95%) based on the standard error of prediction
-  ## from the meta-learner linear model (intercept and 4 base learners, df = 4)
-  prediction.model$predict_type = "se"
+  ## Uncertainty (1 standard deviation) based on alpha scores from conformal prediction
+  conformity <- qs::qread(paste0(models.dir,
+                                 target,
+                                 "/error_pred_",
+                                 spectra.type,
+                                 "_cubist_",
+                                 subset.type,
+                                 "_",
+                                 geo.type,
+                                 "_v1.2.qs"))
 
-  crit <- qt(p = 0.05/2, df = 4, lower.tail = FALSE)
+  # 1 std of the mean account for about 68% of the absolute residuals
+  # We can also use 90%, 95% and 99% confidence intervals
+  # Pay attention to backtransformation of lower and upper bounds
+  confidence.level.factor <- conformity %>%
+    arrange(alpha_scores) %>%
+    pull(alpha_scores) %>%
+    quantile(., probs = 0.68)
 
-  confidence.predictions <- as.data.table(prediction.model$predict_newdata(task)) %>%
-    dplyr::select(se) %>%
-    dplyr::rename(std_error = se) %>%
-    dplyr::mutate(critical_value = crit)
-
-  out <- dplyr::bind_cols(data.prediction, confidence.predictions) %>%
-    dplyr::mutate(lower_CI95 = !!as.name(target)-(std_error*critical_value),
-                  upper_CI95 = !!as.name(target)+(std_error*critical_value)) %>%
-    dplyr::select(-critical_value)
+  out <- data.prediction %>%
+    mutate(std_dev = error*confidence.level.factor) %>%
+    mutate(lower = !!as.name(target)-(std_dev),
+           upper = !!as.name(target)+(std_dev)) %>%
+    select(-error)
 
   ## Back-transforming
   if(grepl("log..", target)){
     out <- out %>%
       dplyr::mutate(!!target := expm1(!!as.name(target)),
-                    std_error = expm1(std_error),
-                    lower_CI95 = expm1(lower_CI95),
-                    upper_CI95 = expm1(upper_CI95))
+                    std_dev = expm1(std_dev),
+                    lower = expm1(lower),
+                    upper = expm1(upper))
   }
 
   ## Spectral outlier screening
   ## Values from "out/trustworthiness_q_critical_values.csv"
   ## Check for updates
-  q.critical <- tibble(model_name = c("mir_mlr3..eml_kssl_v1.2", "mir_mlr3..eml_ossl_v1.2",
-                                      "nir.neospectra_mlr3..eml_ossl_v1.2",
-                                      "visnir_mlr3..eml_kssl_v1.2", "visnir_mlr3..eml_ossl_v1.2"),
+  q.critical <- tibble(model_name = c("mir_cubist_kssl_v1.2", "mir_cubist_ossl_v1.2",
+                                      "nir.neospectra_cubist_ossl_v1.2",
+                                      "visnir_cubist_kssl_v1.2", "visnir_cubist_ossl_v1.2"),
                        q_critical = c(0.0245, 0.0452, 0.00000274, 0.00129, 0.000812))
 
   # Full and employed PC models (120 comps)
@@ -442,7 +466,7 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
     dplyr::filter(grepl(subset.type, model_name)) %>%
     dplyr::pull(q_critical)
 
-  # Flagging spectral outlier
+  # Flagging underrepresented samples
   q.stats <- tibble::tibble(q_stats = q.stats,
                             q_critical = q.critical) %>%
     dplyr::mutate(underrepresented = ifelse(q_stats >= q_critical, TRUE, FALSE)) %>%
@@ -450,7 +474,7 @@ predict.ossl <- function(target = "clay.tot_usda.a334_w.pct",
 
   ## Final results
   out <- bind_cols(out, q.stats) %>%
-    dplyr::rename(!!gsub("log..", "", target) := target)
+    dplyr::rename(!!gsub("log..", "", target) := all_of(target))
 
   return(out)
 
