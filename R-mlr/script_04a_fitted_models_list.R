@@ -25,7 +25,7 @@ files.table <- tibble(file_description = c("train data", "model", "performance",
                                            "error model", "error predictions"),
                       file_code = c("task_", "model_", "perfmetrics_",
                                     "cvpred_", "valplot_",
-                                    "error_model", "error_pred"),
+                                    "error_model_", "error_pred_"),
                       file_extension = c(".qs", ".qs", ".csv",
                                          ".qs", ".png",
                                          ".qs", ".qs"))
