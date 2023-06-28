@@ -59,9 +59,11 @@ db.dir <- "~/mnt-ossl/ossl_import/"
 
 ### Overview
 
-This tutorial explains the steps required to fit Global Soil Spectral Calibration Models for the purpose of the [Soil Spectroscopy for Global Good project](https://soilspectroscopy.org) using the [MLR3 framework](https://mlr3book.mlr-org.com/).
+This tutorial explains the steps required to fit Soil Spectral Prediction Models for the purpose of the [Soil Spectroscopy for Global Good project](https://soilspectroscopy.org) using the [MLR3 framework](https://mlr3book.mlr-org.com/). After running several model evaluations, including the test of several instruments and diverse independent test sets, we are releasing fine-tuned [Cubist models](https://cran.r-project.org/web/packages/Cubist/vignettes/cubist.html), a machine learning algorithm that takes advantage of a decision-tree splitting method but fits linear regression models at each terminal leaf. It also uses a boosting mechanism (sequential trees adjusted by weights) that allows the growth of a forest by tuning the number of committees. We haven't used the correction of final predictions by the nearest neighbors' influence due to the lack of this feature in the MLR3 framework.
 
-The following code is implemented in a high-performance computing environment with many steps fully parallelized with enough RAM (> 64GB). Running this code on a standard computer without subsetting data is not recommended.
+We provide, in addition to the response of a property of interest, the uncertainty via the standard deviation estimation along with the lower and upper bounds, determined via [conformal prediction interval](https://en.wikipedia.org/wiki/Conformal_prediction). Lastly, an extra column is provided to flag potential spectral underrepresentation, warning if the feature space of the calibration set is representative to new samples.
+
+The following code is implemented in a high-performance computing environment with many steps are fully parallelized with enough RAM (> 64GB). Running this code on a standard computer without subsetting data is not recommended.
 
 For each soil property of interest, the possible model combinations are:
 
@@ -81,7 +83,7 @@ modeling.combinations <- tibble(spectra_type = spectra.type) %>%
   crossing(geo = geocovariates)
 ```
 
-At this stage, Neospectra models are fitted using only the OSSL subset, as they have minimal differences (OSSL ~ KSSL). In addition, models with geocovariates are omitted as additional tests are required.
+At this stage, Neospectra models are fitted using only the OSSL subset, as they have minimal differences (OSSL ~ KSSL). In addition, models with geocovariates are not implemented at this version as additional tests are required.
 
 ```{r model_names, include=TRUE, message=FALSE, eval=TRUE}
 # Target models
@@ -113,7 +115,7 @@ soil.properties.names <- soil.properties %>%
 
 knitr::kable(soil.properties)
 ```
-Note: some soil properties are natural-log transformed to help models fitting.
+> Note: some soil properties are natural-log transformed (with offset = 1, that is why we use log1p function) to increase the prediction performance of skewed distribution soil properties. They are back-transformed only at the end after running all modeling steps, including performance estimation and the definition of the uncertainty intervals.
 
 Final modeling combinations:
 ```{r modeling_combinations, include=TRUE, message=FALSE, eval=FALSE}
@@ -126,6 +128,7 @@ write_csv(modeling.combinations, "../out/modeling_combinations_v1.2.csv")
 ## Spectral ranges
 
 Few datasets from the OSSL have distinct spectral ranges. We strictly define them in the chunk below and format the the OSSL naming. MIR is represented in [log10 absorbance units](https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html#mir-table), while the VisNIR and NIR are represented in [reflectance units](https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html#mir-table).
+
 ```{r spectral_ranges, include=TRUE, message=FALSE, eval=TRUE}
 mir.spectral.range <- paste0("scan_mir.", seq(600, 4000, by = 2), "_abs")
 visnir.spectral.range <- paste0("scan_visnir.", seq(400, 2500, by = 2), "_ref")
@@ -188,25 +191,25 @@ rm.neospectra <- rm.neospectra %>%
 # Preparing named list of datasets
 # Selecting only important columns, spectra range and rows with available spectra
 data.list <- list(
-  "mir_mlr3..eml_kssl_v1.2" = {rm.ossl %>%
+  "mir_cubist_kssl_v1.2" = {rm.ossl %>%
       dplyr::filter(dataset.code_ascii_txt == "KSSL.SSL") %>%
       dplyr::select(id.layer_uuid_txt, any_of(soil.properties.names),
                     all_of(mir.spectral.range)) %>%
       dplyr::filter(!is.na(scan_mir.1500_abs))},
-  "mir_mlr3..eml_ossl_v1.2" = {rm.ossl %>%
+  "mir_cubist_ossl_v1.2" = {rm.ossl %>%
       dplyr::select(id.layer_uuid_txt, any_of(soil.properties.names),
                     all_of(mir.spectral.range)) %>%
       dplyr::filter(!is.na(scan_mir.1500_abs))},
-  "visnir_mlr3..eml_kssl_v1.2" = {rm.ossl %>%
+  "visnir_cubist_kssl_v1.2" = {rm.ossl %>%
       dplyr::filter(dataset.code_ascii_txt == "KSSL.SSL") %>%
       dplyr::select(id.layer_uuid_txt, any_of(soil.properties.names),
                     all_of(visnir.spectral.range)) %>%
       dplyr::filter(!is.na(scan_visnir.1500_ref))},
-  "visnir_mlr3..eml_ossl_v1.2" = {rm.ossl %>%
+  "visnir_cubist_ossl_v1.2" = {rm.ossl %>%
       dplyr::select(id.layer_uuid_txt, any_of(soil.properties.names),
                     all_of(visnir.spectral.range)) %>%
       dplyr::filter(!is.na(scan_visnir.1500_ref))},
-  "nir.neospectra_mlr3..eml_ossl_v1.2" = {rm.neospectra %>%
+  "nir.neospectra_cubist_ossl_v1.2" = {rm.neospectra %>%
       dplyr::select(id.layer_uuid_txt, any_of(soil.properties.names),
                     all_of(nir.neospectra.spectral.range)) %>%
       dplyr::filter(!is.na(scan_nir.1500_ref))}
@@ -237,7 +240,7 @@ prep.list <- lapply(data.list, function(x){
 
 ### PCA compression
 
-Compress and save [PCA models](http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/) for the different versions of spectra. This is used to reduce the number of dimension and also control multicollinearity [@chang2001near]. Only 120 components will be used in the models but the remaining deeper components are used for the trustworthiness test.
+Compress and save [PCA models](http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/) for the different versions of spectra. This is used to reduce the number of dimension and also control multicollinearity [@chang2001near]. Only 120 components will be used in the models but the remaining farther components are used for the trustworthiness test, i.e., if a sample is underrepresented because of their unique features on those farther components not accounted by the models, then a flag will be raised.
 
 Objects from `prcomp`:  
 - `sdev`: the standard deviations of the principal components.  
@@ -343,34 +346,25 @@ modeling.combinations %>%
 # Final modeling combinations
 modeling.combinations %>%
   count(spectra_type, subset)
-
-# # Filtering already fitted models
-# modeling.combinations <- modeling.combinations %>%
-#   mutate(fitted = file.exists(paste0(dir, export_name, "/model_", model_name, ".qs")))
-# 
-# modeling.combinations <- modeling.combinations  %>%
-#   filter(!fitted)
 ```
 
 ## Model fitting
 
-For calibration model fitting we use the first 120 PCs, a cutoff considering the tradeoff between spectral representation and compression level. We did a internal experiment and found this number to be optimal when compared to a cumulative explained variance of 99%. In addition, this internal experiment demonstrated that climate geocovariates haven't helped the models, but further tests must be done.
+For model calibration we use the first 120 PCs, a cutoff considering the trade-off between spectral representation and compression level. We did a internal experiment and found this number to be optimal when compared to a cumulative explained variance of 99% (which include more features and hinders the compression capacity).
 
 The use of compressed PCs is presented in @chang2001near, although the authors used only top 10 PCA components.
 
 The following framework is used:  
-- Ensemble machine learning (`mlr3..eml`) composed of a linear regression (meta-learner) of base learners.  
-- Base learners: Elastic net (`glmnet`), Random Forest (`ranger`), XGBoost trees (`xgboost`), and Cubist (`cubist`).  
-- Calibration (`insample`) from base learners are used as input for the the meta-learner.
-- Hyperparameter optimization is done with internal resampling (`inner`) using 5-fold cross-validation and a smaller subset for speeding up this operation. This task is performed with random search of HP space testing up to 20 configurations and RMSE set as the loss function. The final model with the best HPO is fitted at the end with the full data.  
-- Final evaluation is performed with external (`outer`) 10-fold cross (`cv10`) validation of final models.  
-- Cross-validation predictions, accuracy plot and good-of-fitness metrics are exported to disk.
+- Base learner: Cubist (`cubist`).
+- Hyperparameter optimization is done with internal resampling (`inner`) using 5-fold cross-validation and a smaller subset for speeding up this operation. This task is performed with a grid search of HP space testing up to 5 configurations within the predifined range, and the is RMSE set as the loss function. A final model is fitted at the end with the full data and the best HPO.  
+- Performance evaluation is performed with an external (`outer`) 10-fold cross-validation (`cv10`) of the final models.  
+- Cross-validation predictions, accuracy plot, and good-of-fitness metrics are exported to disk.
+- Uncertainty model via conformal prediction: the cross-validated predictions are used to estimate absolute residuals (error), which are fed to a new model using the same fine-tuned structure of the response model. The observed and predicted errors are used to estimate conformity scores given a confidence level (68% ~ 1 std dev, 90%, 95% etc.).
 
 ```{r train, include=TRUE, message=FALSE, eval=FALSE, results='hide'}
 ## Parallelization is done inside the the autotuner
 lgr::get_logger("mlr3")$set_threshold("warn")
-future::plan("multisession")
-  
+
 i=1
 for(i in 1:nrow(modeling.combinations)) {
 
@@ -381,110 +375,70 @@ for(i in 1:nrow(modeling.combinations)) {
   isubset = modeling.combinations[[i,"subset"]]
   igeo = modeling.combinations[[i,"geo"]]
 
-  # Learners
-  learner_glmnet = lrn("regr.glmnet", predict_type = "response")
-  
-  learner_ranger = lrn("regr.ranger", predict_type = "response",
-                       replace = TRUE, num.threads = 1, verbose = FALSE)
-  
-  learner_xgboost = lrn("regr.xgboost", predict_type = "response",
-                        booster = "gbtree", nthread = 1,
-                        subsample = 0.67)
-  
+  # Learner
   learner_cubist = lrn("regr.cubist", predict_type = "response",
                        neighbors = 0, unbiased = FALSE, seed = 1993)
-  
-  # Base learners
-  base_learners = list(learner_glmnet, learner_ranger, learner_xgboost, learner_cubist)
-  
-  # Meta learner: linear model of base learners
-  learner_lm = lrn("regr.lm", predict_type = "response")
 
-  meta_learner = pipeline_stacking(base_learners, learner_lm,
-                                   # method = "cv", folds = 5,
-                                   method = "insample",
-                                   use_features = FALSE)
-  
-  # Setting ensemble as a learner
-  learner_ensemble = as_learner(meta_learner)
-  learner_ensemble$id = "ensemble"
-  learner_ensemble$predict_type = "response"
-
-  # Hyperparameters space, all crossed, i.e. not tuned separately
+  # Hyperparameters space
   search_space_ensemble = ps(
-    regr.glmnet.alpha = p_dbl(0, 1),
-    regr.glmnet.lambda = p_dbl(0.001, 0.1),
-    regr.ranger.num.trees = p_int(20, 100),
-    regr.ranger.min.node.size = p_int(5, 20),
-    regr.xgboost.nrounds = p_int(20, 100),
-    regr.xgboost.eta = p_dbl(0.3, 0.5),
-    regr.xgboost.max_depth = p_int(5, 20),
-    regr.cubist.committees = p_int(5, 10)
+    committees = p_int(1, 20) # Up to 20 tress are fitted sequentially
   )
-  
+
   # PCA scores
   n.comps <- 120
   selected.comps <- paste0("PC", seq(1, n.comps, by = 1))
-  
+
   data <- qread(paste0(dir, "pca.ossl/pca_scores_", ispectra_type, "_mlr3..eml_", isubset, "_v1.2.qs"))
-  
+
   # Apply log transform to soil property
   if(grepl("log..", iexport_name)){
-    
+
     data <- data %>%
       mutate(!!isoil_property := log1p(!!as.name(isoil_property)))
-    
+
   }
-  
+
   # Defining train data
-  if(igeo == "ll") {
-    
-    sel.data <- data %>%
-      select(id.layer_uuid_txt, # ID column
-             id.tile, # ID for block CV
-             all_of(isoil_property), # Target
-             all_of(selected.comps), # Compressed spectra
-             starts_with("clm")) %>% # Geocovariates
-      filter(!is.na(!!as.name(isoil_property)))
-    
-  } else if(igeo == "na") {
-    
-    sel.data <- data %>%
-      select(id.layer_uuid_txt, # ID column
-             all_of(isoil_property), # Target
-             all_of(selected.comps)) %>% # Only compressed spectra
-      filter(!is.na(!!as.name(isoil_property)))
-    
-  }
-  
+  sel.data <- data %>%
+    select(id.layer_uuid_txt, # ID column
+           all_of(isoil_property), # Target
+           all_of(selected.comps)) %>% # Only compressed spectra
+    filter(!is.na(!!as.name(isoil_property)))
+
   # Subset for speeding up HPO
   if(nrow(sel.data) >= 2000) {
-    
+
     set.seed(1993)
     sel.data.hpo <- sel.data %>%
       sample_n(2000)
-    
+
   } else {
-    
+
     sel.data.hpo <- sel.data
-    
+
   }
-  
+
   # Exporting train data
-  qsave(sel.data, paste0(dir,
-                         iexport_name,
-                         "/task_",
-                         imodel_name,
-                         ".qs"))
-  
+
+  export.data <- paste0(dir, iexport_name, "/task_", imodel_name, ".qs")
+  export.data.alt <- gsub("\\.qs", "\\.rds", export.data)
+
+  if(file.exists(export.data)){file.remove(export.data)}
+  if(file.exists(export.data.alt)){file.remove(export.data.alt)}
+
+  tryCatch(
+    expr = {qsave(sel.data, export.data)},
+    error = function(e){saveRDS(sel.data, export.data.alt)}
+  )
+
   # Create regression task
   task.hpo <- as_task_regr(sel.data.hpo, id = "hpo", target = isoil_property, type = "regression")
   task.train <- as_task_regr(sel.data, id = "train", target = isoil_property, type = "regression")
-  
+
   # Defining id column
   task.hpo$set_col_roles("id.layer_uuid_txt", roles = "name")
   task.train$set_col_roles("id.layer_uuid_txt", roles = "name")
-  
+
   # For block CV. If 'id.tile' not present in the data.frame, default to random CV
   if("id.tile" %in% colnames(sel.data)) {
     task.hpo$set_col_roles("id.tile", roles = "group")
@@ -495,13 +449,18 @@ for(i in 1:nrow(modeling.combinations)) {
   inner_resampling = rsmp("cv", folds = 5)
 
   # Auto tuner
-  at = auto_tuner(tuner = tnr("random_search", batch_size = 3), # batch_size X 5 folds = 50 cores
-                  learner = learner_ensemble,
+  # Grid search
+  # Resolution 5 means that within the range, 5 equidistant values will be tested
+  at = auto_tuner(tuner = tnr("grid_search", resolution = 5, batch_size = 1),
+                  learner = learner_cubist,
                   resampling = inner_resampling,
                   measure = msr("regr.rmse"),
                   search_space = search_space_ensemble,
-                  terminator = trm("evals", n_evals = 20),
+                  terminator = trm("none"),
                   store_models = FALSE)
+
+  # Multicore processing
+  future::plan("multisession")
 
   # Fit autotuner
   at$train(task.hpo)
@@ -509,22 +468,29 @@ for(i in 1:nrow(modeling.combinations)) {
   # # Overview
   # at$tuning_result
   # at$tuning_instance
-  
-  # Final model from best HPO
-  final.model <- learner_ensemble
+
+  # Final model with best HPO
+  final.model <- learner_cubist
   final.model$param_set$values = at$tuning_result$learner_param_vals[[1]]
   final.model$train(task.train)
-  
+
+  future:::ClusterRegistry("stop")
+
   # # Overview
   # summary(final.model$model$regr.lm$model)
-  
+
   # Saving trained final model to disk
-  qsave(final.model, paste0(dir,
-                   iexport_name,
-                   "/model_",
-                   imodel_name,
-                   ".qs"))
-  
+  export.model <- paste0(dir, iexport_name, "/model_", imodel_name, ".qs")
+  export.model.alt <- gsub("\\.qs", "\\.rds", export.model)
+
+  if(file.exists(export.model)){file.remove(export.model)}
+  if(file.exists(export.model.alt)){file.remove(export.model.alt)}
+
+  tryCatch(
+    expr = {qsave(final.model, export.model)},
+    error = function(e){saveRDS(final.model, export.model.alt)}
+  )
+
 }
 ```
 
@@ -712,13 +678,102 @@ for(i in 1:nrow(fitted.modeling.combinations)) {
   cat(paste0("Run ", i, "/", nrow(fitted.modeling.combinations), "\n\n"))
 
 }
-
 ```
 
 Example of an accuracy plot:
+```{r ac-toc, echo=FALSE, out.width="60%"}
+knitr::include_graphics("../out/plots/log..c.tot_usda.a622_w.pct..mir_cubist_ossl_na_v1.2.png")
+```
 
-```{r ac-toc, echo=FALSE, fig.cap="Accuracy plot for log..c.tot_usda.a622_w.pct using mir_mlr3..eml_ossl_na_v1.2 model", out.width="60%"}
-knitr::include_graphics("../out/plots/log..c.tot_usda.a622_w.pct..mir_mlr3..eml_ossl_na_v1.2.png")
+## Uncertainty model
+```{r uncertainty, include=TRUE, message=FALSE, eval=FALSE, results='hide'}
+## Parallelization is done inside the the autotuner
+lgr::get_logger("mlr3")$set_threshold("warn")
+
+i=1
+for(i in 1:nrow(modeling.combinations)) {
+
+  isoil_property = modeling.combinations[[i,"soil_property"]]
+  imodel_name = modeling.combinations[[i,"model_name"]]
+  iexport_name = modeling.combinations[[i,"export_name"]]
+  ispectra_type = modeling.combinations[[i,"spectra_type"]]
+  isubset = modeling.combinations[[i,"subset"]]
+  igeo = modeling.combinations[[i,"geo"]]
+
+  # PCA scores
+  n.comps <- 120
+  selected.comps <- paste0("PC", seq(1, n.comps, by = 1))
+
+  data <- qread(paste0(dir, "pca.ossl/pca_scores_", ispectra_type, "_mlr3..eml_", isubset, "_v1.2.qs"))
+
+  # CV predictions
+  predictions <- qread(paste0(dir, iexport_name, "/cvpred_", imodel_name, ".qs"))
+
+  predictions <- predictions %>%
+    mutate(residual = abs(truth-response)) %>%
+    select(id.layer_uuid_txt, residual)
+
+  data <- right_join(data, predictions, by = "id.layer_uuid_txt") %>%
+    relocate(residual, .after = id.layer_uuid_txt)
+
+  # Defining train data
+  sel.data <- data %>%
+    select(id.layer_uuid_txt, # ID column
+           residual, # Target
+           all_of(selected.comps)) %>% # Only compressed spectra
+    filter(!is.na(residual))
+
+  # Create regression task
+  task.error <- as_task_regr(sel.data, id = "train", target = "residual", type = "regression")
+
+  # Defining id column
+  task.error$set_col_roles("id.layer_uuid_txt", roles = "name")
+
+  # For block CV. If 'id.tile' not present in the data.frame, default to random CV
+  if("id.tile" %in% colnames(sel.data)) {
+    task.error$set_col_roles("id.tile", roles = "group")
+  }
+
+  # Importing the best HP from prediction model and setting to error model
+  error.model <- qread(paste0(dir, iexport_name, "/model_", imodel_name, ".qs"))
+
+  # Train
+  error.model$train(task.error)
+
+  # Saving trained error model to disk
+  export.file <- paste0(dir, iexport_name, "/error_model_", imodel_name, ".qs")
+  export.file.alt <- gsub("\\.qs", "\\.rds", export.file)
+
+  if(file.exists(export.file)){file.remove(export.file)}
+  if(file.exists(export.file.alt)){file.remove(export.file.alt)}
+
+  tryCatch(
+    expr = {qsave(error.model, export.file)},
+    error = function(e){saveRDS(error.model, export.file.alt)}
+  )
+
+  # Getting residual predictions and saving to disk
+  results <- predict(error.model, newdata = as.data.table(task.error))
+
+  pred.export <- sel.data %>%
+    select(-starts_with("PC")) %>%
+    mutate(pred_residual = results) %>%
+    mutate(alpha_scores = residual/pred_residual)
+
+  export.error <- paste0(dir, iexport_name, "/error_pred_", imodel_name, ".qs")
+  export.error.alt <- gsub("\\.qs", "\\.rds", export.error)
+
+  if(file.exists(export.error)){file.remove(export.error)}
+  if(file.exists(export.error.alt)){file.remove(export.error.alt)}
+
+  tryCatch(
+    expr = {qsave(pred.export, export.error)},
+    error = function(e){saveRDS(pred.export, export.error.alt)}
+  )
+
+  cat(paste0("Exported error model at ", now(), "\n\n"))
+
+}
 ```
 
 ## References
