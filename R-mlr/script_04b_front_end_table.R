@@ -1,7 +1,6 @@
 
 ## Packages
 library("tidyverse")
-library("yardstick")
 library("qs")
 library("fs")
 
@@ -20,9 +19,15 @@ fitted.modeling.combinations <- fitted.modeling.combinations %>%
 
 fitted.modeling.combinations
 
-frontend.table <- tibble(file_description = c("train_data", "model", "performance_summary", "10cv_predictions", "validation_plot"),
-                      file_code = c("task_", "model_", "perfmetrics_", "cvpred_", "valplot_"),
-                      file_extension = c(".qs", ".qs", ".csv", ".qs", ".png"))
+frontend.table <- tibble(file_description = c("train_data", "model", "performance_summary",
+                                              "10cv_predictions", "validation_plot",
+                                              "error_model", "error_predictions"),
+                         file_code = c("task_", "model_", "perfmetrics_",
+                                       "cvpred_", "valplot_",
+                                       "error_model", "error_pred"),
+                         file_extension = c(".qs", ".qs", ".csv",
+                                            ".qs", ".png",
+                                            ".qs", ".qs"))
 
 frontend.table <- fitted.modeling.combinations %>%
   crossing(frontend.table)
@@ -52,4 +57,4 @@ write_csv(frontend.table, "out/front_end_table.csv")
 
 ## Test
 
-pca.scores <- qread_url("https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/pca_scores_nir.neospectra_mlr3..eml_ossl_v1.2.qs")
+pca.scores <- qread_url("https://storage.googleapis.com/soilspec4gg-public/models/pca.ossl/pca_scores_nir.neospectra_cubist_ossl_v1.2.qs")

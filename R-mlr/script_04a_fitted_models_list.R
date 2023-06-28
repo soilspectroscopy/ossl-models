@@ -20,9 +20,15 @@ fitted.modeling.combinations <- fitted.modeling.combinations %>%
 
 fitted.modeling.combinations
 
-files.table <- tibble(file_description = c("train data", "model", "performance", "10cv predictions", "validation plot"),
-                      file_code = c("task_", "model_", "perfmetrics_", "cvpred_", "valplot_"),
-                      file_extension = c(".qs", ".qs", ".csv", ".qs", ".png"))
+files.table <- tibble(file_description = c("train data", "model", "performance",
+                                           "10cv predictions", "validation plot",
+                                           "error model", "error predictions"),
+                      file_code = c("task_", "model_", "perfmetrics_",
+                                    "cvpred_", "valplot_",
+                                    "error_model", "error_pred"),
+                      file_extension = c(".qs", ".qs", ".csv",
+                                         ".qs", ".png",
+                                         ".qs", ".qs"))
 
 files.table <- fitted.modeling.combinations %>%
   crossing(files.table)
