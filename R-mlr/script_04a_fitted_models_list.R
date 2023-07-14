@@ -40,7 +40,9 @@ files.table <- files.table %>%
                              file_code,
                              model_name,
                              file_extension)) %>%
-  select(-file_code, -file_extension, -export_name)
+  relocate(export_name, .after = description) %>%
+  rename(folder_name = export_name) %>%
+  select(-file_code, -file_extension)
 
 write_csv(files.table, "out/fitted_models_access.csv")
 

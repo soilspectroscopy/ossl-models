@@ -42,7 +42,9 @@ frontend.table <- frontend.table %>%
                            file_code,
                            model_name,
                            file_extension)) %>%
-  select(-file_code, -file_extension, -export_name)
+  relocate(export_name, .after = description) %>%
+  rename(folder_name = export_name) %>%
+  select(-file_code, -file_extension)
 
 frontend.table <- frontend.table %>%
   pivot_wider(names_from = "file_description", values_from = "file_url")
