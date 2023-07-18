@@ -30,7 +30,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..acidity_usda.a795_cmolc.kg/cvpred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..acidity_usda.a795_cmolc.kg/cvpred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..acidity_usda.a795_cmolc.kg/cvpred_nir.neospectra_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..acidity_usda.a795_cmolc.kg/cvpred_nir.neospectra_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..acidity_usda.a795_cmolc.kg/cvpred_visnir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..acidity_usda.a795_cmolc.kg/error_model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..acidity_usda.a795_cmolc.kg/error_model_mir_cubist_ossl_na_v1.2.qs
@@ -92,13 +91,11 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.dith_usda.a65_w.pct/valplot_mir_cubist_ossl_na_v1.2.png
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.dith_usda.a65_w.pct/valplot_nir.neospectra_cubist_ossl_na_v1.2.png
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a1056_mg.kg/cvpred_mir_cubist_kssl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a1056_mg.kg/cvpred_mir_cubist_kssl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a1056_mg.kg/cvpred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a1056_mg.kg/error_model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a1056_mg.kg/error_model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a1056_mg.kg/error_pred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a1056_mg.kg/error_pred_mir_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a1056_mg.kg/error_pred_mir_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a1056_mg.kg/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a1056_mg.kg/model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a1056_mg.kg/perfmetrics_mir_cubist_kssl_na_v1.2.csv
@@ -111,7 +108,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a69_cmolc.kg/cvpred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a69_cmolc.kg/cvpred_nir.neospectra_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a69_cmolc.kg/cvpred_visnir_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a69_cmolc.kg/cvpred_visnir_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a69_cmolc.kg/error_model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a69_cmolc.kg/error_model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ext_usda.a69_cmolc.kg/error_model_nir.neospectra_cubist_ossl_na_v1.2.qs
@@ -139,13 +135,11 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ox_usda.a59_w.pct/cvpred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ox_usda.a59_w.pct/cvpred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ox_usda.a59_w.pct/cvpred_nir.neospectra_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ox_usda.a59_w.pct/cvpred_nir.neospectra_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ox_usda.a59_w.pct/error_model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ox_usda.a59_w.pct/error_model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ox_usda.a59_w.pct/error_model_nir.neospectra_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ox_usda.a59_w.pct/error_pred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ox_usda.a59_w.pct/error_pred_mir_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ox_usda.a59_w.pct/error_pred_mir_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ox_usda.a59_w.pct/error_pred_nir.neospectra_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ox_usda.a59_w.pct/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..al.ox_usda.a59_w.pct/model_mir_cubist_ossl_na_v1.2.qs
@@ -237,7 +231,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..c.tot_usda.a622_w.pct/error_pred_nir.neospectra_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..c.tot_usda.a622_w.pct/error_pred_visnir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..c.tot_usda.a622_w.pct/error_pred_visnir_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..c.tot_usda.a622_w.pct/error_pred_visnir_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..c.tot_usda.a622_w.pct/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..c.tot_usda.a622_w.pct/model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..c.tot_usda.a622_w.pct/model_nir.neospectra_cubist_ossl_na_v1.2.qs
@@ -259,7 +252,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..c.tot_usda.a622_w.pct/valplot_visnir_cubist_kssl_na_v1.2.png
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..c.tot_usda.a622_w.pct/valplot_visnir_cubist_ossl_na_v1.2.png
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ca.ext_usda.a1059_mg.kg/cvpred_mir_cubist_kssl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ca.ext_usda.a1059_mg.kg/cvpred_mir_cubist_kssl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ca.ext_usda.a1059_mg.kg/cvpred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ca.ext_usda.a1059_mg.kg/error_model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ca.ext_usda.a1059_mg.kg/error_model_mir_cubist_ossl_na_v1.2.qs
@@ -347,7 +339,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cec_usda.a723_cmolc.kg/error_pred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cec_usda.a723_cmolc.kg/error_pred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cec_usda.a723_cmolc.kg/error_pred_nir.neospectra_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cec_usda.a723_cmolc.kg/error_pred_nir.neospectra_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cec_usda.a723_cmolc.kg/error_pred_visnir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cec_usda.a723_cmolc.kg/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cec_usda.a723_cmolc.kg/model_mir_cubist_ossl_na_v1.2.qs
@@ -376,7 +367,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cf_usda.c236_w.pct/error_pred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cf_usda.c236_w.pct/error_pred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cf_usda.c236_w.pct/error_pred_nir.neospectra_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cf_usda.c236_w.pct/error_pred_nir.neospectra_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cf_usda.c236_w.pct/error_pred_visnir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cf_usda.c236_w.pct/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cf_usda.c236_w.pct/model_mir_cubist_ossl_na_v1.2.qs
@@ -396,7 +386,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cf_usda.c236_w.pct/valplot_visnir_cubist_ossl_na_v1.2.png
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cu.ext_usda.a1063_mg.kg/cvpred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cu.ext_usda.a1063_mg.kg/cvpred_mir_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cu.ext_usda.a1063_mg.kg/cvpred_mir_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cu.ext_usda.a1063_mg.kg/error_model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cu.ext_usda.a1063_mg.kg/error_model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..cu.ext_usda.a1063_mg.kg/error_pred_mir_cubist_kssl_na_v1.2.qs
@@ -421,7 +410,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/error_pred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/error_pred_nir.neospectra_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/error_pred_visnir_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/error_pred_visnir_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/model_nir.neospectra_cubist_ossl_na_v1.2.qs
@@ -433,7 +421,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/task_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/task_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/task_nir.neospectra_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/task_nir.neospectra_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/task_visnir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/valplot_mir_cubist_kssl_na_v1.2.png
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..ec_usda.a364_ds.m/valplot_mir_cubist_ossl_na_v1.2.png
@@ -477,7 +464,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..fe.ox_usda.a60_w.pct/cvpred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..fe.ox_usda.a60_w.pct/cvpred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..fe.ox_usda.a60_w.pct/cvpred_nir.neospectra_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..fe.ox_usda.a60_w.pct/cvpred_nir.neospectra_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..fe.ox_usda.a60_w.pct/error_model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..fe.ox_usda.a60_w.pct/error_model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..fe.ox_usda.a60_w.pct/error_model_nir.neospectra_cubist_ossl_na_v1.2.qs
@@ -606,7 +592,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..mn.ext_usda.a70_mg.kg/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..mn.ext_usda.a70_mg.kg/model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..mn.ext_usda.a70_mg.kg/model_nir.neospectra_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..mn.ext_usda.a70_mg.kg/model_nir.neospectra_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..mn.ext_usda.a70_mg.kg/perfmetrics_mir_cubist_kssl_na_v1.2.csv
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..mn.ext_usda.a70_mg.kg/perfmetrics_mir_cubist_ossl_na_v1.2.csv
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..mn.ext_usda.a70_mg.kg/perfmetrics_nir.neospectra_cubist_ossl_na_v1.2.csv
@@ -669,7 +654,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..na.ext_usda.a726_cmolc.kg/cvpred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..na.ext_usda.a726_cmolc.kg/cvpred_nir.neospectra_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..na.ext_usda.a726_cmolc.kg/cvpred_visnir_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..na.ext_usda.a726_cmolc.kg/cvpred_visnir_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..na.ext_usda.a726_cmolc.kg/error_model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..na.ext_usda.a726_cmolc.kg/error_model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..na.ext_usda.a726_cmolc.kg/error_model_nir.neospectra_cubist_ossl_na_v1.2.qs
@@ -708,7 +692,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..oc_usda.c729_w.pct/error_pred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..oc_usda.c729_w.pct/error_pred_nir.neospectra_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..oc_usda.c729_w.pct/error_pred_visnir_cubist_kssl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..oc_usda.c729_w.pct/error_pred_visnir_cubist_kssl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..oc_usda.c729_w.pct/error_pred_visnir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..oc_usda.c729_w.pct/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..oc_usda.c729_w.pct/model_mir_cubist_ossl_na_v1.2.qs
@@ -738,19 +721,16 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/error_model_nir.neospectra_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/error_pred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/error_pred_mir_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/error_pred_mir_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/error_pred_nir.neospectra_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/model_nir.neospectra_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/model_nir.neospectra_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/perfmetrics_mir_cubist_kssl_na_v1.2.csv
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/perfmetrics_mir_cubist_ossl_na_v1.2.csv
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/perfmetrics_nir.neospectra_cubist_ossl_na_v1.2.csv
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/task_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/task_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/task_nir.neospectra_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/task_nir.neospectra_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/valplot_mir_cubist_kssl_na_v1.2.png
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/valplot_mir_cubist_ossl_na_v1.2.png
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a1070_mg.kg/valplot_nir.neospectra_cubist_ossl_na_v1.2.png
@@ -760,7 +740,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a270_mg.kg/error_model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a270_mg.kg/error_pred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a270_mg.kg/error_pred_mir_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a270_mg.kg/error_pred_mir_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a270_mg.kg/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a270_mg.kg/model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a270_mg.kg/perfmetrics_mir_cubist_kssl_na_v1.2.csv
@@ -777,7 +756,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a274_mg.kg/error_model_visnir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a274_mg.kg/error_pred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a274_mg.kg/error_pred_mir_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a274_mg.kg/error_pred_mir_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a274_mg.kg/error_pred_visnir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a274_mg.kg/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..p.ext_usda.a274_mg.kg/model_mir_cubist_ossl_na_v1.2.qs
@@ -806,7 +784,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..s.tot_usda.a624_w.pct/error_pred_nir.neospectra_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..s.tot_usda.a624_w.pct/error_pred_visnir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..s.tot_usda.a624_w.pct/error_pred_visnir_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..s.tot_usda.a624_w.pct/error_pred_visnir_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..s.tot_usda.a624_w.pct/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..s.tot_usda.a624_w.pct/model_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..s.tot_usda.a624_w.pct/model_nir.neospectra_cubist_ossl_na_v1.2.qs
@@ -866,7 +843,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..wr.33kPa_usda.a415_w.pct/error_pred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..wr.33kPa_usda.a415_w.pct/error_pred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..wr.33kPa_usda.a415_w.pct/error_pred_nir.neospectra_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..wr.33kPa_usda.a415_w.pct/error_pred_nir.neospectra_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..wr.33kPa_usda.a415_w.pct/error_pred_visnir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..wr.33kPa_usda.a415_w.pct/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,log..wr.33kPa_usda.a415_w.pct/model_mir_cubist_ossl_na_v1.2.qs
@@ -911,7 +887,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,ph.cacl2_usda.a481_index/cvpred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,ph.cacl2_usda.a481_index/cvpred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,ph.cacl2_usda.a481_index/cvpred_nir.neospectra_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,ph.cacl2_usda.a481_index/cvpred_nir.neospectra_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,ph.cacl2_usda.a481_index/cvpred_visnir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,ph.cacl2_usda.a481_index/error_model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,ph.cacl2_usda.a481_index/error_model_mir_cubist_ossl_na_v1.2.qs
@@ -1004,7 +979,6 @@ local_path,public_path,file_path
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,silt.tot_usda.c62_w.pct/error_pred_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,silt.tot_usda.c62_w.pct/error_pred_mir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,silt.tot_usda.c62_w.pct/error_pred_nir.neospectra_cubist_ossl_na_v1.2.qs
-~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,silt.tot_usda.c62_w.pct/error_pred_nir.neospectra_cubist_ossl_na_v1.2.rds
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,silt.tot_usda.c62_w.pct/error_pred_visnir_cubist_ossl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,silt.tot_usda.c62_w.pct/model_mir_cubist_kssl_na_v1.2.qs
 ~/mnt-ossl/ossl_models/,https://storage.googleapis.com/soilspec4gg-public/models,silt.tot_usda.c62_w.pct/model_mir_cubist_ossl_na_v1.2.qs

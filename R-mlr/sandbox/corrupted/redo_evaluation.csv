@@ -1,0 +1,2 @@
+soil_property,description,export_name,model_name,spectra_type,subset,geo,count,file_description,file_code,file_extension,path,exists,size
+cu.ext_usda.a1063_mg.kg,"Copper, Extractable, Mehlich3",log..cu.ext_usda.a1063_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,3772,10cv_predictions,cvpred_,.qs,~/mnt-ossl/ossl_models/log..cu.ext_usda.a1063_mg.kg/cvpred_mir_cubist_ossl_na_v1.2.qs,FALSE,NA

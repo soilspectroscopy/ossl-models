@@ -1,0 +1,4 @@
+soil_property,description,export_name,model_name,spectra_type,subset,geo,count,file_description,file_code,file_extension,path,exists,size
+al.ext_usda.a1056_mg.kg,"Aluminum, Extractable, Mehlich3",log..al.ext_usda.a1056_mg.kg,mir_cubist_ossl_na_v1.2,mir,ossl,na,3773,error_predictions,error_pred_,.qs,~/mnt-ossl/ossl_models/log..al.ext_usda.a1056_mg.kg/error_pred_mir_cubist_ossl_na_v1.2.qs,FALSE,NA
+oc_usda.c729_w.pct,"Organic Carbon, Total C without CaCO3, S prep",log..oc_usda.c729_w.pct,visnir_cubist_kssl_na_v1.2,visnir,kssl,na,19747,error_predictions,error_pred_,.qs,~/mnt-ossl/ossl_models/log..oc_usda.c729_w.pct/error_pred_visnir_cubist_kssl_na_v1.2.qs,FALSE,NA
+s.tot_usda.a624_w.pct,"Sulfur, Total NCS",log..s.tot_usda.a624_w.pct,visnir_cubist_ossl_na_v1.2,visnir,ossl,na,19807,error_predictions,error_pred_,.qs,~/mnt-ossl/ossl_models/log..s.tot_usda.a624_w.pct/error_pred_visnir_cubist_ossl_na_v1.2.qs,FALSE,NA

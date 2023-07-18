@@ -37,12 +37,19 @@ modeling.combinations <- modeling.combinations %>%
   filter(count > 500) %>%
   filter(!(soil_property == "efferv_usda.a479_class"))
 
-# Filtering already fitted models
-modeling.combinations <- modeling.combinations %>%
-  mutate(fitted = file.exists(paste0(dir, export_name, "/model_", model_name, ".qs")))
+# # Filtering already fitted models
+# modeling.combinations <- modeling.combinations %>%
+#   mutate(fitted = file.exists(paste0(dir, export_name, "/model_", model_name, ".qs")))
+#
+# modeling.combinations <- modeling.combinations  %>%
+#   filter(!fitted)
 
-modeling.combinations <- modeling.combinations  %>%
-  filter(!fitted)
+# # Filtering corrupted files
+# redo.train <- read_csv("../R-mlr/sandbox/corrupted/redo_train.csv", show_col_types = F)
+#
+# modeling.combinations <- modeling.combinations %>%
+#   filter(model_name %in% unique(redo.train$model_name)) %>%
+#   filter(soil_property %in% unique(redo.train$soil_property))
 
 # target.dirs <- paste0(dir, unique(modeling.combinations$export_name))
 #

@@ -16,7 +16,7 @@ dir <- "~/mnt-ossl/ossl_models/"
 db.dir <- "~/mnt-ossl/ossl_import/"
 
 # Modeling combinations
-modeling.combinations <- read_csv("../out/fitted_modeling_combinations_v1.2_cubist.csv",
+modeling.combinations <- read_csv("../out/fitted_modeling_combinations_v1.2.csv",
                                   show_col_types = FALSE)
 
 # # Filtering already fitted models
@@ -25,6 +25,13 @@ modeling.combinations <- read_csv("../out/fitted_modeling_combinations_v1.2_cubi
 #
 # modeling.combinations <- modeling.combinations  %>%
 #   filter(!fitted)
+
+# Filtering corrupted files
+redo.error <- read_csv("../R-mlr/sandbox/corrupted/redo_error.csv", show_col_types = F)
+
+modeling.combinations <- modeling.combinations %>%
+  filter(paste0(soil_property, "::", model_name) %in%
+           paste0(unique(redo.error$soil_property), "::", unique(redo.error$model_name)))
 
 ## Parallelization is done inside the the autotuner
 lgr::get_logger("mlr3")$set_threshold("warn")

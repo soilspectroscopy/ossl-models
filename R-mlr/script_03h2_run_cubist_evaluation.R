@@ -13,6 +13,13 @@ db.dir <- "~/mnt-ossl/ossl_import/"
 fitted.modeling.combinations <- read_csv("../out/fitted_modeling_combinations_v1.2.csv",
                                          show_col_types = FALSE)
 
+# # Filtering corrupted files
+# redo.evaluation <- read_csv("../R-mlr/sandbox/corrupted/redo_evaluation.csv", show_col_types = F)
+#
+# fitted.modeling.combinations <- fitted.modeling.combinations %>%
+#   filter(model_name %in% unique(redo.evaluation$model_name)) %>%
+#   filter(soil_property %in% unique(redo.evaluation$soil_property))
+
 ## Evaluation pipeline
 lgr::get_logger("mlr3")$set_threshold("warn")
 
