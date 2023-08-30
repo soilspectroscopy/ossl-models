@@ -100,28 +100,49 @@ found in
 
 Validation plots are available in the [`out/plots`](out/plots) folder.
 
+# OSSL Engine
+
+The OSSL Engine is a web platform where the user can upload spectra from
+the VisNIR (400-2500 nm), NIR (1350-2550 nm), or MIR (600-4000
+cm<sup>-1</sup>) ranges and get predictions back with uncertainty
+estimation and the representativeness flag.
+
+Please, check the example datasets for formatting your spectra to the
+minimum required level. You can provide either csv files or directly asd
+or opus (.0) for VisNIR and MIR scans, respectively.
+
+We recommend using the OSSL model type when getting predictions. KSSL is
+recommended when the spectra to be predicted have the same instrument
+manufacturer/model as the KSSL library and are represented by the range
+of soil properties of interest. Otherwise, use the OSSL subset.
+
 # Using OSSL models on your computer
 
-To load the complete analysis-ready models, train data, cross-validated
-predictions, validation performance metrics, and validation plot in R,
-please use the public URLs described in
-[fitted_models_access.csv](out/fitted_models_access.csv)
+To load the complete analysis-ready models, training data,
+cross-validated predictions, validation performance metrics, and
+validation plots in R, please download them to the same directory
+structure as specified in
+[fitted_models_access.csv](out/fitted_models_access.csv).
+
+Script
+**[script_04f_download_ossl_models.R](R-mlr/script_04f_download_ossl_models.R)**
+describes the automated steps to grab all the required files to your
+computer.
 
 `qs` is a serialized and compressed file format that is faster than
 native R `rds`. You need to have [qs
 package](https://github.com/traversc/qs) version \>= 0.25.5 to load
 files direct from the URLs.
 
-> NOTE: For using the trained models with new spectra, the PC scores
-> should be predicted from the [Standard Normal Variate (SNV)
-> preprocessed](https://cran.r-project.org/web/packages/prospectr/vignettes/prospectr.html#scatter-and-baseline-corrections)
-> spectra following the [same specifications and
-> nomenclature](https://soilspectroscopy.github.io/ossl-manual/neospectra-database.html#database-description)
-> of the OSSL database.
+> NOTE: For using the trained models on new spectra, the spectra must
+> have the [same
+> range](https://soilspectroscopy.github.io/ossl-manual/neospectra-database.html#database-description)
+> of the OSSL models, i.e. 400-2500 nm for VisNIR, 600-4000
+> cm<sup>-1</sup> for MIR, and 1350-2550 for NIR (Neospectra)..
 
 We provided in this repository both [examples of datasets](sample-data)
-and a [prediction function](R-mlr/OSSL_functions.R) that incorporates
-all of above operations.
+and a [prediction function](R-mlr/OSSL_functions.R) that preprocess and
+provide all outputs.
 
 Please, check the example datasets for formatting your spectra to the
 minimum required level of the prediction function. You can provide
@@ -165,11 +186,11 @@ run or online access are described in
 [ossl_models_directory_tree.csv](out/ossl_models_directory_tree.csv).
 
 > Please note that the soil properties indication follows the export
-> name. In addition, check
+> name. Check
 > [fitted_models_performance_v1.2.csv](out/fitted_models_performance_v1.2.csv)
-> for the complete list of models of each soil property as some spectra
-> types are not completely available. More importantly, for natural-log
-> soil properties, the upper and lower bands were estimated before the
+> for the complete list of models of each soil property as some spectral
+> types may not be available. More importantly, for natural-log soil
+> properties, the upper and lower bands were estimated before the
 > back-transformation.
 
 ``` r

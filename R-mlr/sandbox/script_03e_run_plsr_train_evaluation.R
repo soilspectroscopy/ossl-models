@@ -17,8 +17,10 @@ dir <- "~/mnt-ossl/ossl_models/"
 db.dir <- "~/mnt-ossl/ossl_import/"
 
 # Modeling combinations
-modeling.combinations <- read_csv("../out/modeling_combinations_v1.2.csv", show_col_types = FALSE)
-count.table <- read_csv("../out/tab_dataset_count.csv", show_col_types = FALSE)
+modeling.combinations <- read_csv("../../out/modeling_combinations_v1.2.csv", show_col_types = FALSE)
+# modeling.combinations <- read_csv("./out/modeling_combinations_v1.2.csv", show_col_types = FALSE)
+count.table <- read_csv("../../out/tab_dataset_count.csv", show_col_types = FALSE)
+# count.table <- read_csv("./out/tab_dataset_count.csv", show_col_types = FALSE)
 
 # Defining available data from ossl-import
 count.table <- count.table %>%
@@ -44,9 +46,10 @@ modeling.combinations <- modeling.combinations %>%
   filter(!(soil_property == "efferv_usda.a479_class"))
 
 # Filtering target models for PLSR experiment
-# Testing only with mir and a few soil properties
+# Testing only a few soil properties
 modeling.combinations <- modeling.combinations  %>%
-  filter(spectra_type == "mir") %>%
+  # filter(spectra_type == "mir") %>%
+  filter(spectra_type %in% c("visnir", "nir.neospectra")) %>%
   filter(soil_property %in% c("oc_usda.c729_w.pct", "c.tot_usda.a622_w.pct",
                               "clay.tot_usda.a334_w.pct", "sand.tot_usda.c60_w.pct",
                               "silt.tot_usda.c62_w.pct", "bd_usda.a4_g.cm3",
@@ -54,7 +57,7 @@ modeling.combinations <- modeling.combinations  %>%
                               "k.ext_usda.a725_cmolc.kg"))
 
 modeling.combinations <- modeling.combinations %>%
-  mutate(model_name = gsub("mlr3..eml", "plsr", model_name))
+  mutate(model_name = gsub("cubist", "plsr", model_name))
 
 modeling.combinations
 
@@ -102,7 +105,31 @@ for(i in 1:nrow(modeling.combinations)) {
 
   } else if(ispectra_type == "nir.neospectra") {
 
-    data <- qread(paste0(db.dir, "ossl_all_L1_v1.2.qs")) %>%
+    ## Reading OSSL level 1
+    rm.ossl <- qread(paste0(db.dir, "ossl_all_L1_v1.2.qs"))
+
+    # Preparing the bind of soil data level 1 for Neospectra
+    neospectra.soillab <- rm.ossl %>%
+      dplyr::select(id.layer_uuid_txt, id.scan_local_c,
+                    all_of(isoil_property)) %>%
+      filter(grepl("XS|XN", id.scan_local_c)) %>%
+      mutate(id.scan_local_c = gsub("XS|XN", "", id.scan_local_c))
+
+    ## Reading Neospectra datasets
+    neospectra.nir <- qread(paste0(db.dir, "neospectra_nir_v1.2.qs"))
+
+    # Averaging spectra collected by multiple instruments
+    neospectra.nir <- neospectra.nir %>%
+      dplyr::select(id.sample_local_c, all_of(nir.neospectra.spectral.range)) %>%
+      group_by(id.sample_local_c) %>%
+      summarise_all(mean)
+
+    rm.neospectra <- inner_join(neospectra.soillab, neospectra.nir,
+                                by = c("id.scan_local_c" = "id.sample_local_c"))
+
+    # Selecting only important columns
+    data <- rm.neospectra %>%
+      mutate(dataset.code_ascii_txt = "Neospectra") %>%
       select(all_of(column.ids), all_of(isoil_property), all_of(nir.neospectra.spectral.range)) %>%
       filter(!is.na(!!as.name(isoil_property))) %>%
       filter(!is.na(scan_nir.1500_ref))

@@ -34,7 +34,7 @@ system("gsutil ls gs://soilspec4gg-public/models")
 system("gsutil -m rsync -r -n ~/mnt-ossl/rsync gs://soilspec4gg-public/models")
 
 ## Execute rsync
-system("gsutil -m rsync -r ~/mnt-ossl/rsync gs://soilspec4gg-public/models")
+# system("gsutil -m rsync -r ~/mnt-ossl/rsync gs://soilspec4gg-public/models")
 
 ## Delete temporary folder
 dir_delete(rsync.dir)
