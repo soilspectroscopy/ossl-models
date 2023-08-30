@@ -50,7 +50,7 @@ Validation plots are available in the [`out/plots`](out/plots) folder.
 
 # OSSL Engine
 
-The OSSL Engine is a web platform where the user can upload spectra from the VisNIR (400-2500 nm), NIR (1350-2550 nm), or MIR (600-4000 cm<sup>-1</sup>) ranges and get predictions back with uncertainty estimation and the representativeness flag.
+The [OSSL Engine](https://engine.soilspectroscopy.org/) is a web platform where the user can upload spectra from the VisNIR (400-2500 nm), NIR (1350-2550 nm), or MIR (600-4000 cm<sup>-1</sup>) ranges and get predictions back with uncertainty estimation and the representativeness flag. Please, check it out!
 
 Please, check the example datasets for formatting your spectra to the minimum required level. You can provide either csv files or directly asd or opus (.0) for VisNIR and MIR scans, respectively.
 
