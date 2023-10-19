@@ -83,7 +83,7 @@ for(i in 1:nrow(modeling.combinations)) {
   n.comps <- 120
   selected.comps <- paste0("PC", seq(1, n.comps, by = 1))
 
-  data <- qread(paste0(dir, "pca.ossl/pca_scores_", ispectra_type, "_mlr3..eml_", isubset, "_v1.2.qs"))
+  data <- qread(paste0(dir, "pca.ossl/pca_scores_", ispectra_type, "_cubist_", isubset, "_v1.2.qs"))
 
   # Apply log transform to soil property
   if(grepl("log..", iexport_name)){

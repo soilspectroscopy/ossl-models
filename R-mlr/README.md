@@ -4,7 +4,7 @@ Jose L. Safanelli (<jsafanelli@woodwellclimate.org>), Tomislav Hengl
 (<tom.hengl@opengeohub.org>), Leandro Parente
 (<leandro.parente@opengeohub.org>), and Jonathan Sanderman
 (<jsanderman@woodwellclimate.org>)
-28 June, 2023
+19 October, 2023
 
 
 
@@ -23,7 +23,7 @@ License](http://creativecommons.org/licenses/by-sa/4.0/).
 Part of: <https://github.com/soilspectroscopy>  
 Project: [Soil Spectroscopy for Global
 Good](https://soilspectroscopy.org)  
-Last update: 2023-06-28  
+Last update: 2023-10-19  
 Dataset:
 [OSSL](https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html)
 
@@ -507,7 +507,7 @@ for(i in 1:nrow(modeling.combinations)) {
   n.comps <- 120
   selected.comps <- paste0("PC", seq(1, n.comps, by = 1))
 
-  data <- qread(paste0(dir, "pca.ossl/pca_scores_", ispectra_type, "_mlr3..eml_", isubset, "_v1.2.qs"))
+  data <- qread(paste0(dir, "pca.ossl/pca_scores_", ispectra_type, "_cubist_", isubset, "_v1.2.qs"))
 
   # Apply log transform to soil property
   if(grepl("log..", iexport_name)){
@@ -825,7 +825,7 @@ for(i in 1:nrow(modeling.combinations)) {
   n.comps <- 120
   selected.comps <- paste0("PC", seq(1, n.comps, by = 1))
 
-  data <- qread(paste0(dir, "pca.ossl/pca_scores_", ispectra_type, "_mlr3..eml_", isubset, "_v1.2.qs"))
+  data <- qread(paste0(dir, "pca.ossl/pca_scores_", ispectra_type, "_cubist_", isubset, "_v1.2.qs"))
 
   # CV predictions
   predictions <- qread(paste0(dir, iexport_name, "/cvpred_", imodel_name, ".qs"))
