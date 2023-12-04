@@ -4,7 +4,7 @@ Jose L. Safanelli (<jsafanelli@woodwellclimate.org>), Tomislav Hengl
 (<tom.hengl@opengeohub.org>), Leandro Parente
 (<leandro.parente@opengeohub.org>), and Jonathan Sanderman
 (<jsanderman@woodwellclimate.org>)
-19 October, 2023
+04 December, 2023
 
 
 
@@ -23,7 +23,7 @@ License](http://creativecommons.org/licenses/by-sa/4.0/).
 Part of: <https://github.com/soilspectroscopy>  
 Project: [Soil Spectroscopy for Global
 Good](https://soilspectroscopy.org)  
-Last update: 2023-10-19  
+Last update: 2023-12-04  
 Dataset:
 [OSSL](https://soilspectroscopy.github.io/ossl-manual/ossl-database-description.html)
 
@@ -734,7 +734,7 @@ for(i in 1:nrow(fitted.modeling.combinations)) {
       geom_text(aes(x = -Inf, y = Inf, hjust = -0.1, vjust = 1.2),
                 label = perfomance.annotation) +
       scale_fill_viridis_c(trans = "log10") +
-      labs(x = "log(observed)", y = "log(predicted)", fill = bquote(log[10](count)),
+      labs(x = "log(observed)", y = "log(predicted)", fill = "Count"),
            title = iexport_name) +
       theme_bw(base_size = 10) +
       theme(legend.position = "bottom",
@@ -768,7 +768,7 @@ for(i in 1:nrow(fitted.modeling.combinations)) {
       geom_text(aes(x = -Inf, y = Inf, hjust = -0.1, vjust = 1.2),
                 label = perfomance.annotation) +
       scale_fill_viridis_c(trans = "log10") +
-      labs(x = "observed", y = "predicted", fill = bquote(log[10](count)),
+      labs(x = "observed", y = "predicted", fill = fill = "Count"),
            title = iexport_name) +
       theme_bw(base_size = 10) +
       theme(legend.position = "bottom",

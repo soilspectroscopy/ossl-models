@@ -18,7 +18,7 @@ missing.plots <- dir_info(path = dir, regexp = "valplot*", recurse = T)
 
 missing.plots <- missing.plots %>%
   filter(grepl("cubist", path)) %>%
-  filter(!(size > 0 )) %>%
+  # filter(!(size > 0 )) %>%
   pull(path) %>%
   as.vector()
 
@@ -84,7 +84,7 @@ for(i in 1:nrow(missing.plots)) {
       geom_text(aes(x = -Inf, y = Inf, hjust = -0.1, vjust = 1.2),
                 label = perfomance.annotation) +
       scale_fill_viridis_c(trans = "log10") +
-      labs(x = "log(observed)", y = "log(predicted)", fill = bquote(log[10](count)),
+      labs(x = "log(1+observed)", y = "log(1+predicted)", fill = "Count",
            title = iexport_name) +
       theme_bw(base_size = 10) +
       theme(legend.position = "bottom",
@@ -113,7 +113,7 @@ for(i in 1:nrow(missing.plots)) {
       geom_text(aes(x = -Inf, y = Inf, hjust = -0.1, vjust = 1.2),
                 label = perfomance.annotation) +
       scale_fill_viridis_c(trans = "log10") +
-      labs(x = "observed", y = "predicted", fill = bquote(log[10](count)),
+      labs(x = "observed", y = "predicted", fill = "Count",
            title = iexport_name) +
       theme_bw(base_size = 10) +
       theme(legend.position = "bottom",
