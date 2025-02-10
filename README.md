@@ -1,9 +1,16 @@
 
-[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.5759693.svg)](https://doi.org/10.5281/zenodo.5759693)
+<!-- Badges on top of the page -->
 
-# Fitting OSSL models
+<a href="https://doi.org/10.1371/journal.pone.0296545">
+<img src="https://journals.plos.org/resource/img/one/logo.png" style="background-color:white;height:45px;">
 
-[<img src="./img/soilspec4gg-logo_fc.png" alt="SoilSpec4GG logo" width="250"/>](https://soilspectroscopy.org/)
+[![](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/soilspectroscopy)
+
+[![](https://zenodo.org/badge/doi/10.5281/zenodo.5759693.svg)](https://doi.org/10.5281/zenodo.5759693)
+
+# OSSL models
+
+Welcome to the Open Soil Spectral Library (OSSL)!
 
 This is the repository for all model calibration development for the
 [Soil Spectroscopy for Global Good](https://soilspectroscopy.org)
@@ -117,157 +124,24 @@ recommended when the spectra to be predicted have the same instrument
 manufacturer/model as the KSSL library and are represented by the range
 of soil properties of interest. Otherwise, use the OSSL subset.
 
-# Using OSSL models on your computer
+# Using the OSSL models on your computer
 
-To load the complete analysis-ready models, training data,
-cross-validated predictions, validation performance metrics, and
-validation plots in R, please download them to the same directory
-structure as specified in
-[fitted_models_access.csv](out/fitted_models_access.csv).
+Please follow the instructions provided in the
+[**ossl-nix**](https://github.com/soilspectroscopy/ossl-nix) GitHub
+repository for a full reproducible and local execution of the OSSL
+models.
 
-Script
-**[script_04f_download_ossl_models.R](R-mlr/script_04f_download_ossl_models.R)**
-describes the automated steps to grab all the required files to your
-computer.
+# Other resources
 
-`qs` is a serialized and compressed file format that is faster than
-native R `rds`. You need to have [qs
-package](https://github.com/traversc/qs) version \>= 0.25.5 to load
-files direct from the URLs.
+The OSSL is a public and growing database that is compiled by the [Soil
+Spectroscopy for Global Good](https://soilspectroscopy.org/) initiative.
 
-> NOTE: For using the trained models on new spectra, the spectra must
-> have the [same
-> range](https://soilspectroscopy.github.io/ossl-manual/neospectra-database.html#database-description)
-> of the OSSL models, i.e. 400-2500 nm for VisNIR, 600-4000
-> cm<sup>-1</sup> for MIR, and 1350-2550 for NIR (Neospectra)..
+A [peer-reviewed and open-access
+publication](https://doi.org/10.1371/journal.pone.0296545) is available
+for additional reference.
 
-We provided in this repository both [examples of datasets](sample-data)
-and a [prediction function](R-mlr/OSSL_functions.R) that preprocess and
-provide all outputs.
+You can also visit other additional open-access repositories in our
+[GitHub organization](https://github.com/soilspectroscopy).
 
-Please, check the example datasets for formatting your spectra to the
-minimum required level of the prediction function. You can provide
-either `csv` files or directly `asd` or opus (`.0`) for VisNIR and MIR
-scans, respectively.
-
-The results table has the prediction value (already back-transformed if
-log transformation was used) for the soil property of interest, standard
-deviation and uncertainty band, and a flag column for **potential
-underrepresented** samples given the OSSL calibration data, which is
-calculated based on principal components and Q statistics.
-
-The prediction function requires the
-[tidyverse](https://www.tidyverse.org/),
-[mlr3](https://mlr3book.mlr-org.com/intro.html),
-[qs](https://github.com/traversc/qs),
-[asdreader](https://github.com/pierreroudier/asdreader),
-[opusreader2](https://github.com/spectral-cockpit/opusreader2), and
-[matrixStats](https://cran.rstudio.com/web/packages/matrixStats/index.html)
-packages.
-
-Parameters:
-
-- `target`: the soil property of interest. Log-transformed properties
-  must have `log..` appended at the beginning of the name as indicated
-  in the `export_name` column.  
-- `spectra.file`: the path for the spectral measurements, either a `csv`
-  table (following the sample-data specifications), `asd`, or opus
-  (`.0`) file.  
-- `spectra.type`: the spectral range of interest. Either `visnir`,
-  `nir.neospectra`, or `mir`.  
-- `subset.type`: the subset of interest, either the whole `ossl` or the
-  `kssl` alone.  
-- `geo.type`: only available for `na`.  
-- `models.dir`: the path for the `ossl_models` folder. Should follow the
-  same structure and naming code as represented in
-  [fitted_models_access.csv](out/fitted_models_access.csv).
-
-All files that represent the **ossl_models** directory tree for local
-run or online access are described in
-[ossl_models_directory_tree.csv](out/ossl_models_directory_tree.csv).
-
-> Please note that the soil properties indication follows the export
-> name. Check
-> [fitted_models_performance_v1.2.csv](out/fitted_models_performance_v1.2.csv)
-> for the complete list of models of each soil property as some spectral
-> types may not be available. More importantly, for natural-log soil
-> properties, the upper and lower bands were estimated before the
-> back-transformation.
-
-``` r
-source("R-mlr/OSSL_functions.R")
-
-list.files("sample-data")
-```
-
-    ## [1] "101453MD01.asd"             "235157MD01.asd"            
-    ## [3] "235157XS01.0"               "icr056141.0"               
-    ## [5] "sample_mir_data.csv"        "sample_neospectra_data.csv"
-    ## [7] "sample_visnir_data.csv"
-
-``` r
-clay.visnir.ossl <- predict.ossl(target = "clay.tot_usda.a334_w.pct",
-                                 spectra.file = "sample-data/101453MD01.asd",
-                                 spectra.type = "visnir",
-                                 subset.type = "ossl",
-                                 geo.type = "na",
-                                 models.dir = "~/mnt-ossl/ossl_models/")
-
-clay.visnir.ossl |>
-  knitr::kable()
-```
-
-| sample_id | clay.tot_usda.a334_w.pct |  std_dev |    lower |    upper | underrepresented |
-|----------:|-------------------------:|---------:|---------:|---------:|:-----------------|
-|         1 |                 33.35406 | 9.900726 | 23.45334 | 43.25479 | FALSE            |
-
-``` r
-oc.mir.kssl <- predict.ossl(target = "log..oc_usda.c729_w.pct",
-                            spectra.file = "sample-data/sample_mir_data.csv",
-                            spectra.type = "mir",
-                            subset.type = "kssl",
-                            geo.type = "na",
-                            models.dir = "~/mnt-ossl/ossl_models/")
-
-oc.mir.kssl |>
-  knitr::kable()
-```
-
-| sample_id | oc_usda.c729_w.pct |   std_dev |      lower |      upper | underrepresented |
-|----------:|-------------------:|----------:|-----------:|-----------:|:-----------------|
-|         1 |          0.0232091 | 0.0387254 | -0.0149378 |  0.0628333 | FALSE            |
-|         2 |          0.0438117 | 0.0774065 | -0.0311812 |  0.1246095 | FALSE            |
-|         3 |          0.4533481 | 0.0906541 |  0.3325472 |  0.5851001 | FALSE            |
-|         4 |          1.0724492 | 0.0625031 |  0.9505346 |  1.2019838 | TRUE             |
-|         5 |          0.0490533 | 0.0355205 |  0.0130686 |  0.0863161 | FALSE            |
-|         6 |          0.8021375 | 0.0527328 |  0.7118660 |  0.8971693 | TRUE             |
-|         7 |          1.2250589 | 0.0807371 |  1.0588345 |  1.4047039 | FALSE            |
-|         8 |          0.3362929 | 0.1103006 |  0.2035415 |  0.4836867 | FALSE            |
-|         9 |          1.9155340 | 0.0538360 |  1.7665917 |  2.0724947 | FALSE            |
-|        10 |          1.3158559 | 0.0914151 |  1.1218836 |  1.5275601 | FALSE            |
-|        11 |          0.4234255 | 0.0786920 |  0.3195847 |  0.5354376 | FALSE            |
-|        12 |         13.3578608 | 0.2007397 | 10.9575133 | 16.2400532 | TRUE             |
-|        13 |          1.4059354 | 0.1456846 |  1.0999981 |  1.7564430 | FALSE            |
-|        14 |         33.1607521 | 0.0746672 | 30.7872847 | 35.7114397 | TRUE             |
-|        15 |          6.1175378 | 0.1536174 |  5.1697557 |  7.2109157 | TRUE             |
-|        16 |          0.5058015 | 0.0990479 |  0.3700963 |  0.6549481 | FALSE            |
-|        17 |          0.3885227 | 0.0553760 |  0.3156664 |  0.4654135 | FALSE            |
-|        18 |         34.2093266 | 0.0610237 | 32.1842980 | 36.3579298 | FALSE            |
-|        19 |          0.2090189 | 0.0927047 |  0.1064461 |  0.3211006 | FALSE            |
-|        20 |          0.2358387 | 0.0734969 |  0.1512271 |  0.3266690 | FALSE            |
-
-If you fit your own models and/or if you are interested in contributing
-to this project, please contact us and help us make better open soil
-data for global good!
-
-# Other tools and repositories of interest
-
-For more advanced uses of the soil spectral libraries, **we advise to
-contacting the original data producers** especially to get help with
-using, extending, and improving the original SSL data.
-
-- OSSL Documentation: <https://soilspectroscopy.github.io/ossl-manual/>;
-- OSSL Explorer: <https://explorer.soilspectroscopy.org>;
-- OSSL Engine: <https://engine.soilspectroscopy.org>;
-- OSSL datasets import repository:
-  <https://github.com/soilspectroscopy/ossl-imports>;
+<img src="img/soilspec4gg-logo_fc.png" style="width:50.0%"
+data-wfig-align="center" />
